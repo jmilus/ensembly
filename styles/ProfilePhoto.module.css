@@ -1,0 +1,33 @@
+.profilePhotoBase {
+    display: flex;
+    border-radius: 50%;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}
+
+.profilePhotoBase > div {
+    height: 100%;
+    width: 100%;
+}
+
+.profilePhotoBase > img {
+    min-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+
+}
+
+.photoBackdrop {
+    display: flex;
+    background: var(--p-fill);
+    color: var(--p-text);
+    justify-content: center;
+    align-items: center;
+    color: var(--p-text);
+    font-size: 2em;
+}
+
+.photoBackdrop > i {
+    opacity: 0.5;
+}

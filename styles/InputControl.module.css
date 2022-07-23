@@ -1,0 +1,24 @@
+.base {
+    position: relative;
+    display: flex;
+    flex: 1;
+    padding: 20px 0 10px 0;
+}
+
+* ~ .base {
+    margin-left: 10px;
+}
+
+.textInput {
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    background: var(--gray2);
+}
+
+.textInput:focus,
+.textInput:focus-visible {
+    outline: 2px solid var(--p-fill);
+}
+

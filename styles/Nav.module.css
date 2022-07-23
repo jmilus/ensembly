@@ -1,0 +1,102 @@
+.slideOut {
+    transition: all ease 0.2s;
+    transition-delay: 1s;
+}
+.slideOut.now {
+    transition-delay: 0s;
+}
+
+.mainMenuPanel {
+    overflow: hidden;
+    z-index: 10;
+    background: var(--p-fill);
+    display:flex;
+    flex-direction:column;
+    width: 40px;
+    color: white;
+}
+.mainMenuPanel:hover {
+    width: 250px;
+}
+
+.mainMenuPanel:hover .appFullTitle {
+    opacity: 1;
+}
+
+.appFullTitle {
+    opacity: 0;
+}
+
+.appLogo {
+    flex: 1;
+    font-size: 32px;
+}
+
+.menuOptions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    flex:1;
+}
+
+.menuItem {
+    font-size: 20px;
+    padding: 5px 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select:none;
+    margin-top: 5px;
+}
+.menuItem:last-child {
+    margin-top: auto;
+}
+
+.menuItem button {
+    --b-alp: 0;
+    margin:0;
+    padding: 0 5px;
+}
+
+.menuItem:hover {
+    background: white;
+    color: var(--p-fill);
+    transition: all 0.1s;
+}
+
+.menuHeader {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+}
+
+.profileBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: goldenrod;
+    height: 30px;
+    width: 30px;
+    border-radius: 25px;
+    overflow: hidden;
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 0px 1px white;
+    transition: box-shadow 0.1s;
+    cursor: pointer;
+    user-select:none;
+}
+.profileBtn:hover {
+    box-shadow: 0 0 0px 3px white;
+}
+
+.profileIcon {
+    font-weight: 700;
+}
+
+@keyframes glow-hover {
+    0% {box-shadow: 0 0 1px 1px white;}
+    100% {box-shadow: 0 0 3px 3px white;}
+
+}

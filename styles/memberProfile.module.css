@@ -1,0 +1,33 @@
+.profilePage {
+    display: flex;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.dataSection {
+    flex:1;
+    min-height:450px;
+}
+
+.actionSection {
+    min-height: 150px;
+    background: hsl(0, 0%, 75%);
+    /* box-shadow: 10px 0px 20px -15px inset hsl(0, 0%, 40%); */
+    box-shadow: 15px 0px 10px -10px inset hsl(0, 0%, 40%);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.profileHeader {
+    padding: 20px;
+}
+
+.profileDetails {
+    display: flex;
+    padding: 0 10px;
+}
+
+.profileSegment ~ .profileSegment {
+    /* border-left: 1px solid var(--gray4); */
+}

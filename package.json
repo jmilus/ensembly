@@ -1,0 +1,26 @@
+{
+  "name": "ensembly-next",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.0.0",
+    "classnames": "^2.3.1",
+    "lodash": "^4.17.21",
+    "next": "^12.1.4",
+    "nextjs": "^0.0.3",
+    "node": "^17.7.2",
+    "psql": "^0.0.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "eslint": "8.13.0",
+    "eslint-config-next": "12.1.4",
+    "prisma": "^4.0.0"
+  }
+}

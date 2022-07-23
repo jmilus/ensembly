@@ -1,0 +1,202 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model EnsembleType {
+  id        Int        @id @default(autoincrement())
+  name      String     @db.VarChar(64)
+  ensembles Ensemble[]
+  Section   Section[]
+}
+
+model Ensemble {
+  id      Int                  @id @default(autoincrement())
+  name    String               @db.VarChar(64)
+  members EnsembleMembership[]
+  type    EnsembleType         @relation(fields: [typeId], references: [id])
+  typeId  Int
+}
+
+model Member {
+  id           String               @id @default(cuid())
+  created      DateTime             @default(now())
+  firstName    String               @db.VarChar(64)
+  middleName   String?              @db.VarChar(64)
+  lastName     String               @db.VarChar(64)
+  name         String?              @db.VarChar(128)
+  memberBio    MemberBio?
+  ensembles    EnsembleMembership[]
+  phoneNumbers PhoneNumber[]
+  addresses    Address[]
+  emails       Email[]
+  user         User?
+}
+
+model EnsembleMembership {
+  id         String    @id @default(cuid())
+  member     Member    @relation(fields: [memberId], references: [id])
+  memberId   String
+  ensemble   Ensemble  @relation(fields: [ensembleId], references: [id])
+  ensembleId Int
+  startDate  DateTime  @default(now())
+  endDate    DateTime?
+  status     Status?
+  role       Role      @default(Performer)
+  section    Section?  @relation(fields: [sectionId], references: [id])
+  sectionId  Int?
+}
+
+model Section {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(64)
+  roleType           Role                 @default(Performer)
+  ensembleType       EnsembleType         @relation(fields: [ensembleTypeId], references: [id])
+  ensembleTypeId     Int
+  EnsembleMembership EnsembleMembership[]
+}
+
+model MemberBio {
+  id        Int        @id @default(autoincrement())
+  photos    PhotoSet?
+  birthday  DateTime?  @db.Date
+  sex       Sex?       @default(unspecified)
+  height    Int?       @db.SmallInt
+  weight    Int?       @db.SmallInt
+  race      Race?      @default(unspecified)
+  ethnicity String?    @db.VarChar(64)
+  hair      HairColor? @default(unspecified)
+  eyes      EyeColor?  @default(unspecified)
+  member    Member     @relation(fields: [memberId], references: [id])
+  memberId  String     @unique
+}
+
+model PhotoSet {
+  id       Int       @id @default(autoincrement())
+  member   MemberBio @relation(fields: [memberId], references: [id])
+  memberId Int       @unique
+  photos   Photo[]
+}
+
+model Photo {
+  id         Int      @id @default(autoincrement())
+  image      Bytes    @db.ByteA
+  photoSet   PhotoSet @relation(fields: [photoSetId], references: [id])
+  photoSetId Int      @unique
+}
+
+model PhoneNumber {
+  id          String    @id @default(cuid())
+  prefix      String?   @db.VarChar(4)
+  phonenumber String    @unique @db.VarChar(12)
+  rank        PhoneRank @default(Home)
+  member      Member    @relation(fields: [memberId], references: [id])
+  memberId    String    @unique
+}
+
+model Address {
+  id         String      @id @default(cuid())
+  street     String      @db.VarChar(64)
+  street2    String?     @db.VarChar(64)
+  city       String      @db.VarChar(32)
+  state      String      @db.VarChar(2)
+  postalCode String      @db.VarChar(8)
+  country    String?     @db.VarChar(32)
+  poBox      String?     @db.VarChar(16)
+  rank       AddressRank @default(Home)
+  member     Member      @relation(fields: [memberId], references: [id])
+  memberId   String      @unique
+}
+
+model Email {
+  id       String    @id @default(cuid())
+  address  String    @unique @db.VarChar(96)
+  rank     EmailRank @default(Primary)
+  member   Member    @relation(fields: [memberId], references: [id])
+  memberId String    @unique
+}
+
+model User {
+  id         String   @id @default(cuid())
+  login      String   @unique @db.VarChar(32)
+  password   String   @db.VarChar(256)
+  created_at DateTime @default(now())
+  updated_at DateTime
+  member     Member   @relation(fields: [memberId], references: [id])
+  memberId   String   @unique
+}
+
+enum EyeColor {
+  unspecified
+  brown
+  blue
+  green
+  hazel
+}
+
+enum HairColor {
+  unspecified
+  black
+  blonde
+  brown
+  red
+  gray
+  white
+  bald
+}
+
+enum Sex {
+  unspecified
+  female
+  male
+}
+
+enum Race {
+  unspecified
+  Black
+  White
+  Hispanic
+  Asian
+  NativeAmerican
+}
+
+enum Status {
+  Active
+  Suspended
+  Inactive
+}
+
+enum EmailRank {
+  Primary
+  Personal
+  Work
+  Secondary
+  Old
+}
+
+enum AddressRank {
+  Home
+  Work
+  Secondary
+  Temporary
+  Old
+}
+
+enum PhoneRank {
+  Home
+  Mobile
+  Work
+  Emergency
+  Secondary
+  Old
+}
+
+enum Role {
+  Performer
+  Crew
+}

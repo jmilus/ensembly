@@ -1,0 +1,86 @@
+.main-menu-panel {
+    width: 0px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.slide-out {
+  transition: all ease 0.2s;
+  transition-delay: 1s;
+}
+.slide-out.now {
+  transition-delay: 0s;
+}
+
+.main-menu-panel.show {
+    background: var(--primary-fill);
+    display:flex;
+    flex-direction:column;
+    width: 40px;
+    color: white;
+}
+.main-menu-panel.show:hover {
+    width: 250px;
+}
+
+.main-menu-panel.show:hover .app-full-title {
+    opacity: 1;
+}
+
+.app-full-title {
+    opacity: 0;
+}
+
+.app-logo {
+    flex: 1;
+    font-size: 32px;
+}
+
+.main-menu-panel .menu-list {
+    font-size: 20px;
+}
+
+.main-menu-panel .menu-item {
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.main-menu-panel .menu-item:hover {
+    background: white;
+    color: var(--primary-fill);
+    transition: all 0.1s;
+}
+
+.menu-header {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+}
+
+.profile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: goldenrod;
+    height: 30px;
+    width: 30px;
+    border-radius: 25px;
+    overflow: hidden;
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 0px 1px white;
+    transition: box-shadow 0.1s;
+}
+.profile-btn:hover {
+    box-shadow: 0 0 0px 3px white;
+}
+
+.profile-icon {
+    font-weight: 700;
+}
+
+@keyframes glow-hover {
+    0% {box-shadow: 0 0 1px 1px white;}
+    100% {box-shadow: 0 0 3px 3px white;}
+
+}
