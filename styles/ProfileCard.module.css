@@ -1,8 +1,7 @@
 .cardContainer {
-    width:100px;
     border-radius: 15px;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     border: 1px solid lightgray;
     width: auto;
     padding: 5px;
@@ -14,16 +13,19 @@
     margin: 5px;
 }
 
-.cardContainer:hover {
-    cursor: pointer;
-
+.cardCaption {
+    margin-left: 10px;
 }
 
 .cardName {
     display: flex;
     font-size: 16px;
     font-weight: 700;
-    margin-left: 10px;
+}
+
+.subtitle {
+    color: gray;
+    font-style: italic;
 }
 
 .heroIcon {
@@ -35,8 +37,12 @@
     color: var(--p-text);
 }
 
-.title {
+.header {
     display: flex;
-
     align-items: center;
+}
+
+.cardControls {
+    display: flex;
+    justify-content: space-between;
 }

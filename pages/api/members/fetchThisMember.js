@@ -1,12 +1,17 @@
 import getThisMember from '../../../lib/members/_fetchThisMember';
 
 const fetchThisMember = async (req, res) => {
-    
+    const { id } = req.query;
     let response = [];
     try {
-        response = await getThisMember(req.query.id);
-        res.status(200);
-        res.json(response);
+        if (id) {
+            response = await getThisMember(id);
+            res.status(200);
+            res.json(response);
+        } else {
+            res.status(500);
+            res.json({ message: "that id does not exist" });
+        }
     }
     catch (err) {
         console.error({ err });

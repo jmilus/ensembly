@@ -1,120 +1,223 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import useAutoSaveForm from '../../hooks/useAutoSaveForm';
 import { useRouter } from 'next/router';
+import useLoader from '../../hooks/useLoader';
+import { useDrop } from 'react-dnd';
 
-import Carousel from '../../components/Carousel';
-import ContactCard from '../../components/ContactCard';
-import DateControl from '../../components/DateControl';
+import { ItemTypes } from '../../config/constants';
+
 import Link from 'next/link';
-import SelectControl from '../../components/SelectControl';
-import TextControl from '../../components/TextControl';
+import Meta from '../../components/Meta';
+
+import VForm from '../../components/VForm';
+import V from '../../components/ControlMaster';
+import MemberCard from '../../components/MemberCard';
+import TabControl, { Tab } from '../../components/TabControl';
+import DropContainer from '../../components/DropContainer';
 
 import { GlobalContext } from "../_app";
-import { deleteRecord, handleFormUpdate } from '../../utils/';
-import getAllEnsembles from '../../lib/ensembles/_fetchAllEnsembles';
+
 import getThisEnsemble from '../../lib/ensembles/_fetchThisEnsemble';
 
-import styles from '../../styles/ensembleProfile.module.css';
-import { isEmpty } from 'lodash';
+import basePageStyles from '../../styles/basePage.module.css';
+import getAllDivisions from '../../lib/ensembles/_fetchAllDivisions';
+import getAllSubdivisions from '../../lib/ensembles/_fetchAllSubdivisions';
+import getAllMembers from '../../lib/members/_fetchAllMembers';
 
-export async function getStaticProps({ params }) {
-    const ensembleFormData = await getThisEnsemble(params.id);
-    const { ensemble, properties } = ensembleFormData;
+import { Capacity } from '@prisma/client';
+
+export async function getServerSideProps(context) {
+    const ensemble = await getThisEnsemble(context.params.id);
+    const members = await getAllMembers();
+    const divisions = await getAllDivisions(ensemble.typeId);
+    const subdivisions = await getAllSubdivisions();
+
+    // console.log("sending these to the API:", context.params);
+    
     return {
         props: {
-            ensemble: ensemble ? ensemble : {},
-            properties: properties ? properties : {}
+            ensemble,
+            members,
+            divisions,
+            subdivisions
         }
-    }
-}
-
-export async function getStaticPaths() {
-    const ensembles = await getAllEnsembles();
-    const paths = ensembles.map((ensemble) => {
-        return {
-            params: {
-                id: ensemble.id.toString(),
-            }
-        }
-    })
-    return {
-        paths,
-        fallback: true
     }
 }
 
 const ensembleProfile = (initialProps) => {
-    const router = useRouter();
+    const { dispatch } = useContext(GlobalContext);
+    
     const [ensemble, setEnsemble] = useState(initialProps.ensemble);
-    const [saved, setSaved] = useState(true);
-    const saveTimer = useRef(null);
+    const [showRoster, setShowRoster] = useState(false);
+    const router = useRouter();
 
-    const { autoSaveDelay } = useAutoSaveForm();
+    useLoader(ensemble.id, setEnsemble, `/api/ensembles/fetchThisEnsemble?id=${ensemble.id}`);
 
-    const id = router.query.id;
+    const { members, divisions, subdivisions } = initialProps;
+    const { name, membership, typeId } = ensemble;
 
-    const loadEnsembleProfile = async (ensemble) => {
-        const response = await fetch(`/api/ensembles/fetchThisEnsemble?id=${ensemble.id}`);
-        if (!response.ok) throw new Error(response.statusText);
-        const profile = await response.json();
-        setEnsemble(profile);
-    }
+    console.log({ensemble}, {members}, {divisions}, {subdivisions});
 
-    useEffect(() => {
-        if (isEmpty(initialProps.ensemble)) {
-            if (ensembles.length > 0) {
-                const findEnsembleById = ensembles.find(ensemble => {
-                    return ensemble.id.toString() === id;
-                })
-                loadEnsembleProfile(findEnsembleById);
-            }
+    const ensembleCapacities = {};
+    membership.forEach(mem => {
+        ensembleCapacities[mem.capacity] = mem.capacity;
+    })
+
+    const handleDrop = async (payload) => {
+        if (payload.tag != "subDivisionId") return null;
+        //
+        console.log({payload})
+        const { item, tag, value } = payload;
+        const changedIndex = ensemble.membership.findIndex(mem => {
+            return item.membershipId === mem.id;
+        })
+        const tempEnsemble = {...ensemble}
+        if (changedIndex >= 0) {
+            tempEnsemble.membership[changedIndex].subDivisionId = value.id;
+            tempEnsemble.membership[changedIndex].subDivision = value;
+            tempEnsemble.membership[changedIndex].divisionId = value.divisionId;
+            tempEnsemble.membership[changedIndex].division = divisions.find((div) => div.id === value.divisionId);
+        } else {
+            tempEnsemble.membership.push({
+                member: {...item, memberId: item.id},
+                capacity: item.capacity,
+                subDivisionId: value.id,
+                subDivision: value,
+                divisionId: value.divisionId,
+                division: divisions.find((div) => div.id === value.divisionId)
+            })
         }
+        setEnsemble(tempEnsemble);
 
-    }, [id]);
 
-    const updateEnsembleProfile = async (event) => {
-        const APIURL = '/api/ensembles/updateThisEnsemble';
-        const ids = { recordId: ensemble.id, linkedId: null };
-        const updatedEnsemble = await handleFormUpdate(event, APIURL, ids)
-
-        setEnsemble(updatedEnsemble);
-        setSaved(true);
+        const updatedMembership = await fetch('/api/members/updateMembership', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                id: item.membershipId,
+                ensembleId: ensemble.id,
+                capacity: item.capacity,
+                linkedId: item.id,
+                division: value.divisionId,
+                subdivision: value.id
+            })
+        })
+            .then(response => response.json())
+            .then(record => {
+                console.log(record)
+                return record;
+            })
+            .catch((err, message) => {
+                console.error('failed to update membership:', message);
+                return err;
+            })
+        return updatedMembership;
     }
 
     
-
-    // console.log("rendering with", ensemble);
-    const { name, members, typeId } = ensemble;
-    console.log({ensemble});
-    console.log( initialProps.properties );
     return (
-        <div className={styles.profilePage}>
-            <div className={styles.dataSection}>
-                <div className={styles.profileHeader}>
-                    <form id="ensembleName" name="ensembleName" onSubmit={(e) => updateEnsembleProfile(e)} onChange={(e) => autoSaveDelay(e)}>
-                        <TextControl id="name" name="name" type="text" initialValue={name} hero isRequired/>
-                    </form>
+        <div className={basePageStyles.pageBase}>
+            <div className={basePageStyles.formSection}>
+                <div className={basePageStyles.pageHeader}>
+                    <VForm id="ensembleName" APIURL="/ensembles/updateThisEnsemble" recordId={ensemble.id}>
+                        <V.Text id="name" name="name" value={ensemble.name} hero isRequired />
+                    </VForm>
                 </div>
-                <div className={styles.profileDetails}>
-                    <div className={styles.profileSegment}>
-                        <form id="profile" name="profile" onSubmit={(e) => updateEnsembleProfile(e)} onChange={(e) => autoSaveDelay(e)}>
-                            <fieldset>
-                                <legend>Ensemble Details</legend>
-                                <SelectControl id="type" name="type" label="Ensemble Type" initialValueId={typeId} options={initialProps.properties} optionValue="typeName"/>
-                                
-                            </fieldset>
-                        </form>
-                    </div>
-                    <div className={styles.profileSegmentWide}>
-                        <fieldset>
-                            <legend>Membership</legend>
-                        </fieldset>
-                    </div>
+                <div className={basePageStyles.pageDetails}>
+                    <TabControl>
+                        {
+                            Object.keys(Capacity).map(cap => {
+                                return (
+                                    <Tab id={cap}>
+                                        {
+                                            divisions.map(div => {
+                                                if (div.capacity != cap) return null;
+                                                return (
+                                                    <fieldset>
+                                                        <legend>{div.name}</legend>
+                                                        <DropContainer tag="divisionId" value={div} onDrop={handleDrop}>
+                                                            {
+                                                                membership.map((mem, i) => {
+                                                                    if (mem.divisionId != div.id) return null;
+                                                                    return (
+                                                                        <MemberCard
+                                                                            key={i}
+                                                                            member={{ ...mem.member, membershipId: mem.id, capacity: cap }}
+                                                                            subtitle={mem.subDivision?.name}
+                                                                            presentation="grid"
+                                                                            format="drag"
+                                                                        />
+                                                                    )
+                                                                })
+                                                            }
+                                                            {
+                                                                subdivisions.map(sd => {
+                                                                    if (sd.divisionId != div.id) return null;
+                                                                    return <DropContainer tag="subDivisionId" value={sd} onDrop={handleDrop} />
+                                                                })
+                                                            }
+                                                        </DropContainer>
+                                                    </fieldset>
+                                                )
+                                            })
+                                        }
+                                    </Tab>
+                                )
+                            })
+                        }
+                        
+                    </TabControl>
+                    <div id="full-roster" className="collapsible" style={{ width: showRoster ? "250px" : "0px" }}>
+                        <TabControl>
+                            <Tab id="Unassigned">
+                                <fieldset>
+                                    <legend>Members</legend>
+                                    <article>
+                                        {
+                                            members.map((member, i) => {
+                                                const result = membership.find(mem => {
+                                                    return mem.member.id === member.id;
+                                                })
+                                                if (result) return null;
+                                                return (
+                                                    <MemberCard
+                                                        key={i}
+                                                        member={member}
+                                                        format="drag"
+                                                    />
+                                                )
+                                            })
+                                        }
+                                    </article>
+                                </fieldset>
+                            </Tab>
+                            <Tab id="All">
+                                <fieldset>
+                                    <legend>Members</legend>
+                                    <article>
+                                        {
+                                            members.map((member, i) => {
+                                                return (
+                                                    <MemberCard
+                                                        key={i}
+                                                        member={member}
+                                                        format="drag"
+                                                    />
+                                                )
+                                            })
+                                        }
+                                    </article>
+                                </fieldset>
+                            </Tab>
+                        </TabControl>
+                        
+                        {/* {
+                        } */}
+                    </div >
                 </div>
             </div>
-            <div className={styles.actionSection}>
+            <div className={basePageStyles.actionSection}>
                 <Link href="/ensembles"><button className="icon-and-label"><i>arrow_back</i>Back to Ensembles</button></Link>
-                <button type="submit" className="" onClick={() => document.forms["profile"].requestSubmit()}>Save</button>
+                <button className="icon-and-label" onClick={() => setShowRoster(!showRoster)}><i>reduce_capacity</i>Manage Members</button>
             </div>
         </div>
 

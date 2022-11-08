@@ -4,7 +4,7 @@ export const MENUOPTIONS = [
     {
         name: "Dashboard",
         icon: "space_dashboard",
-        route: ""
+        route: "dashboard"
     },
     {
         name: "Ensembles",

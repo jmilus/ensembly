@@ -1,102 +1,55 @@
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { getInitials, handleFormUpdate } from '../utils';
-import DateControl from './DateControl';
-import SelectControl from './SelectControl';
+import { getInitials } from '../utils';
 
-import useAutoSaveForm from '../hooks/useAutoSaveForm';
+import VForm from './VForm';
+import V from './ControlMaster';
 
-import { Status, Role } from '@prisma/client';
+import { Status, Capacity } from '@prisma/client';
 
 import styles from '../styles/ProfileCard.module.css'
 
-const getSections = async (ensembleTypeId) => {
-    const sections = await fetch('/api/ensembles/fetchAllSections', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            ensembleTypeId: ensembleTypeId
-        })
-    })
-        .then(res => res.json())
-        .then(sections => {
-            //console.log("returned sections:", sections);
-            return sections
-        })
-        .catch((err) => {
-            console.log("failed to fetch ensemble sections,", err);
-        })
-    
-    return sections;
-}
-
-const EnsembleCard = ({ ensemble, memberId, presentation, format }) => {
-    const [sections, setSections] = useState([]);
-    const [filteredSections, setFilteredSections] = useState();
+const EnsembleCard = ({ ensemble, divisions, subdivisions, memberId, format }) => {
     const router = useRouter();
-    const { autoSaveDelay } = useAutoSaveForm();
 
-    const { ensembleId, membershipId, ensembleName, roles } = ensemble;
+    const { id, name, capacities, type } = ensemble;
+    const typeColor = JSON.parse(type.typeColor);
     
-    const initials = getInitials([ensembleName]).substring(0,3);
+    const elemTypeColor = `${typeColor.type}(${typeColor.values[0]},${typeColor.values[1]}%, ${typeColor.values[2]}%)`;
+    
+    const initials = getInitials(name).substring(0,3);
     const heroIcon = <div>{initials}</div>
-    
-    useEffect(() => {
-        async function fetchSections() {
-            const fetchedSections = await getSections(ensemble.ensembleType.id)
-            setSections(fetchedSections);
-            setFilteredSections(filterSections(role))
-        }
-        if (format === "detail") {
-            fetchSections();
-        }
-    }, [format])
-    
-    // console.log({ ensemble }, { sections })
-    
-    const filterSections = (role) => {
-        const filtered = sections.filter(sec => {
-            return sec.roleType === role.name
-        })
-        setFilteredSections(filtered)
-    }
-
-    const updateMembership = async (event) => {
-        const APIURL = '/api/members/updateMembership';
-        const ids = {
-            recordId: ensemble.membershipId,
-            linkedId: memberId
-        }
-        try {
-            await handleFormUpdate(event, APIURL, ids);
-        }
-        catch {
-            console.log("there was a problem updating this membership");
-        }
-
-    }
 
     switch (format) {
-        case "detail":
+        case "membership":
             return (
                 <object className={styles.cardContainer}>
-                    <div className={styles.title} onClick={() => router.push(`/ensembles/${ensembleId}`)}>
-                        <div className={styles.heroIcon} style={{ width: "25px", height: "25px", fontSize: "0.5em"}}>{heroIcon}</div>
-                        <div className={styles.cardName}>{ensembleName}</div>
-                    </div>
+                    <section>
+                        <div className={styles.header} onClick={() => router.push(`/ensembles/${id}`)}>
+                            <div className={styles.heroIcon} style={{ width: "25px", height: "25px", fontSize: "0.5em" }}>{heroIcon}</div>
+                            <div className={styles.cardCaption}>
+                                <div className={styles.cardName}>{name}</div>
+                                <div className={styles.subtitle}></div>
+                            </div>
+                        </div>
+                    </section>
                     {
-                        roles.map((role, i) => {
-                            const formName = `membership-${ensembleId}-${membershipId}`;
+                        capacities.map((cap, i) => {
+                            const membershipName = `${id}-${cap.membershipId}`;
+                            // const dateControl = cap.endDate ? <V.Date id={`endDate-${membershipName}`} name="endDate" label="End" value={cap.endDate} /> : <V.Date id={`startDate-${membershipName}`} name="startDate" label="Start" value={cap.startDate} />;
+                            const divisionByCapacity = divisions.find(div => {
+                                return div.capacity === cap.name;
+                            })
                             return (
-                                <form id={formName} name={formName} onSubmit={(e) => updateMembership(e)} onChange={(e) => autoSaveDelay(e)}>
+                                <VForm id={`membership-${membershipName}`} APIURL="/members/updateMembership" linkedId={memberId} recordId={cap.membershipId} >
                                     <section>
-                                        <SelectControl id="role" name="role" label="Role" initialValueId={role.name} options={Role}>
-                                            <SelectControl id="section" name="section" label="Section" initialValueId={role.section.id} options={sections} />
-                                        </SelectControl>
-                                        <DateControl id="startDate" name="startDate" label="Start" initialValue={role.startDate} />
-                                        <DateControl id="endDate" name="endDate" label="End" initialValue={role.endDate} />
+                                        <V.Select id={`capacity-${membershipName}`} name="capacity" label="Capacity" value={cap.name} options={Capacity} >
+                                            <V.Select id={`division-${membershipName}`} name="division" label={divisionByCapacity.divisionAlias} value={cap.division?.id} options={divisions} filterKey={"capacity"} >
+                                                <V.Select id={`subdivision-${membershipName}`} name="subdivision" label="subdivision" value={cap.subDivision?.id} options={subdivisions} filterKey={"divisionId"} />
+                                            </V.Select>
+                                        </V.Select>
+                                        {/* {dateControl} */}
                                     </section>
-                                </form>
+                                </VForm>
                             )
                         })
                     }
@@ -105,9 +58,9 @@ const EnsembleCard = ({ ensemble, memberId, presentation, format }) => {
         case "minimal":
         default:
             return (
-                <object className={styles.cardContainer} onClick={() => router.push(`/ensembles/${ensembleId}`)}>
-                    <div className={styles.heroIcon} style={{width: "50px", height: "50px"}}>{heroIcon}</div>
-                    <div className={styles.cardName}>{ensembleName}</div>
+                <object className={styles.cardContainer} onClick={() => router.push(`/ensembles/${id}`)}>
+                    <div className={styles.heroIcon} style={{width: "50px", height: "50px", background: elemTypeColor}}>{heroIcon}</div>
+                    <div className={styles.cardName}>{name}</div>
                 </object>
             );
     }

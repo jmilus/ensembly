@@ -1,29 +1,23 @@
-import { useContext } from 'react';
-
 import Meta from './Meta';
 import Nav from './Nav';
 import Modal from '../components/Modal';
 
-import { ACTION_TYPES, GlobalContext } from "../pages/_app";
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
 import { MENUOPTIONS } from '../config/index';
 
 const Frame = ({ children }) => {
-    const { dispatch, state } = useContext(GlobalContext);
-    const { modal } = state;
-
-    const hideModal = () => {
-        dispatch({
-            type: ACTION_TYPES.HIDE_MODAL
-        })
-    }
 
     return (
         <>
             <Meta />
             <div className="app-body">
-                <Modal data={modal}/>
-                <Nav menuOptions={MENUOPTIONS}/>
-                {children}
+                <Modal />
+                <Nav menuOptions={MENUOPTIONS} />
+                <DndProvider backend={HTML5Backend}>
+                    {children}
+                </DndProvider>
             </div>
         </>
     )

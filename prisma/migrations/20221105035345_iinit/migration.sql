@@ -22,10 +22,14 @@ CREATE TYPE "AddressRank" AS ENUM ('Home', 'Work', 'Secondary', 'Temporary', 'Ol
 -- CreateEnum
 CREATE TYPE "PhoneRank" AS ENUM ('Home', 'Mobile', 'Work', 'Emergency', 'Secondary', 'Old');
 
+-- CreateEnum
+CREATE TYPE "Capacity" AS ENUM ('Performer', 'Crew', 'Staff');
+
 -- CreateTable
 CREATE TABLE "EnsembleType" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(64) NOT NULL,
+    "typeColor" JSONB,
 
     CONSTRAINT "EnsembleType_pkey" PRIMARY KEY ("id")
 );
@@ -53,13 +57,38 @@ CREATE TABLE "Member" (
 
 -- CreateTable
 CREATE TABLE "EnsembleMembership" (
+    "id" TEXT NOT NULL,
     "memberId" TEXT NOT NULL,
     "ensembleId" INTEGER NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endDate" TIMESTAMP(3),
-    "status" "Status" NOT NULL,
+    "status" "Status",
+    "capacity" "Capacity" NOT NULL DEFAULT 'Performer',
+    "divisionId" INTEGER,
+    "subDivisionId" INTEGER,
 
-    CONSTRAINT "EnsembleMembership_pkey" PRIMARY KEY ("memberId","ensembleId")
+    CONSTRAINT "EnsembleMembership_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Division" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR(64) NOT NULL,
+    "divisionAlias" VARCHAR(64) NOT NULL,
+    "capacity" "Capacity" NOT NULL,
+    "ensembleTypeId" INTEGER NOT NULL,
+
+    CONSTRAINT "Division_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SubDivision" (
+    "id" SERIAL NOT NULL,
+    "name" VARCHAR(64) NOT NULL,
+    "subDivisionAlias" VARCHAR(64) NOT NULL,
+    "divisionId" INTEGER NOT NULL,
+
+    CONSTRAINT "SubDivision_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -178,28 +207,40 @@ CREATE UNIQUE INDEX "User_memberId_key" ON "User"("memberId");
 ALTER TABLE "Ensemble" ADD CONSTRAINT "Ensemble_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "EnsembleType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EnsembleMembership" ADD CONSTRAINT "EnsembleMembership_ensembleId_fkey" FOREIGN KEY ("ensembleId") REFERENCES "Ensemble"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EnsembleMembership" ADD CONSTRAINT "EnsembleMembership_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "EnsembleMembership" ADD CONSTRAINT "EnsembleMembership_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EnsembleMembership" ADD CONSTRAINT "EnsembleMembership_ensembleId_fkey" FOREIGN KEY ("ensembleId") REFERENCES "Ensemble"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MemberBio" ADD CONSTRAINT "MemberBio_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EnsembleMembership" ADD CONSTRAINT "EnsembleMembership_divisionId_fkey" FOREIGN KEY ("divisionId") REFERENCES "Division"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PhotoSet" ADD CONSTRAINT "PhotoSet_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "MemberBio"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EnsembleMembership" ADD CONSTRAINT "EnsembleMembership_subDivisionId_fkey" FOREIGN KEY ("subDivisionId") REFERENCES "SubDivision"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Photo" ADD CONSTRAINT "Photo_photoSetId_fkey" FOREIGN KEY ("photoSetId") REFERENCES "PhotoSet"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Division" ADD CONSTRAINT "Division_ensembleTypeId_fkey" FOREIGN KEY ("ensembleTypeId") REFERENCES "EnsembleType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "PhoneNumber" ADD CONSTRAINT "PhoneNumber_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SubDivision" ADD CONSTRAINT "SubDivision_divisionId_fkey" FOREIGN KEY ("divisionId") REFERENCES "Division"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MemberBio" ADD CONSTRAINT "MemberBio_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Email" ADD CONSTRAINT "Email_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PhotoSet" ADD CONSTRAINT "PhotoSet_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "MemberBio"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Photo" ADD CONSTRAINT "Photo_photoSetId_fkey" FOREIGN KEY ("photoSetId") REFERENCES "PhotoSet"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PhoneNumber" ADD CONSTRAINT "PhoneNumber_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Email" ADD CONSTRAINT "Email_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

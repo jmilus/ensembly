@@ -1,10 +1,10 @@
-import getAllSections from '../../../lib/ensembles/_fetchAllSections';
+import getAllSubdivisions from '../../../lib/ensembles/_fetchAllSubdivisions';
 
-const fetchAllSections = async (req, res) => {
+const fetchAllSubdivisions = async (req, res) => {
     
     let response = [];
     try {
-        response = await getAllSections(req.body);
+        response = await getAllSubdivisions(req.body);
         res.status(200);
         res.json(response);
     }
@@ -15,4 +15,4 @@ const fetchAllSections = async (req, res) => {
     }
 }
 
-export default fetchAllSections;
+export default fetchAllSubdivisions;

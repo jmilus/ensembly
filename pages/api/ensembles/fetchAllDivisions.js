@@ -1,10 +1,10 @@
-import getAllMembers from '../../../lib/members/_fetchAllMembers';
+import getAllDivisions from '../../../lib/ensembles/_fetchAllDivisions';
 
-const fetchAllMembers = async (req, res) => {
+const fetchAllDivisions = async (req, res) => {
     
     let response = [];
     try {
-        response = await getAllMembers(req.body);
+        response = await getAllDivisions(req.body);
         res.status(200);
         res.json(response);
     }
@@ -15,4 +15,4 @@ const fetchAllMembers = async (req, res) => {
     }
 }
 
-export default fetchAllMembers;
+export default fetchAllDivisions;

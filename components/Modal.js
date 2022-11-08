@@ -1,97 +1,82 @@
-import { useContext } from 'react';
-import { ACTION_TYPES, GlobalContext } from "../pages/_app";
+import React, { Children, useContext, useState, useEffect } from 'react';
+// import useModal from '../hooks/useModal';
 
-import { processForm } from '../utils/';
+import { GlobalContext } from "../pages/_app";
 
-import TextControl from './TextControl';
-import SelectControl from '../components/SelectControl';
-import DateControl from '../components/DateControl';
+import VForm from '../components/VForm';
 
 import styles from '../styles/Modal.module.css'
 
-const Modal = ({ data }) => {
-    const { dispatch, state } = useContext(GlobalContext);
+const Modal = () => {
+    const { dispatch, parameters } = useContext(GlobalContext);
+    const { modal } = parameters;
+    const [modalIsFullscreen, setModalIsFullscreen] = useState(true)
+    console.log("rendering modal with:", modal);
 
     const hideModal = () => {
-        dispatch({
-            type: ACTION_TYPES.HIDE_MODAL
-        })
+        if (modal.type === "load") {
+            setModalIsFullscreen(false)
+        } else {
+            dispatch({ type: "modal", payload: null })
+        }
     }
 
-    if (data) {
-        switch (data.type) {
-            case "loading":
-                return (
-                    <div className={styles.modalBase}>
-                        <div className={styles.modalBody}>
-                            <div className={styles.loading}>
-                                Loading...
-                            </div>
+    let modalBody, modalActions = null;
+
+    if (modal) {
+        if (modal.type != "hide") {
+            switch (modal.type) {
+                case "load":
+                    modalBody =
+                        <div className="loading">
+                            Loading...
                         </div>
-                        <div className={styles.modalBackdrop}></div>
-                    </div>
-                )
-            case "error":
-                return (
-                    <div className={styles.modalBase}>
-                        <div className={styles.modalBody}>
+                    break;
+                case "error":
+                    modalBody =
+                        <>
                             <div className={styles.error}>
-                                {data.message}
+                                {modal.message}
                             </div>
                             <div className={styles.modalActions}>
                                 <button type="button" className="panel" onClick={hideModal}>OK</button>
                             </div>
-                        </div>
-                        <div className={styles.modalBackdrop}></div>
+                        </>
+                    break;
+                case "form":
+                    console.log("modal is a form!");
+                    const { title, body, URL, recordId, linkedId } = modal.content;
+                    modalActions =
+                        <section id="modal-actions" className="panel-buttons">
+                            {
+                                modal.buttons.map(button => {
+                                    let action = button.name === "dismiss" ? hideModal : button.action;
+                                    return <button name={button.name} className={button.style} onClick={action}>{button.caption}</button>
+                                })
+                            }
+                            
+                        </section>
+                    modalBody =
+                        <VForm id="modal-form" APIURL={URL} manual="true" followUp={modal.followUp} recordId={recordId} linkedId={linkedId} >
+                            <div className={styles.modalHeader}>{title}</div>
+                            {body}
+                            {modalActions}
+                        </VForm>
+                    break;
+                default:
+                    console.log("no modal type specified");
+                    break;
+            }
+            return (
+                <div className="modal-base">
+                    <div className={`modal-body ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : setIsFullscreen(true)}>
+                        {modalBody}
                     </div>
-                )
-            case "form":
-                const submitForm = (event) => {
-                    const formData = processForm(event);
-                    data.submit(formData);
-                }
-                return (
-                    <object className={styles.modalBase}>
-                        <form className={styles.modalBody} onSubmit={(e) => submitForm(e)}>
-                            <div className={styles.modalHeader}>{data.title}</div>
-                            <div className={styles.modalFields}>
-                                {
-                                    data.fields.map((field, i) => {
-                                        switch (field.controlType) {
-                                            case "text":
-                                                return <TextControl key={i} id={field.id} name={field.name} type={field.type} label={field.label} />
-                                            case "date":
-                                                return <DateControl key={i} id={field.id} name={field.name} type={field.type} label={field.label} />
-                                            case "select":
-                                                return <SelectControl key={i} id={field.id} name={field.name} type={field.type} label={field.label} options={field.options} optionKey={field.optionKey} />
-                                            default:
-                                                return <div>There is an error in this form tempalte</div>
-                                        }
-                                    })
-                                }
-                            </div>
-                            <div className={styles.modalActions}>
-                                <button type="submit" className="panel hero">Submit</button>
-                                {
-                                    data.actions.map((action, i) => {
-                                        const buttonType = action.type ? action.type : "button";
-                                        return (
-                                            <button key={i} type={buttonType} className="panel" onClick={buttonAction}>{action.name}</button>
-                                        )
-                                    })
-                                }
-                                <button type="button" className="panel" onClick={hideModal}>Cancel</button>
-                            </div>
-                        </form>
-                        <div className={styles.modalBackdrop} onClick={hideModal}></div>
-                    </object>
-                )
-            default:
-                console.log("no modal type specified");
-                break;
+                    {modalIsFullscreen ? <div className={styles.modalBackdrop} onClick={hideModal}></div> : null}
+                </div>
+            );
         }
     }
-    
     return null;
 }
 

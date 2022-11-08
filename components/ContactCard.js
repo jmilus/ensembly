@@ -1,49 +1,37 @@
-import useAutoSaveForm from '../hooks/useAutoSaveForm';
-
+import React from 'react';
+import { Text, Num, Select } from './ControlMaster';
 import TextControl from './TextControl';
 import SelectControl from './SelectControl';
 
-import styles from '../styles/ContactCard.module.css';
+import styles from '../styles/ProfileCard.module.css';
 
-// const EmailCard = (id, contact) => {
-//     return (
-//         <TextControl id={`${id}-text`} name="address" type="text" defaultValue={contact?.address} />
-//     )
-// }
 
-const ContactCard = (props) => {
-    const { autoSaveDelay } = useAutoSaveForm();
-    const { id = `new-contact-${props.type}`, name = "new", recordId = "null", type, contact, enums, formSubmit, deleteMe } = props;
+const ContactCard = ({ id = `new-contact-${props.type}`, name = "new", type, contact, enums, deleteMe, recordId, updateForm }) => {
     const buttons = [];
 
 
-    const cardContent = () => {
-        switch (type) {
-            case "email":
-                return (
-                    <TextControl id={`${id}-text`} name="address" type="text" initialValue={contact?.address} />
-                )
-            case "phone":
-                return (
-                    <TextControl id={`${id}-text`} name="phonenumber" type="text" initialValue={contact?.phonenumber} />
-                )
-            case "address":
-                return (
-                    <>
-                        <TextControl id={`${id}-street1-text`} label="Street" name="street" type="text" initialValue={contact?.street} />
-                        <TextControl id={`${id}-street2-text`} label="Street 2" name="street2" type="text" initialValue={contact?.street2} />
-                        <TextControl id={`${id}-city-text`} label="City" name="city" type="text" initialValue={contact?.city} />
-                        <div style={{ display: 'flex' }}>
-                            <TextControl id={`${id}-state-text`} label="State" name="state" type="text" initialValue={contact?.state} />
-                            <TextControl id={`${id}-postalCode-text`} label="Zip" name="postalCode" type="text" inheritedStyles={{ width: '5em' }} initialValue={contact?.postalCode} />
-                        </div>
-                    </>
-                )
-            default:
-                return (
-                    <div>Control not Provisioned</div>
-                )
-        }
+    let cardContent = null;
+    switch (type) {
+        case "email":
+            cardContent = <Text id={`${id}-text`} name="address" label="Email" initialValue={contact?.address} recordId={recordId} updateForm={updateForm} />
+            break;
+        case "phone":
+            cardContent = <TextControl id={`${id}-text`} name="phonenumber" type="text" initialValue={contact?.phonenumber} />
+            break;
+        case "address":
+            cardContent =
+                <>
+                    <TextControl id={`${id}-street1-text`} label="Street" name="street" type="text" initialValue={contact?.street} />
+                    <TextControl id={`${id}-street2-text`} label="Street 2" name="street2" type="text" initialValue={contact?.street2} />
+                    <TextControl id={`${id}-city-text`} label="City" name="city" type="text" initialValue={contact?.city} />
+                    <div style={{ display: 'flex' }}>
+                        <TextControl id={`${id}-state-text`} label="State" name="state" type="text" initialValue={contact?.state} />
+                        <TextControl id={`${id}-postalCode-text`} label="Zip" name="postalCode" type="text" inheritedStyles={{ width: '5em' }} initialValue={contact?.postalCode} />
+                    </div>
+                </>
+            break;
+        default:
+            cardContent = <div>Control not Provisioned</div>
     }
 
     if (contact) {
@@ -55,20 +43,18 @@ const ContactCard = (props) => {
     }
 
     return (
-        <object className="contact-card">
-            <form id={id} name={name} onSubmit={(e) => formSubmit(e, recordId)} onChange={(e) => autoSaveDelay(e)}>
-                <div className={styles.contactControls}>
-                    <SelectControl id={`${id}-rank`} name="rank" initialValueId={contact?.rank} options={enums} tiny />
-                    <div className="button-tray">
-                        {
-                            buttons.map(button => button)
-                        }
-                    </div>
+        <object className={styles.cardContainer}>
+            <div className={styles.cardControls}>
+                <Select id={`${id}-rank`} name="rank" initialValue={contact?.rank} options={enums} tiny recordId={recordId} updateForm={updateForm} />
+                <div className="button-tray">
+                    {
+                        buttons.map(button => button)
+                    }
                 </div>
-                <div className={styles.cardContent}>
-                    {cardContent()}
-                </div>
-            </form>
+            </div>
+            <div className={styles.cardContent}>
+                {cardContent}
+            </div>
         </object>
     )
 }

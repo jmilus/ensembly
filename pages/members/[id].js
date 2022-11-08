@@ -1,389 +1,210 @@
 import { useEffect, useState, useContext, useRef } from 'react';
-import useAutoSaveForm from '../../hooks/useAutoSaveForm';
 import { useRouter } from 'next/router';
+import useLoader from '../../hooks/useLoader';
 
-import ProfilePhoto from '../../components/ProfilePhoto';
-import Carousel from '../../components/Carousel';
-import ContactCard from '../../components/ContactCard';
-import EnsembleCard from '../../components/EnsembleCard';
-import DateControl from '../../components/DateControl';
 import Link from 'next/link';
-import SelectControl from '../../components/SelectControl';
-import TextControl from '../../components/TextControl';
+import ProfilePhoto from '../../components/ProfilePhoto';
+import EnsembleCard from '../../components/EnsembleCard';
+import Meta from '../../components/Meta';
 
-import { ACTION_TYPES, GlobalContext } from "../_app";
-import { deleteRecord, handleFormUpdate } from '../../utils/';
-import getAllMembers from '../../lib/members/_fetchAllMembers';
+
+import VForm from '../../components/VForm';
+import V from '../../components/ControlMaster';
+
+import { GlobalContext } from "../_app";
+
 import getThisMember from '../../lib/members/_fetchThisMember';
-import { Race, Sex, HairColor, EyeColor, EmailRank, AddressRank, PhoneRank, Role } from '@prisma/client';
+import getAllDivisions from '../../lib/ensembles/_fetchAllDivisions';
+import getAllSubdivisions from '../../lib/ensembles/_fetchAllSubdivisions';
+import { Race, Sex, HairColor, EyeColor, EmailRank, AddressRank, PhoneRank, Capacity } from '@prisma/client';
 
-import styles from '../../styles/memberProfile.module.css';
-import { isEmpty } from 'lodash';
+import basePageStyles from '../../styles/basePage.module.css';
 
-export async function getStaticProps({ params }) {
-    const member = await getThisMember(params.id);
+export async function getServerSideProps(context) {
+    const member = await getThisMember(context.params.id);
+    const divisions = await getAllDivisions();
+    const subdivisions = await getAllSubdivisions();
     return {
         props: {
-            member: member ? member : {}
+            member,
+            divisions,
+            subdivisions,
         }
-    }
-}
-
-export async function getStaticPaths() {
-    const members = await getAllMembers();
-    const paths = members.map((member) => {
-        return {
-            params: {
-                id: member.id.toString(),
-            }
-        }
-    })
-    return {
-        paths,
-        fallback: true
     }
 }
 
 const memberProfile = (initialProps) => {
-    const router = useRouter();
+    const {dispatch} = useContext(GlobalContext);
+
     const [member, setMember] = useState(initialProps.member);
-    const [saved, setSaved] = useState(true);
-    const saveTimer = useRef(null);
+    const router = useRouter();
 
-    const { autoSaveDelay } = useAutoSaveForm();
-
-    const id = router.query.id;
-
-    const {
-        dispatch,
-        state: { members }
-    } = useContext(GlobalContext);
-
-    const loadMemberProfile = async (member) => {
-        const response = await fetch(`/api/members/fetchThisMember?id=${member.id}`);
-        if (!response.ok) throw new Error(response.statusText);
-        const profile = await response.json();
-        console.log("loaded member:",{profile});
-        setMember(profile.member);
-    }
-
-    useEffect(() => {
-        if (isEmpty(initialProps.member)) {
-            if (members.length > 0) {
-                const findMemberById = members.find(member => {
-                    return member.id.toString() === id;
-                })
-                loadMemberProfile(findMemberById);
-            }
-        }
-
-    }, [id]);
-
-    const updateMemberProfile = async (event) => {
-        const APIURL = '/api/members/updateThisMember';
-        const ids = { recordId: member.id, linkedId: null };
-        try {
-            await handleFormUpdate(event, APIURL, ids)
-        }
-        catch {
-            console.log("there was a problem saving:")
-        }
-        loadMemberProfile(member);
-    }
-
-    const updateMemberEmails = async (event, emailId) => {
-        console.log({ event }, { emailId });
-        const APIURL = '/api/members/updateThisEmail';
-        const ids = { recordId: emailId, linkedId: member.id };
-
-        try {
-            await handleFormUpdate(event, APIURL, ids);
-        }
-        catch {
-            console.log("unable to add email.");
-        }
-        loadMemberProfile(member);
-    }
-
-    const deleteMemberEmail = async (emailId) => {
-        const APIURL = '/api/members/deleteThisEmail';
-
-        try {
-            await deleteRecord(APIURL, emailId);
-        }
-        catch {
-            console.log("unable to delete email.")
-        }
-        loadMemberProfile(member);
-    }
-
-    const updateMemberPhone = async (event, phoneId) => {
-        const APIURL = '/api/members/updateThisPhoneNumber';
-        const ids = { recordId: phoneId, linkedId: member.id };
-
-        try {
-            await handleFormUpdate(event, APIURL, ids);
-        }
-        catch {
-            console.log("unable to add phone number.");
-        }
-        loadMemberProfile(member);
-    }
-
-    const deleteMemberPhone = async (phoneId) => {
-        const APIURL = '/api/members/deleteThisPhoneNumber';
-        try {
-            await deleteRecord(APIURL, phoneId);
-        }
-        catch {
-            console.log("unable to delete phone number.")
-        }
-        loadMemberProfile(member);
-    }
-
-    const updateMemberAddress = async (event, addressId) => {
-        const APIURL = '/api/members/updateThisAddress';
-        const ids = { recordId: addressId, linkedId: member.id };
-        try {
-            await handleFormUpdate(event, APIURL, ids);
-        }
-        catch {
-            console.log("unable to update address.")
-        }
-        loadMemberProfile(member);
-    }
-
-    const deleteMemberAddress = async (addressId) => {
-        const APIURL = '/api/members/deleteThisAddress';
-        try {
-            await deleteRecord(APIURL, addressId);
-        }
-        catch {
-            console.log("unable to delete address.")
-        }
-        loadMemberProfile(member);
-    }
-
-    const updateMembership = async (formData, membershipRecord) => {
-        console.log("membership!", formData);
-        dispatch({
-            type: ACTION_TYPES.LOAD_MODAL
-        })
-        await fetch(`/api/members/updateMembership`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id: membershipRecord,
-                memberId: member.id,
-                ensembleId: formData.id
-            })
-        })
-            .then(res => res.json())
-            .then(response => {
-                console.log(response)
-                loadMemberProfile(member);
-            })
-            .catch((err) => {
-                console.log("Could not update membership...", err);
-            })
-        
-        
-        dispatch({
-            type: ACTION_TYPES.HIDE_MODAL
-        })
-    }
+    console.log("member:", {initialProps}, { member });
+    
+    useLoader(member.id, setMember, `/api/members/fetchThisMember?id=${member.id}`);
 
     const newMembershipModal = async () => {
-        console.log("membership modal");
         const response = await fetch('/api/ensembles/fetchAllEnsembles');
         if (!response.ok) throw new Error(response.statusText);
         const ensembleList = await response.json()
-        console.log({ensembleList})
-        try {
-            dispatch({
-                type: ACTION_TYPES.SET_ENSEMBLELIST,
-                payload: {
-                    ensembles: ensembleList
-                }
-            })
-        }
-        catch (error) {
-            //set error
-            console.log("this is the error", { error })
-        }
 
-        const modalContent = {
-            type: "form",
-            submit: updateMembership,
-            title: "Add Member To...",
-            fields: [
-                { id: "ensembleName", name: "ensembleId", type: "select", label: "Ensemble", controlType: "select", options: ensembleList },
-                { id: "ensembleRole", name: "role", type: "select", label: "Role", controlType: "select", options: Role }
-            ],
-            actions: []
+        const updateMembershipPanel = (data) => {
+            console.log({ data });
+            const newMembership = data[0];
+            const newCapacity = {
+                membershipId: newMembership.id,
+                startDate: newMembership.startDate,
+                endDate: newMembership.endDate,
+                status: newMembership.status,
+                name: newMembership.capacity,
+                division: newMembership.division,
+                subDivision: newMembership.subDivision
+            }
+            const updatedEnsembles = { ...member.ensembles };
+            updatedEnsembles[newMembership.ensembleId].capacities.push(newCapacity)
+            setMember({...member, ensembles: updatedEnsembles})
         }
+        
+        const modalBody =
+            <div className="modal-fields">
+                <section>
+                    <V.Select id="ensembleName" name="ensembleId" label="Ensemble" options={ensembleList} />
+                </section>
+                <section>
+                    <V.Select id="ensembleCapacity" name="capacity" label="Capacity" options={Capacity} optionFilters={["capacity"]}>
+                        <V.Select id="ensembleDivision" name="division" label="Division" options={initialProps.divisions} />
+                    </V.Select>
+
+                </section>
+            </div>
+
         dispatch({
-            type: ACTION_TYPES.SET_MODAL,
+            type: "modal",
             payload: {
-                modal: modalContent
+                type: "form",
+                content: {
+                    title: "Add Member To...",
+                    body: modalBody,
+                    URL: "/members/updateMembership",
+                    linkedId: member.id
+                },
+                buttons: [
+                    { name: "submit", caption: "Add", style: "hero" },
+                    { name: "dismiss", caption: "Cancel" }
+                ],
+                followUp: updateMembershipPanel
             }
         })
     }
 
-    const { firstName, middleName, lastName, name, memberBio, ensembles, phoneNumbers, addresses, emails } = member;
+    const emailAddress = member.emails?.length > 0 ? member.emails[0] : "";
+    const phoneNumber = member.phoneNumbers?.length > 0 ? member.phoneNumbers[0] : "";
+    const mailingAddress = member.addresses?.length > 0 ? member.addresses[0] : "";
 
-    console.log("rendering with", member);
+    if (!member) return <div className="floater">Member Not Found</div>
     
-    let pageContent = null;
-    if (member) {
-        pageContent =
-            <div className={styles.profilePage}>
-                <div className={styles.dataSection}>
-                    <div className={styles.profileHeader}>
-                        <form id="memberName" name="memberName" onSubmit={(e) => updateMemberProfile(e)} onChange={(e) => autoSaveDelay(e)}>
-                            <TextControl id="name" name="name" type="text" initialValue={name} hero isRequired />
-                        </form>
-                    </div>
-                    <div className={styles.profileDetails}>
-                        <div id="member-bio" className="profile-segment">
+    const ensembleCards = Object.keys(member.ensembles).map((key, i) => {
+        const ensemble = member.ensembles[key];
+        return (
+            <EnsembleCard
+                key={i}
+                ensemble={ensemble}
+                divisions={initialProps.divisions}
+                subdivisions={initialProps.subdivisions}
+                memberId={member.id}
+                presentation="list"
+                format="membership"
+            />
+        )
+    })
+
+    return (
+        <div className={basePageStyles.pageBase}>
+            <div className={basePageStyles.formSection}>
+                <div className={basePageStyles.pageHeader}>
+                    <VForm id="memberName" APIURL="/members/updateThisMember" recordId={member.id}>
+                        <V.Text id="name" name="name" value={member.name} hero isRequired />
+                    </VForm>
+                </div>
+                <div className={basePageStyles.pageDetails}>
+                    <div className="grid profile">
+                        <div id="member-photo" className={basePageStyles.profileSegment}>
                             <ProfilePhoto
-                                name={lastName}
+                                name={member.lastName}
                                 profilePic=""
                                 // profilePic="http://localhost:3100/images/HAPPYJOSH.jpg"
-                                styling={{ width: "100px", height: "100px" }}
                             />
-                            <form id="profile" name="profile" onSubmit={(e) => updateMemberProfile(e)} onChange={(e) => autoSaveDelay(e)}>
+                        </div>
+                        <div id="member-bio" className={basePageStyles.profileSegment}>
+                            <VForm id="member-profile" APIURL="/members/updateThisMember" recordId={member.id}>
                                 <fieldset>
                                     <legend>Bio</legend>
                                     <section>
-                                        <TextControl id="firstName" name="firstName" type="text" label="First Name" initialValue={firstName} />
-                                        <TextControl id="middleName" name="middleName" type="text" label="Middle Name" initialValue={middleName} />
-                                        <TextControl id="lastName" name="lastName" type="text" label="Last Name" initialValue={lastName} />
+                                        <V.Text id="firstName" name="firstName" label="First Name" value={member.firstName} />
+                                        <V.Text id="middleName" name="middleName" label="Middle Name" value={member.middleName} />
+                                        <V.Text id="lastName" name="lastName" label="Last Name" value={member.lastName} />
                                     </section>
                                     <section>
-                                        <DateControl id="birthday" name="birthday" label="Birthday" initialValue={memberBio?.birthday} />
-                                        <SelectControl id="sex" name="sex" label="Sex" initialValueId={memberBio?.sex} options={Sex} />
-                                    </section>
-
-                                    <section>
-                                        <TextControl id="height" name="height" type="number" label="Height" initialValue={memberBio?.height} units="imperial-length" />
-                                        <TextControl id="weight" name="weight" type="number" label="Weight" initialValue={memberBio?.weight} units="imperial-weight" />
+                                        <V.Select id="sex" name="sex" label="Sex" value={member.memberBio?.sex} options={Sex} />
+                                        <V.Date id="birthday" name="birthday" label="Birthday" value={member.memberBio?.birthday} />
                                     </section>
                                     <section>
-                                        <SelectControl id="race" name="race" label="Race" initialValueId={memberBio?.race} options={Race} />
-                                        <TextControl id="ethnicity" name="ethnicity" type="text" label="Ethnicity" initialValue={memberBio?.ethnicity} />
+                                        <V.Select id="hair" name="hair" label="Hair Color" value={member.memberBio?.hair} options={HairColor} />
+                                        <V.Select id="eyes" name="eyes" label="Eye Color" value={member.memberBio?.eyes} options={EyeColor} />
+                                        <V.Number id="height" name="height" label="Height" format="height" value={member.memberBio?.height} />
+                                        <V.Number id="weight" name="weight" label="Weight" format="weight" value={member.memberBio?.weight} />
                                     </section>
                                     <section>
-                                        <SelectControl id="hair" name="hair" label="Hair" initialValueId={memberBio?.hair} options={HairColor} />
-                                        <SelectControl id="eyes" name="eyes" label="Eyes" initialValueId={memberBio?.eyes} options={EyeColor} />
+                                        <V.Select id="race" name="race" label="Race" value={member.memberBio?.race} options={Race} />
+                                        <V.Text id="ethnicity" name="ethnicity" label="Ethnicity" value={member.memberBio?.ethnicity} />
                                     </section>
                                 </fieldset>
-                            </form>
+                            </VForm>
                         </div>
-                        <div id="member-contacts" className="profile-segment">
-                            <Carousel
-                                id="carousel-email"
-                                title="Email"
-                                newItem={<ContactCard type="email" enums={EmailRank} formSubmit={updateMemberEmails} />}
-                            >
-                                {
-                                    emails.map((email, i) => {
-                                        return (
-                                            <ContactCard
-                                                key={i}
-                                                id={`email-${i}`}
-                                                type="email"
-                                                name={`email-${i}`}
-                                                recordId={email.id}
-                                                contact={email}
-                                                enums={EmailRank}
-                                                formSubmit={updateMemberEmails}
-                                                deleteMe={deleteMemberEmail}
-                                            />
-                                        )
-                                    })
-                                }
-                            </Carousel>
-                            <Carousel
-                                id="carousel-phone"
-                                title="Phone"
-                                newItem={<ContactCard type="phone" enums={PhoneRank} formSubmit={updateMemberPhone} />}
-                            >
-                                {
-                                    phoneNumbers.map((phone, i) => {
-                                        return (
-                                            <ContactCard
-                                                key={i}
-                                                id={`phone-${i}`}
-                                                type="phone"
-                                                name={`phone-${i}`}
-                                                recordId={phone.id}
-                                                contact={phone}
-                                                enums={PhoneRank}
-                                                formSubmit={updateMemberPhone}
-                                                deleteMe={deleteMemberPhone}
-                                            />
-                                        )
-                                    })
-                                }
-                            </Carousel>
-                            <Carousel
-                                id="carousel-address"
-                                title="Address"
-                                newItem={<ContactCard type="address" enums={AddressRank} formSubmit={updateMemberAddress} />}
-                            >
-                                {
-                                    addresses.map((address, i) => {
-                                        return (
-                                            <ContactCard
-                                                key={i}
-                                                id={`address-${i}`}
-                                                type="address"
-                                                name={`address-${i}`}
-                                                recordId={address.id}
-                                                contact={address}
-                                                enums={AddressRank}
-                                                formSubmit={updateMemberAddress}
-                                                deleteMe={deleteMemberAddress}
-                                            />
-                                        )
-                                    })
-                                }
-                            </Carousel>
+                        
+
+                        <div id="member-contacts" className={basePageStyles.profileSegment}>
+                            <fieldset>
+                                <legend>Contact Info</legend>
+                                <section>
+                                    <VForm id="member_email" APIURL="/members/updateThisEmail" linkedId={member.id}>
+                                        <V.Text id="email" name="address" label="Email" value={emailAddress?.address} recordId={emailAddress?.id} />
+                                    </VForm>
+                                    <VForm id="member_phone" APIURL="/members/updateThisPhoneNumber" linkedId={member.id}>
+                                        <V.Number id="phone" name="phonenumber" label="Phone Number" format="phone" value={phoneNumber?.phonenumber} recordId={phoneNumber?.id} />
+                                    </VForm>
+                                </section>
+                                <VForm id="address" APIURL="/members/updateThisAddress" linkedId={member.id}  recordId={mailingAddress?.id}>
+                                    <V.Text id="street1" name="street" label="Street" value={mailingAddress?.street} />
+                                    <V.Text id="street2" name="street2" label="Street 2" value={mailingAddress?.street2} />
+                                    <section>
+                                        <V.Text id="city" name="city" label="City" value={mailingAddress?.city} inheritedStyles={{ flex: 5 }} />
+                                        <V.Text id="state" name="state" label="State" value={mailingAddress?.state} />
+                                        <V.Text id="postalCode" name="postalCode" label="Zip Code" value={mailingAddress?.postalCode} inheritedStyles={{ flex: 2 }}/>
+                                    </section>
+                                </VForm>
+                            </fieldset>
+                            
                         </div>
-                        <div id="memberships" className="profile-segment">
+
+                        <div id="memberships" className={basePageStyles.profileSegment} style={{gridRowStart:"span 2"}}>
                             <fieldset className="button-stack">
                                 <legend>Membership</legend>
                                 <div id="ensemble-membership-list">
-                                    {
-                                        Object.keys(ensembles).map((key, i) => {
-                                            const ensemble = ensembles[key];
-                                            return (
-                                                <EnsembleCard
-                                                    key={i}
-                                                    ensemble={ensemble}
-                                                    memberId={member.id}
-                                                    presentation="list"
-                                                    format="detail"
-                                                //sections={initialProps.sections}
-                                                />
-                                            )
-                                        })
-                                    }
+                                    { ensembleCards }
                                 </div>
                                 <button id="add-membership" onClick={() => newMembershipModal()}>Add Membership</button>
                             </fieldset>
                         </div>
                     </div>
                 </div>
-                <div className={styles.actionSection}>
-                    <Link href="/members"><button className="icon-and-label"><i>arrow_back</i>Back to Members</button></Link>
-                    <button type="submit" className="icon-and-label" onClick={() => document.forms["profile"].requestSubmit()}><i>save</i>Save</button>
-                </div>
             </div>
-    }
+            <div className={basePageStyles.actionSection}>
+                <Link href="/members"><button className="icon-and-label"><i>arrow_back</i>Back to Members</button></Link>
+            </div>
+        </div>
+    )
 
-    return pageContent;
 }
 
 export default memberProfile;

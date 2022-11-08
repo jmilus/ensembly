@@ -5,20 +5,21 @@ generator client {
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model EnsembleType {
-  id        Int        @id @default(autoincrement())
-  name      String     @db.VarChar(64)
-  ensembles Ensemble[]
-  Section   Section[]
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(64)
+  typeColor     Json?           @db.JsonB
+  ensembles     Ensemble[]
+  Divisions     Division[]      
 }
 
 model Ensemble {
   id      Int                  @id @default(autoincrement())
   name    String               @db.VarChar(64)
-  members EnsembleMembership[]
+  membership EnsembleMembership[]
   type    EnsembleType         @relation(fields: [typeId], references: [id])
   typeId  Int
 }
@@ -26,12 +27,12 @@ model Ensemble {
 model Member {
   id           String               @id @default(cuid())
   created      DateTime             @default(now())
-  firstName    String               @db.VarChar(64)
+  firstName     String               @db.VarChar(64)
   middleName   String?              @db.VarChar(64)
   lastName     String               @db.VarChar(64)
   name         String?              @db.VarChar(128)
   memberBio    MemberBio?
-  ensembles    EnsembleMembership[]
+  memberships  EnsembleMembership[]
   phoneNumbers PhoneNumber[]
   addresses    Address[]
   emails       Email[]
@@ -39,25 +40,38 @@ model Member {
 }
 
 model EnsembleMembership {
-  id         String    @id @default(cuid())
-  member     Member    @relation(fields: [memberId], references: [id])
-  memberId   String
-  ensemble   Ensemble  @relation(fields: [ensembleId], references: [id])
-  ensembleId Int
-  startDate  DateTime  @default(now())
-  endDate    DateTime?
-  status     Status?
-  role       Role      @default(Performer)
-  section    Section?  @relation(fields: [sectionId], references: [id])
-  sectionId  Int?
+  id            String       @id @default(cuid())
+  member        Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId      String
+  ensemble      Ensemble     @relation(fields: [ensembleId], references: [id], onDelete: Cascade)
+  ensembleId    Int
+  startDate     DateTime     @default(now())
+  endDate       DateTime?
+  status        Status?
+  capacity      Capacity     @default(Performer)
+  division      Division?    @relation(fields: [divisionId], references: [id])
+  divisionId    Int?
+  subDivision   SubDivision? @relation(fields: [subDivisionId], references: [id])
+  subDivisionId Int?
 }
 
-model Section {
+model Division {
   id                 Int                  @id @default(autoincrement())
   name               String               @db.VarChar(64)
-  roleType           Role                 @default(Performer)
+  divisionAlias      String               @db.VarChar(64)
+  capacity           Capacity
   ensembleType       EnsembleType         @relation(fields: [ensembleTypeId], references: [id])
   ensembleTypeId     Int
+  EnsembleMembership EnsembleMembership[]
+  subDivisions       SubDivision[]
+}
+
+model SubDivision {
+  id                 Int               @id @default(autoincrement())
+  name               String            @db.VarChar(64)
+  subDivisionAlias   String            @db.VarChar(64)
+  division           Division          @relation(fields: [divisionId], references: [id])
+  divisionId         Int
   EnsembleMembership EnsembleMembership[]
 }
 
@@ -72,13 +86,13 @@ model MemberBio {
   ethnicity String?    @db.VarChar(64)
   hair      HairColor? @default(unspecified)
   eyes      EyeColor?  @default(unspecified)
-  member    Member     @relation(fields: [memberId], references: [id])
+  member    Member     @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId  String     @unique
 }
 
 model PhotoSet {
   id       Int       @id @default(autoincrement())
-  member   MemberBio @relation(fields: [memberId], references: [id])
+  member   MemberBio @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId Int       @unique
   photos   Photo[]
 }
@@ -86,7 +100,7 @@ model PhotoSet {
 model Photo {
   id         Int      @id @default(autoincrement())
   image      Bytes    @db.ByteA
-  photoSet   PhotoSet @relation(fields: [photoSetId], references: [id])
+  photoSet   PhotoSet @relation(fields: [photoSetId], references: [id], onDelete: Cascade)
   photoSetId Int      @unique
 }
 
@@ -95,7 +109,7 @@ model PhoneNumber {
   prefix      String?   @db.VarChar(4)
   phonenumber String    @unique @db.VarChar(12)
   rank        PhoneRank @default(Home)
-  member      Member    @relation(fields: [memberId], references: [id])
+  member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId    String    @unique
 }
 
@@ -109,7 +123,7 @@ model Address {
   country    String?     @db.VarChar(32)
   poBox      String?     @db.VarChar(16)
   rank       AddressRank @default(Home)
-  member     Member      @relation(fields: [memberId], references: [id])
+  member     Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId   String      @unique
 }
 
@@ -117,7 +131,7 @@ model Email {
   id       String    @id @default(cuid())
   address  String    @unique @db.VarChar(96)
   rank     EmailRank @default(Primary)
-  member   Member    @relation(fields: [memberId], references: [id])
+  member   Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId String    @unique
 }
 
@@ -196,7 +210,8 @@ enum PhoneRank {
   Old
 }
 
-enum Role {
+enum Capacity {
   Performer
   Crew
+  Staff
 }
