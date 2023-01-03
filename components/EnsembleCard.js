@@ -3,15 +3,18 @@ import { getInitials } from '../utils';
 
 import VForm from './VForm';
 import V from './ControlMaster';
+import SubMenu from './SubMenu';
 
 import { Status, Capacity } from '@prisma/client';
 
-import styles from '../styles/ProfileCard.module.css'
+import { useContext } from 'react';
+import { GlobalContext } from "../pages/_app";
 
-const EnsembleCard = ({ ensemble, divisions, subdivisions, memberId, format }) => {
+const EnsembleCard = ({ membership, ensemble, presentation, format }) => {
+    const { dispatch } = useContext(GlobalContext);
     const router = useRouter();
 
-    const { id, name, capacities, type } = ensemble;
+    const { id, name, type } = ensemble;
     const typeColor = JSON.parse(type.typeColor);
     
     const elemTypeColor = `${typeColor.type}(${typeColor.values[0]},${typeColor.values[1]}%, ${typeColor.values[2]}%)`;
@@ -19,48 +22,145 @@ const EnsembleCard = ({ ensemble, divisions, subdivisions, memberId, format }) =
     const initials = getInitials(name).substring(0,3);
     const heroIcon = <div>{initials}</div>
 
+    const changeMembershipStatus = (newStatus) => {
+        console.log("changing membership status", newStatus);
+
+        const changeButtonProps = {
+            Active: { caption: "Activate", class: "hero" },
+            Suspended: { caption: "Suspend", class: "warning"}
+        }
+
+        
+        const changeStatus = (newStatus) => {
+            const response = fetch('/api/members/updateMembership', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: membership.id,
+                    status: newStatus
+                })
+            })
+                .then(response => response.json())
+                .then(record => {
+                    console.log("status updated successfully:", { record })
+                    return record;
+                })
+                .catch((err, message) => {
+                    console.error('problem updating status:', message);
+                    return err;
+            })
+        }
+
+        dispatch({
+            type: "modal",
+            payload: {
+                type: "message",
+                content: {
+                    title: "Change Status",
+                    body: `Change status to ${newStatus}?`
+                },
+                buttons: [
+                    { name: "change", caption: changeButtonProps[newStatus].caption, class: changeButtonProps[newStatus].class, action: () => changeStatus(newStatus) },
+                    { name: "dismiss", caption: "Cancel" }
+                ]
+            }
+        })
+    }
+
+    const closeOutMembership = () => {
+        console.log("closing out membership", membership);
+
+        const modalBody = 
+            <div className="modal-fields">
+                <div className="modal-message">{`Deactivate ${member.name}'s ${membership.name} Role?`}</div> 
+                <V.Date id="endDate" field="endDate" label="Deactivate As Of" min={membership.startDate} recordId={membership.membershipId} isRequired/>
+            </div>
+
+        dispatch({
+            type: "modal",
+            payload: {
+                type: "form",
+                content: {
+                    title: "Deactivate",
+                    body: modalBody,
+                    URL: "/members/updateMembership",
+                    additionalIds: { memberId: member.id, ensembleId: ensemble.id }
+                },
+                buttons: [
+                    { name: "submit", caption: "Deactivate", styleClass: "deactivate", class: "hero"},
+                    { name: "dismiss", caption: "Cancel" }
+                ]
+            }
+        })
+    }
+
+    const deleteMembership = () => {
+        console.log("deleting membership")
+    }
+
     switch (format) {
         case "membership":
+            const membershipName = `$membership-${membership.id}`;
+            let statusIcon;
+            switch (membership.status) {
+                case "Active":
+                    statusIcon = <i className="status-icon" style={{color:"limegreen"}}>check_circle</i>
+                    break;
+                case "Suspended":
+                    statusIcon = <i className="status-icon" style={{color:"orange"}}>unpublished</i>
+                    break;
+                default:
+                    statusIcon = <i className="status-icon" style={{color:"royalblue"}}>brightness_2</i>
+            }
+            //
+            const statusChanger = membership.status === "Active"
+                ? {
+                    caption: "Suspend",
+                    action: () => changeMembershipStatus("Suspended")
+                }
+                : {
+                    caption: "Activate",
+                    action: () => changeMembershipStatus("Active")
+                }
+            
+            const ensembleOptions = [
+                statusChanger,
+                {
+                    caption: "Deactivate",
+                    action: () => closeOutMembership(cap)
+                },
+                {
+                    caption: "Delete Memberhsip",
+                    action: () => deleteMembership(cap),
+                    style: {color: "red"}
+                }
+            ]
             return (
-                <object className={styles.cardContainer}>
+                <div className="card-container">
                     <section>
-                        <div className={styles.header} onClick={() => router.push(`/ensembles/${id}`)}>
-                            <div className={styles.heroIcon} style={{ width: "25px", height: "25px", fontSize: "0.5em" }}>{heroIcon}</div>
-                            <div className={styles.cardCaption}>
-                                <div className={styles.cardName}>{name}</div>
-                                <div className={styles.subtitle}></div>
+                        <div className="card-header clickable" onClick={() => router.push(`/ensembles/${id}`)}>
+                            <div className="hero-icon" style={{ width: "25px", height: "25px", fontSize: "0.5em" }}>{heroIcon}</div>
+                            <div className="card-caption">
+                                <div className="card-name">{name}</div>
+                                <div className="card-subtitle"></div>
                             </div>
                         </div>
                     </section>
-                    {
-                        capacities.map((cap, i) => {
-                            const membershipName = `${id}-${cap.membershipId}`;
-                            // const dateControl = cap.endDate ? <V.Date id={`endDate-${membershipName}`} name="endDate" label="End" value={cap.endDate} /> : <V.Date id={`startDate-${membershipName}`} name="startDate" label="Start" value={cap.startDate} />;
-                            const divisionByCapacity = divisions.find(div => {
-                                return div.capacity === cap.name;
-                            })
-                            return (
-                                <VForm id={`membership-${membershipName}`} APIURL="/members/updateMembership" linkedId={memberId} recordId={cap.membershipId} >
-                                    <section>
-                                        <V.Select id={`capacity-${membershipName}`} name="capacity" label="Capacity" value={cap.name} options={Capacity} >
-                                            <V.Select id={`division-${membershipName}`} name="division" label={divisionByCapacity.divisionAlias} value={cap.division?.id} options={divisions} filterKey={"capacity"} >
-                                                <V.Select id={`subdivision-${membershipName}`} name="subdivision" label="subdivision" value={cap.subDivision?.id} options={subdivisions} filterKey={"divisionId"} />
-                                            </V.Select>
-                                        </V.Select>
-                                        {/* {dateControl} */}
-                                    </section>
-                                </VForm>
-                            )
-                        })
-                    }
-                </object>
+                    <VForm id={`membership-${membershipName}`} APIURL="/members/updateMembership" recordId={membership.id} >
+                        <section>
+                            {statusIcon}
+                            <V.Date id="" field="statusDate" label="Status" value={membership.statusDate} />
+                            <SubMenu options={ensembleOptions} style={{ margin: "auto 0 10px 0" }} />
+                        </section>
+                    </VForm>
+                </div>
             )
         case "minimal":
         default:
             return (
-                <object className={styles.cardContainer} onClick={() => router.push(`/ensembles/${id}`)}>
-                    <div className={styles.heroIcon} style={{width: "50px", height: "50px", background: elemTypeColor}}>{heroIcon}</div>
-                    <div className={styles.cardName}>{name}</div>
+                <object className="card-container clickable" onClick={() => router.push(`/ensembles/${id}`)}>
+                    <div className="hero-icon" style={{width: "50px", height: "50px", background: elemTypeColor}}>{heroIcon}</div>
+                    <div className="card-name">{name}</div>
                 </object>
             );
     }

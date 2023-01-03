@@ -6,6 +6,19 @@
     border-radius: 7px 7px 0 0;
 }
 
+.modalAlertMessage {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    min-height: 100px;
+}
+
+.modalAlertMessage > i {
+    font-size: 3em;
+    color: var(--gray4);
+    margin: 10px;
+}
+
 .modalFields {
     flex: 1;
     display: flex;

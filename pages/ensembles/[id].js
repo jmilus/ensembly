@@ -1,12 +1,9 @@
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useImmer } from 'use-immer';
 import { useRouter } from 'next/router';
 import useLoader from '../../hooks/useLoader';
-import { useDrop } from 'react-dnd';
-
-import { ItemTypes } from '../../config/constants';
 
 import Link from 'next/link';
-import Meta from '../../components/Meta';
 
 import VForm from '../../components/VForm';
 import V from '../../components/ControlMaster';
@@ -16,29 +13,22 @@ import DropContainer from '../../components/DropContainer';
 
 import { GlobalContext } from "../_app";
 
-import getThisEnsemble from '../../lib/ensembles/_fetchThisEnsemble';
-
 import basePageStyles from '../../styles/basePage.module.css';
-import getAllDivisions from '../../lib/ensembles/_fetchAllDivisions';
-import getAllSubdivisions from '../../lib/ensembles/_fetchAllSubdivisions';
-import getAllMembers from '../../lib/members/_fetchAllMembers';
 
-import { Capacity } from '@prisma/client';
+import { fetchOneEnsemble } from '../api/ensembles/getOneEnsemble';
+import { fetchManyDivisions } from '../api/ensembles/getManyDivisions';
+import { fetchOneSchema } from '../api/ensembles/getOneSchema';
 
 export async function getServerSideProps(context) {
-    const ensemble = await getThisEnsemble(context.params.id);
-    const members = await getAllMembers();
-    const divisions = await getAllDivisions(ensemble.typeId);
-    const subdivisions = await getAllSubdivisions();
-
-    // console.log("sending these to the API:", context.params);
+    const ensemble = await fetchOneEnsemble(context.params.id);
+    const baseSchema = await fetchOneSchema(ensemble.schema[0].id)
+    const divisions = await fetchManyDivisions(ensemble.typeId);
     
     return {
         props: {
             ensemble,
-            members,
+            baseSchema,
             divisions,
-            subdivisions
         }
     }
 }
@@ -46,59 +36,59 @@ export async function getServerSideProps(context) {
 const ensembleProfile = (initialProps) => {
     const { dispatch } = useContext(GlobalContext);
     
-    const [ensemble, setEnsemble] = useState(initialProps.ensemble);
+    const [ensemble, updateEnsemble] = useImmer(initialProps.ensemble);
+    const [viewSchema, updateViewSchema] = useImmer(initialProps.baseSchema)
     const [showRoster, setShowRoster] = useState(false);
     const router = useRouter();
 
-    useLoader(ensemble.id, setEnsemble, `/api/ensembles/fetchThisEnsemble?id=${ensemble.id}`);
+    useLoader(ensemble.id, updateEnsemble, `/api/ensembles/getOneEnsemble?id=${ensemble.id}`);
+    useLoader(viewSchema?.id, updateViewSchema, `/api/ensembles/getOneSchema?id=${viewSchema?.id}`)
 
-    const { members, divisions, subdivisions } = initialProps;
+    const { divisions } = initialProps;
     const { name, membership, typeId } = ensemble;
 
-    console.log({ensemble}, {members}, {divisions}, {subdivisions});
+    console.log({ ensemble }, { membership }, { divisions }, { viewSchema });
 
-    const ensembleCapacities = {};
-    membership.forEach(mem => {
-        ensembleCapacities[mem.capacity] = mem.capacity;
-    })
+    const loadSchema = async (schemaId) => {
+        const fetchedSchema = await fetch(`/api/ensembles/getOneSchema?id=${schemaId}`)
+        const loadedSchema = await fetchedSchema.json();
+        updateViewSchema(loadedSchema);
+    }
 
     const handleDrop = async (payload) => {
-        if (payload.tag != "subDivisionId") return null;
-        //
         console.log({payload})
-        const { item, tag, value } = payload;
-        const changedIndex = ensemble.membership.findIndex(mem => {
-            return item.membershipId === mem.id;
+        if (!payload.value) return null;
+        const { item, value } = payload;
+
+        updateViewSchema(draft => {
+            if (item.assignmentId) {
+                let index = viewSchema.assignments.findIndex(ass => {
+                    return ass.id === item.assignmentId;
+                })
+
+                draft.assignments[index] = { ...draft.assignments[index], divisionId: value.id, division: value, test: true }
+            } else {
+                if (item.assignmentTempId) {
+                    let index = viewSchema.assignments.findIndex(ass => {
+                        return ass.assignmentTempId === item.assignmentTempId;
+                    })
+                    draft.assignments[index] = { ...draft.assignments[index], divisionId: value.id, division: value, assignmentTempId: `${item.id}-${value.id}` }
+                } else {
+                    draft.assignments.push({ schemaId: viewSchema.id, member: item, memberId: item.id, capacity: value.capacity, divisionId: value.id, division: value, assignmentTempId: `${item.id}-${value.id}` });
+                }
+            }
+
         })
-        const tempEnsemble = {...ensemble}
-        if (changedIndex >= 0) {
-            tempEnsemble.membership[changedIndex].subDivisionId = value.id;
-            tempEnsemble.membership[changedIndex].subDivision = value;
-            tempEnsemble.membership[changedIndex].divisionId = value.divisionId;
-            tempEnsemble.membership[changedIndex].division = divisions.find((div) => div.id === value.divisionId);
-        } else {
-            tempEnsemble.membership.push({
-                member: {...item, memberId: item.id},
-                capacity: item.capacity,
-                subDivisionId: value.id,
-                subDivision: value,
-                divisionId: value.divisionId,
-                division: divisions.find((div) => div.id === value.divisionId)
-            })
-        }
-        setEnsemble(tempEnsemble);
 
-
-        const updatedMembership = await fetch('/api/members/updateMembership', {
-            method: 'POST',
+        return await fetch('/api/ensembles/updateSchemaAssignment', {
+            method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                id: item.membershipId,
-                ensembleId: ensemble.id,
-                capacity: item.capacity,
-                linkedId: item.id,
-                division: value.divisionId,
-                subdivision: value.id
+                id: item.assignmentId,
+                schemaId: viewSchema.id,
+                memberId: item.id,
+                capacity: value.capacity,
+                divisionId: value.id
             })
         })
             .then(response => response.json())
@@ -107,112 +97,225 @@ const ensembleProfile = (initialProps) => {
                 return record;
             })
             .catch((err, message) => {
-                console.error('failed to update membership:', message);
+                console.error('failed to update schema assignment:', message);
                 return err;
             })
-        return updatedMembership;
     }
 
+    const removeAssignment = async (payload) => {
+        console.log("removing assignment for", payload)
+        const { item } = payload;
+        let deleteId = item.assignmentId;
+        
+        updateViewSchema(draft => {
+            let index = viewSchema.assignments.findIndex(ass => {
+                return ass.id === item.assignmentId;
+            })
+            draft.assignments.splice(index, 1)
+            
+        })
+        
+        return await fetch('/api/ensembles/deleteSchemaAssignment', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                id: item.assignmentId
+            })
+        })
+            .then(response => response.json())
+            .then(record => {
+                console.log(record)
+                return record;
+            })
+            .catch((err, message) => {
+                console.error('failed to remove assignment:', message);
+                return err;
+            })
+    }
+
+    const hoverStyle = {
+        ['--drop-h']: 150,
+        ['--drop-s']: '60%',
+        ['--drop-l']: '45%'
+    }
+
+    const rosterStyles = {
+        padding: "5px 0",
+        margin: "30px 0 0 10px",
+        display: "flex"
+    }
+
+    const rosterGenerator = (source, filterFunction, div) => {
+        switch (source) {
+            case "membership":
+                return membership.map((mem, m) => {
+                    if (filterFunction && filterFunction(mem)) {
+                        return null;
+                    }
+                    return (
+                        <MemberCard
+                            key={m}
+                            member={mem.member}
+                            format="drag"
+                            cardType="CARD-OUT"
+                        />
+                    )
+                });
+            case "assignments":
+                return viewSchema?.assignments.map((ass, m) => {
+                    if (filterFunction && filterFunction(ass)) {
+                        return null;
+                    }
+                    return (
+                        <MemberCard
+                            key={m}
+                            member={{ ...ass.member, assignmentId: ass.id, capacity: "Performer", assignmentTempId: `${ass.member.id}-${ass.divisionId}` }}
+                            subtitle={ass.division?.name}
+                            presentation="grid"
+                            format={ass.id ? "drag" : "wait"}
+                            cardType="CARD-IN"
+                        />
+                    )
+                })
+            default:
+                return null;
+        }
+    }
     
     return (
         <div className={basePageStyles.pageBase}>
             <div className={basePageStyles.formSection}>
                 <div className={basePageStyles.pageHeader}>
                     <VForm id="ensembleName" APIURL="/ensembles/updateThisEnsemble" recordId={ensemble.id}>
-                        <V.Text id="name" name="name" value={ensemble.name} hero isRequired />
+                        <V.Text id="name" field="name" value={ensemble.name} hero isRequired />
                     </VForm>
                 </div>
                 <div className={basePageStyles.pageDetails}>
-                    <TabControl>
-                        {
-                            Object.keys(Capacity).map(cap => {
-                                return (
-                                    <Tab id={cap}>
-                                        {
-                                            divisions.map(div => {
-                                                if (div.capacity != cap) return null;
-                                                return (
-                                                    <fieldset>
+                    <TabControl type="large" >
+                        <Tab id="Main">
+
+                        </Tab>
+                        <Tab id="Events" >
+
+                        </Tab>
+                        <Tab id="Schemas">
+                            <V.Select id="schema-select" field="schema" value={ensemble.schema[0].id} options={ensemble.schema} updateForm={(v) => console.log(v.schema) } />
+                            <TabControl type="filters">
+                                <Tab id="Performer">
+                                    {
+                                        divisions.map((div, i) => {
+                                            if (div.capacity != "Performer") return null;
+                                            return (
+                                                <DropContainer key={i} onDrop={handleDrop} acceptTypes={["CARD-IN", "CARD-OUT"]}>
+                                                    <fieldset className="grid">
                                                         <legend>{div.name}</legend>
-                                                        <DropContainer tag="divisionId" value={div} onDrop={handleDrop}>
-                                                            {
-                                                                membership.map((mem, i) => {
-                                                                    if (mem.divisionId != div.id) return null;
-                                                                    return (
-                                                                        <MemberCard
-                                                                            key={i}
-                                                                            member={{ ...mem.member, membershipId: mem.id, capacity: cap }}
-                                                                            subtitle={mem.subDivision?.name}
-                                                                            presentation="grid"
-                                                                            format="drag"
-                                                                        />
-                                                                    )
-                                                                })
-                                                            }
-                                                            {
-                                                                subdivisions.map(sd => {
-                                                                    if (sd.divisionId != div.id) return null;
-                                                                    return <DropContainer tag="subDivisionId" value={sd} onDrop={handleDrop} />
-                                                                })
-                                                            }
-                                                        </DropContainer>
+                                                        {
+                                                            rosterGenerator("assignments", (ass) => ass.division.parentId != div.id, div)
+                                                            // viewSchema?.assignments.map((assignment, a) => {
+                                                            //     if (assignment.division.parentId != div.id) return null;
+                                                            //     return (
+                                                            //         <MemberCard
+                                                            //             key={a}
+                                                            //             member={{ ...assignment.member, assignmentId: assignment.id, capacity: "Performer" }}
+                                                            //             subtitle={assignment.division?.name}
+                                                            //             presentation="grid"
+                                                            //             cardType="CARD-IN"
+                                                            //             format="drag"
+                                                            //         />
+                                                            //     )
+                                                            // })
+                                                        }
                                                     </fieldset>
-                                                )
-                                            })
-                                        }
-                                    </Tab>
-                                )
-                            })
-                        }
-                        
-                    </TabControl>
-                    <div id="full-roster" className="collapsible" style={{ width: showRoster ? "250px" : "0px" }}>
-                        <TabControl>
-                            <Tab id="Unassigned">
-                                <fieldset>
-                                    <legend>Members</legend>
-                                    <article>
-                                        {
-                                            members.map((member, i) => {
-                                                const result = membership.find(mem => {
-                                                    return mem.member.id === member.id;
+                                                    {
+                                                        div.childDivisions.map((sd, k) => {
+                                                            const dropValue = {
+                                                                capacity: "Performer",
+                                                                divisionId: sd.id
+                                                            }
+                                                            return <DropContainer key={k} caption={sd.name}  value={sd} onDrop={handleDrop} hoverStyle={hoverStyle} />
+                                                        })
+                                                    }
+                                                </DropContainer>
+                                            )
+                                        })
+                                    }
+                                </Tab>
+                                <Tab id="Crew">
+                                    <DropContainer acceptTypes={["CARD-IN", "CARD-OUT"]}>
+                                        <fieldset className="grid">
+                                            <legend>Personnel</legend>
+                                            {
+                                                membership.map((mem, i) => {
+                                                    if (mem.capacity != "Crew") return null;
+                                                    return (
+                                                        <MemberCard
+                                                            key={i}
+                                                            member={{ ...mem.member, membershipId: mem.id, capacity: "Crew" }}
+                                                            subtitle={mem.title}
+                                                            presentation="grid"
+                                                            cardType="CARD-IN"
+                                                            format="drag"
+                                                        />
+                                                    )
                                                 })
-                                                if (result) return null;
-                                                return (
-                                                    <MemberCard
-                                                        key={i}
-                                                        member={member}
-                                                        format="drag"
-                                                    />
-                                                )
-                                            })
-                                        }
-                                    </article>
-                                </fieldset>
-                            </Tab>
-                            <Tab id="All">
+                                            }
+                                        </fieldset>
+                                        <DropContainer caption="Crew" value={{capacity: "Crew"}} onDrop={handleDrop} hoverStyle={hoverStyle}/>
+                                    </DropContainer>
+                                </Tab>
+                                <Tab id="Staff">
+                                    <DropContainer acceptTypes={["CARD-IN", "CARD-OUT"]}>
+                                        <fieldset className="grid">
+                                            <legend>Personnel</legend>
+                                            {
+                                                membership.map((mem, i) => {
+                                                    if (mem.capacity != "Staff") return null;
+                                                    return (
+                                                        <MemberCard
+                                                            key={i}
+                                                            member={{ ...mem.member, membershipId: mem.id, capacity: "Staff" }}
+                                                            subtitle={mem.title}
+                                                            presentation="grid"
+                                                            cardType="CARD-IN"
+                                                            format="drag"
+                                                        />
+                                                    )
+                                                })
+                                            }
+                                        </fieldset>
+                                        <DropContainer caption="Staff" value={{capacity: "Staff"}} onDrop={handleDrop} hoverStyle={hoverStyle}/>
+                                    </DropContainer>
+                                </Tab>
+                            </TabControl>
+                            <div id="full-roster" className="collapsible" style={{ ...rosterStyles, width: showRoster ? "250px" : "0px" }}>
                                 <fieldset>
-                                    <legend>Members</legend>
-                                    <article>
-                                        {
-                                            members.map((member, i) => {
-                                                return (
-                                                    <MemberCard
-                                                        key={i}
-                                                        member={member}
-                                                        format="drag"
-                                                    />
-                                                )
-                                            })
-                                        }
-                                    </article>
+                                <legend>Members</legend>
+                                    <TabControl type="filters">
+                                        <Tab id="Unassigned">
+                                            <DropContainer acceptTypes={["CARD-IN"]}>
+                                                <article>
+                                                    {
+                                                        rosterGenerator("membership", (mem) => viewSchema?.assignments.find(assignment => assignment.memberId === mem.memberId))
+                                                    }
+                                                </article>
+                                                <DropContainer caption="Remove Assignment" onDrop={removeAssignment} hoverStyle={{border: '2px solid red', backgroundColor: 'hsla(0, 0%, 100%, 50%)', color: 'red'}}/>
+                                            </DropContainer>
+                                        </Tab>
+                                        <Tab id="All">
+                                            <DropContainer acceptTypes={["CARD-IN"]}>
+                                                <article>
+                                                    {
+                                                        rosterGenerator("membership")
+                                                    }
+                                                </article>
+                                                <DropContainer caption="Remove Assignment" onDrop={removeAssignment} hoverStyle={{border: '2px solid red', backgroundColor: 'hsla(0, 0%, 100%, 50%)', color: 'red'}}/>
+                                            </DropContainer>
+                                        </Tab>
+                                    </TabControl>
                                 </fieldset>
-                            </Tab>
-                        </TabControl>
-                        
-                        {/* {
-                        } */}
-                    </div >
+                            </div >
+                        </Tab>
+                    </TabControl>
                 </div>
             </div>
             <div className={basePageStyles.actionSection}>

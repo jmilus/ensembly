@@ -1,10 +1,31 @@
-import createEnsemble from '../../../lib/ensembles/_createNewEnsemble';
+import prisma from '../../../lib/prisma';
 
-const createNewEnsemble = async (req, res) => {
+export const createNewEnsemble = async (data) => {
+    const { name, typeId } = data;
+    
+    const newEnsemble = await prisma.ensemble.create({
+        data: {
+            name: name,
+            type: {
+                connect: {
+                    id: parseInt(typeId)
+                }
+            },
+            schema: {
+                create: {
+                    name: `${name} Base Schema`
+                }
+            }
+        }
+    })
+    return newEnsemble;
+}
+
+const createEnsemble = async (req, res) => {
 
     let response = [];
     try {
-        response = await createEnsemble(req.body);
+        response = await createNewEnsemble(req.body);
         res.status(200);
         res.json(response);
     }
@@ -15,4 +36,4 @@ const createNewEnsemble = async (req, res) => {
     }
 }
 
-export default createNewEnsemble;
+export default createEnsemble;

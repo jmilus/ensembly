@@ -1,31 +1,33 @@
-import React, { useState, useEffect } from 'react';
-
-import styles from '../styles/Tab.module.css';
+import React, { useState } from 'react';
 
 export const Tab = (props) => {
     const { children } = props;
     return (
-        <div className={styles.tabPage}>{children}</div>
+        <div className="tab-page">{children}</div>
     )
 }
 
 const TabControl = (props) => {
-    const { children } = props;
+    const { type, children } = props;
     const [activeTabPage, setActiveTabPage] = useState();
     
     let activePage;
     const tabs = React.Children.map(children, child => {
-        if (child.props.id === activeTabPage) activePage = React.cloneElement(child, children)
+        if (child.props.id === activeTabPage) {
+            activePage = React.cloneElement(child, children)
+            if (child.props.onTabLoad) child.props.onTabLoad()
+            if (props.onAnyTabLoad) props.onAnyTabLoad();
+        }
         return child.props.id;
     })
     if (!activeTabPage) setActiveTabPage(tabs[0]);
 
     return (
-        <div className={styles.wrapper}>
-            <ul className={styles.tabRow}>
+        <div className={`tab-wrapper ${type}`}>
+            <ul className="tab-row">
                 {
-                    tabs.map(tab => {
-                        return <li className={`tab-button ${activeTabPage === tab ? "active" : ""}`} onClick={() => setActiveTabPage(tab)}>{tab}</li>
+                    tabs.map((tab, t) => {
+                        return <li key={t} className={`tab-button ${activeTabPage === tab ? "active" : ""}`} onClick={() => setActiveTabPage(tab)}>{tab}</li>
                     })
                 }
             </ul>

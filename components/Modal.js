@@ -1,5 +1,5 @@
 import React, { Children, useContext, useState, useEffect } from 'react';
-// import useModal from '../hooks/useModal';
+import { getErrorMessage } from '../utils/';
 
 import { GlobalContext } from "../pages/_app";
 
@@ -20,11 +20,12 @@ const Modal = () => {
             dispatch({ type: "modal", payload: null })
         }
     }
-
+    
     let modalBody, modalActions = null;
 
     if (modal) {
         if (modal.type != "hide") {
+            const { content } = modal;
             switch (modal.type) {
                 case "load":
                     modalBody =
@@ -33,10 +34,11 @@ const Modal = () => {
                         </div>
                     break;
                 case "error":
+                    const errMessage = getErrorMessage(modal.errCode)
                     modalBody =
                         <>
                             <div className={styles.error}>
-                                {modal.message}
+                                {errMessage}
                             </div>
                             <div className={styles.modalActions}>
                                 <button type="button" className="panel" onClick={hideModal}>OK</button>
@@ -44,32 +46,49 @@ const Modal = () => {
                         </>
                     break;
                 case "form":
-                    console.log("modal is a form!");
-                    const { title, body, URL, recordId, linkedId } = modal.content;
                     modalActions =
                         <section id="modal-actions" className="panel-buttons">
                             {
-                                modal.buttons.map(button => {
+                                modal.buttons.map((button, i) => {
                                     let action = button.name === "dismiss" ? hideModal : button.action;
-                                    return <button name={button.name} className={button.style} onClick={action}>{button.caption}</button>
+                                    return <button key={i} name={button.name} className={button.class} onClick={action}>{button.caption}</button>
+                                })
+                            }
+                        </section>
+                    modalBody =
+                        <VForm id="modal-form" APIURL={content.URL} manual="true" followUp={modal.followUp} recordId={content.recordId} additionalIds={content.additionalIds} fileUpload={content.file} context={content.context} >
+                            <div className={styles.modalHeader}>{content.title}</div>
+                            {content.body}
+                            {modalActions}
+                        </VForm>
+                    break;
+                case "message":
+                    modalActions =
+                        <section id="modal-actions" className="panel-buttons" onClick={hideModal}>
+                            {
+                                modal.buttons.map((button, i) => {
+                                    let action = button.name === "dismiss" ? hideModal : button.action;
+                                    return <button key={i} name={button.name} className={button.class} onClick={action}>{button.caption}</button>
                                 })
                             }
                             
                         </section>
-                    modalBody =
-                        <VForm id="modal-form" APIURL={URL} manual="true" followUp={modal.followUp} recordId={recordId} linkedId={linkedId} >
-                            <div className={styles.modalHeader}>{title}</div>
-                            {body}
+                    modalBody = 
+                        <>
+                            <div className={styles.modalHeader}>{content.title}</div>
+                            <div className={styles.modalAlertMessage}>
+                                <i>help</i>
+                                <div className="modal-message">{content.body}</div>
+                            </div>
                             {modalActions}
-                        </VForm>
-                    break;
+                        </>
                 default:
                     console.log("no modal type specified");
                     break;
             }
             return (
                 <div className="modal-base">
-                    <div className={`modal-body ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : setIsFullscreen(true)}>
+                    <div className={`modal-body ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : setModalIsFullscreen(true)}>
                         {modalBody}
                     </div>
                     {modalIsFullscreen ? <div className={styles.modalBackdrop} onClick={hideModal}></div> : null}

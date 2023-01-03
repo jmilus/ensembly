@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fieldReference"]
 }
 
 datasource db {
@@ -10,18 +11,20 @@ datasource db {
 
 model EnsembleType {
   id            Int             @id @default(autoincrement())
-  name          String          @db.VarChar(64)
+  name          String          @db.VarChar(64) @unique
   typeColor     Json?           @db.JsonB
   ensembles     Ensemble[]
-  Divisions     Division[]      
+  divisions     Division[]      
 }
 
 model Ensemble {
-  id      Int                  @id @default(autoincrement())
-  name    String               @db.VarChar(64)
-  membership EnsembleMembership[]
-  type    EnsembleType         @relation(fields: [typeId], references: [id])
-  typeId  Int
+  id          String               @id @default(cuid())
+  name        String               @db.VarChar(64) @unique
+  membership  EnsembleMembership[]
+  type        EnsembleType         @relation(fields: [typeId], references: [id])
+  typeId      Int
+  event       EventEnsemble[]
+  schema      Schema[]
 }
 
 model Member {
@@ -30,54 +33,22 @@ model Member {
   firstName     String               @db.VarChar(64)
   middleName   String?              @db.VarChar(64)
   lastName     String               @db.VarChar(64)
-  name         String?              @db.VarChar(128)
+  suffix        String?              @db.VarChar(8)
+  aka          String?              @db.VarChar(204)
+  uniqueName   String               @db.VarChar(204) @unique
   memberBio    MemberBio?
+  photos       PhotoSet?
   memberships  EnsembleMembership[]
+  schemas      SchemaAssignment[]
   phoneNumbers PhoneNumber[]
   addresses    Address[]
   emails       Email[]
+  attendance   Attendance[]
   user         User?
 }
 
-model EnsembleMembership {
-  id            String       @id @default(cuid())
-  member        Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  memberId      String
-  ensemble      Ensemble     @relation(fields: [ensembleId], references: [id], onDelete: Cascade)
-  ensembleId    Int
-  startDate     DateTime     @default(now())
-  endDate       DateTime?
-  status        Status?
-  capacity      Capacity     @default(Performer)
-  division      Division?    @relation(fields: [divisionId], references: [id])
-  divisionId    Int?
-  subDivision   SubDivision? @relation(fields: [subDivisionId], references: [id])
-  subDivisionId Int?
-}
-
-model Division {
-  id                 Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(64)
-  divisionAlias      String               @db.VarChar(64)
-  capacity           Capacity
-  ensembleType       EnsembleType         @relation(fields: [ensembleTypeId], references: [id])
-  ensembleTypeId     Int
-  EnsembleMembership EnsembleMembership[]
-  subDivisions       SubDivision[]
-}
-
-model SubDivision {
-  id                 Int               @id @default(autoincrement())
-  name               String            @db.VarChar(64)
-  subDivisionAlias   String            @db.VarChar(64)
-  division           Division          @relation(fields: [divisionId], references: [id])
-  divisionId         Int
-  EnsembleMembership EnsembleMembership[]
-}
-
 model MemberBio {
-  id        Int        @id @default(autoincrement())
-  photos    PhotoSet?
+  id        String     @id @default(cuid())
   birthday  DateTime?  @db.Date
   sex       Sex?       @default(unspecified)
   height    Int?       @db.SmallInt
@@ -90,10 +61,140 @@ model MemberBio {
   memberId  String     @unique
 }
 
+model EnsembleMembership {
+  id            String       @id @default(cuid())
+  member        Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId      String
+  ensemble      Ensemble     @relation(fields: [ensembleId], references: [id], onDelete: Cascade)
+  ensembleId    String
+  startDate     DateTime     @default(now())
+  status        MembershipStatus?
+  statusDate    DateTime?
+  statusNote    String?      @db.VarChar(128)
+
+  @@unique([memberId, ensembleId])
+}
+
+model EventModel {
+  id             String      @id @default(cuid())
+  name           String      @db.VarChar(64)
+  modStartDate   DateTime    @db.Timestamptz(3)
+  modEndDate     DateTime    @db.Timestamptz(3)
+  details        String?     @db.VarChar(1000)
+  eventType      EventType   @relation(fields: [typeId], references: [id])
+  typeId         Int
+  location       Address?    @relation(fields: [locationId], references: [id])
+  locationId     String?     @unique
+  interval       Int?        @db.SmallInt
+  period         Period?
+  occurrence     Json?       @db.JsonB
+  recEndCount    Int?        @db.SmallInt
+  recEndDate     DateTime?   @db.Timestamptz(3)
+  ensembles      EventEnsemble[]
+  events         Event[]
+}
+
+model Event {
+  id            String          @id @default(cuid())
+  model         EventModel      @relation(fields: [eventModelId], references: [id], onDelete: Cascade)
+  eventModelId  String
+  name          String?         @db.VarChar(64)
+  anchorDate    String          @db.VarChar(10)
+  startDate     DateTime        @db.Timestamptz(3)
+  endDate       DateTime        @db.Timestamptz(3)
+  exception     Boolean         @db.Boolean @default(false)
+  location      Address?        @relation(fields: [locationId], references: [id])
+  locationId    String?         @unique
+  note          String?         @db.VarChar(1000)
+  schemas       EventSchemas[]
+  attendance    Attendance[]
+  eventProgram  EventProgram?
+}
+
+model Schema {
+  id            String              @id @default(cuid())
+  name          String              @unique
+  ensemble      Ensemble            @relation(fields: [ensembleId], references: [id], onDelete: Cascade)
+  ensembleId    String
+  events        EventSchemas[]
+  assignments   SchemaAssignment[]
+}
+
+model EventSchemas {
+  id          Int             @id @default(autoincrement())
+  event       Event           @relation(fields: [eventId], references: [id])
+  eventId     String
+  schema      Schema          @relation(fields: [schemaId], references: [id])
+  schemaId    String
+}
+
+model SchemaAssignment {
+  id            Int           @id @default(autoincrement())
+  member        Member        @relation(fields: [memberId], references: [id])
+  memberId      String
+  schema        Schema        @relation(fields: [schemaId], references: [id])
+  schemaId      String
+  capacity      Capacity
+  division      Division      @relation(fields: [divisionId], references: [id])
+  divisionId    Int
+  title         String?       @db.VarChar(64)
+}
+
+model Division {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(64)
+  alias              String               @db.VarChar(64)
+  members            SchemaAssignment[]
+  capacity           Capacity
+  ensembleType       EnsembleType?        @relation(fields: [ensembleTypeId], references: [id])
+  ensembleTypeId     Int?
+  parentId           Int?
+  parentDivision     Division?            @relation("SubDivision", fields: [parentId], references: [id])
+  childDivisions     Division[]           @relation("SubDivision")
+}
+
+model EventProgram {
+  id            String          @id @default(cuid())
+  event         Event           @relation(fields: [eventId], references: [id])
+  eventId       String          @unique
+  work          Work[]
+}
+
+model Work {
+  id            String          @id @default(cuid())
+  name          String          @db.VarChar(64)
+  filepath       String?         @db.VarChar(64)
+  program       EventProgram[]
+}
+
+model Attendance {
+  id            Int               @id @default(autoincrement())
+  event         Event             @relation(fields: [eventId], references: [id])
+  eventId       String
+  member        Member            @relation(fields: [memberId], references: [id])
+  memberId      String
+  status        AttendanceStatus  @default(Uncounted)
+}
+
+model EventType {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(64)
+  color       Json?     @db.JsonB
+  eventModel  EventModel[]
+}
+
+model EventEnsemble {
+  id           String      @id @default(cuid())
+  eventModel   EventModel  @relation(fields: [eventModelId], references: [id], onDelete: Cascade)
+  eventModelId String
+  ensemble     Ensemble    @relation(fields: [ensembleId], references: [id])
+  ensembleId   String
+}
+
 model PhotoSet {
   id       Int       @id @default(autoincrement())
-  member   MemberBio @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  memberId Int       @unique
+  member   Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String    @unique
   photos   Photo[]
 }
 
@@ -106,30 +207,32 @@ model Photo {
 
 model PhoneNumber {
   id          String    @id @default(cuid())
-  prefix      String?   @db.VarChar(4)
-  phonenumber String    @unique @db.VarChar(12)
+  prefix       String?   @db.VarChar(4)
+  phonenumber String    @db.VarChar(12)
   rank        PhoneRank @default(Home)
   member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId    String    @unique
 }
 
 model Address {
-  id         String      @id @default(cuid())
-  street     String      @db.VarChar(64)
-  street2    String?     @db.VarChar(64)
-  city       String      @db.VarChar(32)
-  state      String      @db.VarChar(2)
-  postalCode String      @db.VarChar(8)
-  country    String?     @db.VarChar(32)
-  poBox      String?     @db.VarChar(16)
-  rank       AddressRank @default(Home)
-  member     Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  memberId   String      @unique
+  id          String      @id @default(cuid())
+  street      String?     @db.VarChar(64)
+  street2     String?     @db.VarChar(64)
+  city        String?     @db.VarChar(32)
+  state       String?     @db.VarChar(2)
+  postalCode  String?     @db.VarChar(8)
+  country     String?     @db.VarChar(32)
+  poBox       String?     @db.VarChar(16)
+  rank        AddressRank @default(Home)
+  member      Member?     @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId    String?
+  eventModel  EventModel?
+  event       Event?
 }
 
 model Email {
   id       String    @id @default(cuid())
-  address  String    @unique @db.VarChar(96)
+  email    String    @db.VarChar(96)
   rank     EmailRank @default(Primary)
   member   Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId String    @unique
@@ -143,6 +246,11 @@ model User {
   updated_at DateTime
   member     Member   @relation(fields: [memberId], references: [id])
   memberId   String   @unique
+}
+
+model Configuration {
+  id          Int         @id @default(1)
+  unitsystem  String      @db.VarChar(3)
 }
 
 enum EyeColor {
@@ -179,7 +287,7 @@ enum Race {
   NativeAmerican
 }
 
-enum Status {
+enum MembershipStatus {
   Active
   Suspended
   Inactive
@@ -214,4 +322,16 @@ enum Capacity {
   Performer
   Crew
   Staff
+}
+
+enum Period {
+  Week
+  Month
+}
+
+enum AttendanceStatus {
+  Present
+  Excused
+  Absent
+  Uncounted
 }

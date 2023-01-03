@@ -18,7 +18,7 @@ const contextReducer = (parameters, action) => {
 
 const ContextProvider = ({ children }) => {
   const initialState = {
-    modal: null,
+    modal: { type: "hide", content: {} },
     config: {}
   };
 

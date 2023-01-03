@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import useLoader from '../../hooks/useLoader';
 
-import getAllMembers from '../../lib/members/_fetchAllMembers';
+import {fetchManyMembers} from '../api/members/getManyMembers';
 
 import Meta from '../../components/Meta';
 import MemberCard from '../../components/MemberCard';
@@ -14,7 +14,7 @@ import { GlobalContext } from "../_app";
 import basePageStyles from '../../styles/basePage.module.css';
 
 export async function getServerSideProps(context) {
-    const members = await getAllMembers()
+    const members = await fetchManyMembers()
 
     return {
         props: {
@@ -26,9 +26,10 @@ export async function getServerSideProps(context) {
 export default function membersPage(initialProps) {
     const { dispatch } = useContext(GlobalContext);
     const [members, setMembers] = useState(initialProps.members)
+    const [searchString, setSearchString] = useState("");
     const router = useRouter();
 
-    useLoader("all-members", setMembers, `/api/members/fetchAllMembers`);
+    useLoader("all-members", setMembers, `/api/members/getManyMembers`);
     
     const newMemberModal = () => {
         const submitModal = (newRecord) => {
@@ -37,8 +38,8 @@ export default function membersPage(initialProps) {
 
         const modalBody = 
             <section className="modal-fields">
-                <V.Text id="newMemberFirstName" name="firstName" label="First Name" value=""/>
-                <V.Text id="newMemberLastName" name="lastName" label="Last Name" value=""/>
+                <V.Text id="newMemberFirstName" field="firstName" label="First Name" value=""/>
+                <V.Text id="newMemberLastName" field="lastName" label="Last Name" value=""/>
             </section>
 
         dispatch({
@@ -48,10 +49,10 @@ export default function membersPage(initialProps) {
                 content: {
                     title: "Create New Member",
                     body: modalBody,
-                    URL: "/members/createNewMember"
+                    URL: "/members/createMember"
                 },
                 buttons: [
-                    { name: "submit", caption: "Create Member", style: "hero" },
+                    { name: "submit", caption: "Create Member", class: "hero" },
                     { name: "dismiss", caption: "Cancel" }
                 ],
                 followUp: submitModal
@@ -59,10 +60,44 @@ export default function membersPage(initialProps) {
         })
     }
 
+    const uploadMembersModal = () => {
+        const submitModal = (submission) => {
+            console.log({submission});
+        }
+
+        const modalBody = 
+            <section className="modal-fields">
+                <V.File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
+            </section>
+        
+        dispatch({
+            type: "modal",
+            payload: {
+                type: "form",
+                content: {
+                    title: "Upload Members from Excel File",
+                    body: modalBody,
+                    URL: "/members/uploadMembers",
+                    file: true,
+                    context: "1234"
+                },
+                buttons: [
+                    { name: "submit", caption: "Create Member", class: "hero" },
+                    { name: "dismiss", caption: "Cancel" }
+                ],
+                followUp: submitModal
+            }
+        })
+    }
+
+    const filteredMembers = members.filter(member => {
+        return member.aka.toLowerCase().includes(searchString.toLowerCase());
+    })
+
     let membersGrid = null;
     if (members) {
-        // console.log({ members });
-        membersGrid = members.map((member, i) => {
+        console.log({ filteredMembers });
+        membersGrid = filteredMembers.map((member, i) => {
             return (
                 <MemberCard
                     key={i}
@@ -81,6 +116,7 @@ export default function membersPage(initialProps) {
                 <div className={basePageStyles.formSection}>
                     <div className={basePageStyles.pageHeader}>
                         <h1>Members</h1>
+                        <input className="uncontrolled-text" type="text" placeholder="Search..." onChange={(e) => setSearchString(e.target.value)} />
                     </div>
                     <div className={basePageStyles.pageDetails}>
                         <div className="grid">
@@ -89,8 +125,8 @@ export default function membersPage(initialProps) {
                     </div>
                 </div>
                 <div className={basePageStyles.actionSection}>
-                    <input type="text" placeholder="Search..." />
-                    <button className="icon-and-label" onClick={newMemberModal}>New Member</button>
+                    <button className="icon-and-label" onClick={newMemberModal}><i>person_add</i>New Member</button>
+                    <button className="icon-and-label" onClick={uploadMembersModal}><i>upload</i>Upload Members</button>
                 </div>
             </div>
         </>

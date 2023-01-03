@@ -19,8 +19,10 @@ body {
   --p-hue: 150;
   --p-sat: 60%;
   --p-lum: 45%;
+  --p-alph: 50%;
 
   --p-fill: hsl(var(--p-hue), var(--p-sat), var(--p-lum));
+  --p-transparent: hsla(var(--p-hue), var(--p-sat), var(--p-lum), var(--p-alph));
   --p-fade: hsl(var(--p-hue), var(--p-sat), calc(var(--p-lum) / 2));
   --p-text: white;
   --background: hsl(0, 0%, 93%);
@@ -38,6 +40,7 @@ body {
 
 * {
   box-sizing: border-box;
+  outline-color: var(--p-fill);
 }
 
 i {
@@ -55,7 +58,18 @@ ul {
   
 }
 
-input::placeholder{
+input, textarea {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+textarea {
+  min-height: 100px;
+  resize: none;
+}
+
+input::placeholder,
+textarea::placeholder 
+{
   font-weight:100;
   font-style:italic;
   color: hsl(0, 0%, 75%);
@@ -73,7 +87,7 @@ input::placeholder{
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: hsl(0, 0%, 97%);
+  background: var(--gray1)
 }
 
 
@@ -86,7 +100,7 @@ input::placeholder{
 }
 
 .grid {
-  --grid-gap: 20px;
+  --grid-gap: 10px;
   --min-w: 250px;
   --min-h: 200px;
   flex:1;
@@ -96,6 +110,7 @@ input::placeholder{
   row-gap: var(--grid-gap);
   grid-template-columns: repeat(auto-fill, minmax(var(--min-w), 1fr));
   grid-template-rows: repeat(auto-fill, var(--min-h));
+  margin: 5px;
 }
 
 .card {
@@ -108,15 +123,40 @@ input::placeholder{
   grid-auto-flow: column;
 }
 
+.grid-rows-2 {
+  grid-row: span 2;
+}
+
+.grid-columns-2 {
+  grid-column: span 2;
+}
+
+
+/************************* CUSTOM HTML TAGS *************************/
+
+fast-grid {
+  display: grid;
+  width: 100%;
+}
+
+
+/************************* DRAG-N-DROP *************************/
+
 .drop-container {
+  --drop-h: 0;
+  --drop-s: 0%;
+  --drop-l: 80%;
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  border-radius: 7px;
+  transition: background-color 0.2s ease;
+  backdrop-filter: blur(2px);
 }
 
-.subdrop-container {
+.subdrop-wrapper {
   position: absolute;
   top: 0;
   height: 100%;
@@ -126,9 +166,21 @@ input::placeholder{
   z-index: 10;
 }
 
-.subdrop-container > .drop-container.hovered {
-  background: var(--p-fill);
-  opacity: 50%;
+.hovered .drop-container {
+  color: hsl(var(--drop-h), var(--drop-s), var(--drop-l));
+  /* background-color:  hsla(0, 0%, 100%, 50%); */
+  background-image: radial-gradient(circle at top left, white 50px, hsla(0, 0%, 100%, 50%));
+  border: 2px solid hsl(var(--drop-h), var(--drop-s), var(--drop-l));
+}
+
+.dc-name { display: none;}
+
+.hovered .dc-name {
+  display: block;
+  font-size: 1.25em;
+  font-weight: 700;
+  text-shadow: 0 0 5px 15px white;
+  margin: 10px;
 }
 
 [draggable="true"]:hover {
@@ -156,6 +208,16 @@ input::placeholder{
 .btn.disabled {
   opacity: 0.25;
   cursor:not-allowed;
+}
+
+i.btn {
+  font-size: 1.25em;
+  padding: 5px;
+}
+i.btn.active {
+  border-radius: 50%;
+  background: var(--gray2);
+  background-clip: content-box;
 }
 
 button {
@@ -217,6 +279,7 @@ fieldset {
   border: 1px solid var(--gray3);
   border-radius: 5px;
   padding: 5px;
+  margin: 5px;
 }
 
 legend {
@@ -237,6 +300,10 @@ article {
   overflow-y: scroll;
 }
 
+.padded {
+  padding: 5px;
+}
+
 .button-stack {
   display: flex;
   flex-direction: column;
@@ -247,17 +314,35 @@ article {
   flex: 1;
 }
 
-
-
-.tab-button {
-  padding: 5px;
-  margin-right: 3px;
-  background: var(--gray3);
-  border-radius: 5px 5px 0 0;
-  cursor: pointer;
+.status-icon {
+  font-size: 1.5em;
+  margin-top: 25px;
 }
 
-.tab-button.active {
+.submenu {
+  position: relative;
+}
+
+.submenu .drop-down {
+  position: absolute;
+  right: 0%;
+  border: 1px solid var(--gray4);
+  box-shadow: var(--shadow1);
+}
+
+.menu-option {
+  padding: 5px;
+  background: var(--gray2);
+  font-size: 0.75em;
+  white-space: nowrap;
+  max-width: 140px;
+  min-width: 80px;
+  overflow: hidden;
+}
+.menu-option ~ .menu-option {
+  border-top: 1px solid var(--gray4);
+}
+.menu-option:hover {
   background: white;
 }
 
@@ -289,6 +374,11 @@ article {
   min-width: unset;
   margin: auto 0 0 auto;
   border-radius: 7px 0 0 0;
+}
+
+.modal-message {
+  margin: 10px;
+  max-width: 30em;
 }
 
 .modal-fields {
@@ -329,23 +419,27 @@ article {
 
 .label {
   font-size:0.75em;
-  position: absolute;
   color: gray;
   transition: all 0.1s ease-out;
+  margin: 7px 10px 0px;
 }
 
 .input-control-base {
-  position: relative;
   display: flex;
+  flex-direction: column;
+  background: white;
   flex: 1 1;
-  padding: 20px 0 5px 0;
-  margin: 0 5px;
-  height: 60px;
+  border: 1px solid var(--gray2);
+  border-radius: 5px;
+  margin: 5px;
 }
 
-.input-control-base.unlabeled {
-  padding-top: 5px;
-  height: 45px;
+.input-control-base:has(*:focus-visible) {
+  border-color: var(--p-fill);
+}
+
+.input-control-base.hero {
+  background: transparent;
 }
 
 .select-box {
@@ -363,31 +457,51 @@ input[type="date"][value=""] {
   width: 100%;
 }
 
-.drop-down-arrow{
+i.drop-down-arrow{
   position:absolute;
   top:calc(50% - 0.5em);
   right:5px;
-  color: hsla(0, 0%, 50%, 0.5)
+  color: hsla(0, 0%, 50%, 0.5);
+  font-size: 1.5em;
+  padding: 0;
 }
 .expanded > .drop-down-arrow {
   display: none;
 }
 
-.input-control-base input {
+.input-control-base input,
+.input-control-base textarea {
   width: 100%;
-  height: 100%;
-  border: 1px solid var(--gray2);
-  border-radius: 5px;
-  padding: 0 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 10px 20px 15px;
+  background: transparent;
 }
 
-.select-box input:focus-visible {
-  outline-color: var(--p-fill);
-  background: var(--gray2);
+.input-control-base input {
+  height: 3em;
 }
+
+.input-control-base textarea {
+  padding: 25px 10px 10px;
+  min-height: 10em;
+}
+
+.input-control-base:has(input[readonly]),
+.input-control-base:has(textarea[readonly]) {
+  border-color: var(--gray3);
+  background-color: var(--gray1) !important;
+  outline: none;
+}
+
+/* .select-box input:focus-visible {
+  background: var(--gray2);
+} */
 
 .option-set {
   position: absolute;
+  top: calc(100% + 1px);
   width: 100%;
   background: var(--gray1);
   z-index: 1;
@@ -403,6 +517,7 @@ input[type="date"][value=""] {
   height: 0px;
   overflow: hidden;
   transition: height 0.05s ease;
+  border-width: 0;
 }
 .select-option:hover {
   background: var(--gray2);
@@ -412,24 +527,27 @@ input[type="date"][value=""] {
   padding: 10px;
   height: var(--option-height);
 }
+.expanded .select-option.selected {
+  border: 1px solid var(--p-fill);
+  background: var(--p-transparent);
+}
 
 .hero {
-  padding: 0;
+  border: none;
   margin: 0;
-  height: auto;
+}
+
+.hero:hover {
+  background: var(--gray2);
 }
 
 .hero > input {
   font-size: 24px;
   font-family: var(--brand-font);
   color: var(--p-fill);
-  background: transparent;
-  margin: 0;
-  border: none !important;
+  padding: 10px;
 }
-.hero > input:hover {
-  background: var(--gray2);
-}
+
 .hero > input:focus-visible {
   outline: none;
   background: white;
@@ -458,6 +576,14 @@ input[type="date"][value=""] {
   font-size: 0.65em;
   padding: 2px 5px;
   height: 15px;
+}
+
+.uncontrolled-text {
+  border-radius: 5px;
+  border: 1px solid var(--gray2);
+  padding: 5px 10px;
+  margin: 5px;
+  height: 35px;
 }
 
 .carousel-title {
@@ -515,4 +641,261 @@ i.dot.selected {
   display: flex;
   justify-content: flex-end;
   padding: 5px;
+}
+
+.missing-data .flag:has(input[value=""]),
+.missing-data .flag:has(textarea[value=""]) {
+  border: 1px solid red !important;
+}
+
+.checkbox {
+  flex-direction: row;
+  background: transparent;
+  border: none;
+}
+
+.file-box label {
+  background: transparent;
+  border: 1px solid var(--gray4);
+  padding: 10px;
+  cursor: pointer;
+}
+
+.file-box input {
+  display: none;
+}
+
+.checkbox:not(.readonly) * {
+  cursor: pointer;
+}
+
+.checkbox.checked i {
+  color: hsl(120, 90%, 40%);
+}
+.checkbox.readonly {
+  color: var(--gray4);
+}
+
+.checkbox i {
+  font-size: 1.5em;
+  color: gray;
+}
+
+.checkbox input {
+  display: none;
+}
+
+.checkbox label {
+  left: 2em;
+  margin: 5px 10px;
+  color: black;
+}
+
+
+/************************* PROFILE CARDS *************************/
+
+.card-container {
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid lightgray;
+  width: auto;
+  padding: 5px;
+  margin:5px;
+  box-shadow: 0px 2px 5px hsla(0, 0%, 0%, 0.1);
+  background-color: white;
+}
+.clickable {
+  cursor: pointer;
+}
+
+.card-container > * {
+  margin: 5px;
+}
+
+.card-caption {
+  margin-left: 10px;
+}
+
+.card-name {
+  display: flex;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.card-subtitle {
+  color: gray;
+  font-style: italic;
+}
+
+.hero-icon {
+  border-radius: 50%;
+  background: var(--p-fill);
+  display: flex;
+  align-items:center;
+  justify-content:center;
+  color: var(--p-text);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+}
+
+.card-controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.hero-icon.cold {
+  background: gray;
+}
+.card-name.cold {
+  color: gray;
+}
+
+
+/************************* TAB CONTROL *************************/
+
+.tab-wrapper {
+  flex:1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.tab-row {
+  display: flex;
+  background-image: linear-gradient(0deg, var(--gray4) 0px, var(--gray2) 1px, var(--gray1) 90%, transparent);
+  padding-left: 5px;
+}
+
+.tab {
+
+}
+
+.tab-page {
+  flex: 1;
+  display: flex;
+  /* background: white; */
+  padding: 5px;
+  overflow: hidden;
+}
+
+.tab-button {
+  padding: 5px 10px;
+  margin-right: 3px;
+  background: var(--gray3);
+  border-radius: 5px 5px 0 0;
+  cursor: pointer;
+}
+
+.tab-wrapper.large > .tab-row > .tab-button {
+  padding: 10px 15px;
+
+}
+
+.tab-button.active {
+  background: var(--gray1);
+  border: solid var(--gray4);
+  border-width: 1px 1px 0;
+  color: var(--p-fill);
+  font-weight: 700;
+}
+
+.tab-wrapper.filters .tab-row {
+  padding: 5px;
+  background-image: none;
+}
+
+.tab-wrapper.filters .tab-button {
+  border-radius: 20px;
+  border: 2px solid transparent;
+  font-size: 0.8em;
+  background: var(--gray4);
+}
+
+.tab-wrapper.filters .tab-button.active {
+  background: white;
+  border-color: var(--p-fill);
+}
+
+.tab-wrapper.filters .tab-page {
+  background: transparent;
+  padding: 0;
+}
+
+
+/************************* CALENDAR *************************/
+
+.grid-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(auto-fit, minmax(100px, auto));
+  row-gap: 5px;
+  column-gap: 5px;
+  margin: 5px 0;
+  flex: 1;
+}
+
+.cal-day {
+  background: var(--gray2);
+  border: 1px solid transparent;
+  border-radius: 5px 15px 5px 5px;
+  overflow: hidden;
+  color: gray;
+  box-shadow: 0 0 4px -2px gray;
+}
+
+.cal-day.current-month {
+  background: white;
+  color: var(--p-fill);
+  font-weight: 700;
+}
+.cal-day.past {
+  color: var(--gray4);
+}
+
+.cal-day:hover {
+  border: 1px solid var(--p-fill);
+}
+
+.cal-day-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 9px;
+  text-align: right;
+}
+
+.date-button {
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 1px;
+  min-width: 1.5em;
+}
+.date-button:hover {
+  border-color: var(--p-fill);
+  cursor: pointer;
+}
+
+.today .cal-day-header {
+  background: var(--p-fill);
+  color: white;
+}
+.today .date-button:hover {
+  border-color: white;
+}
+
+.event-node {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid red;
+  border-radius: 7px;
+  padding: 3px 5px;
+  margin: 1.5px 3px;
+  font-size: 0.75em;
+}
+.event-node:hover {
+  cursor: pointer;
+
 }

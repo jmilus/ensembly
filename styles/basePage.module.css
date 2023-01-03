@@ -21,12 +21,14 @@
 
 .pageHeader {
     padding: 20px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .pageDetails {
     display: flex;
     flex: 1;
-    padding: 0 10px;
+    /* padding: 0 10px; */
     overflow-y: scroll;
 }
 

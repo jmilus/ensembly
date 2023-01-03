@@ -3,105 +3,136 @@ const prisma = new PrismaClient()
 
 async function Main() {
     let ensembleTypes = [
+        {
+            name: "chorus",
+            typeColor: '{"type": "hsl", "values": [200, 100, 50]}'
+        },
+        {
+            name: "orchestra",
+            typeColor: '{"type": "hsl", "values": [50, 100, 50]}'
+        },
+        {
+            name: "theater",
+            typeColor: '{"type": "hsl", "values": [280, 100, 50]}'
+        },
+        {
+            name: "dance",
+            typeColor: '{"type": "hsl", "values": [350, 100, 50]}'
+        }
+    ]
+
+    const typeDivisions = {
+        chorus: [
             {
-                name: "chorus",
-                typeColor: '{"type": "hsl", "values": [200, 100, 50]}'
+                name: "Sopranos",
+                alias: "Section",
+                capacity: "Performer",
+                childDivisions: [
+                    { name: "1st Sopranos", alias: "Subsection", capacity: "Performer" },
+                    { name: "2nd Sopranos", alias: "Subsection", capacity: "Performer" }
+                ]
             },
             {
-                name: "orchestra",
-                typeColor: '{"type": "hsl", "values": [50, 100, 50]}'
+                name: "Altos",
+                alias: "Section",
+                capacity: "Performer",
+                childDivisions: [
+                    { name: "1st Altos", alias: "Subsection", capacity: "Performer" },
+                    { name: "2nd Altos", alias: "Subsection", capacity: "Performer" }
+                ]
             },
             {
-                name: "theater",
-                typeColor: '{"type": "hsl", "values": [280, 100, 50]}'
+                name: "Tenors",
+                alias: "Section",
+                capacity: "Performer",
+                childDivisions: [
+                    { name: "1st Tenors", alias: "Subsection", capacity: "Performer" },
+                    { name: "2nd Tenors", alias: "Subsection", capacity: "Performer" }
+                ]
             },
             {
-                name: "dance",
-                typeColor: '{"type": "hsl", "values": [350, 100, 50]}'
+                name: "Basses",
+                alias: "Section",
+                capacity: "Performer",
+                childDivisions: [
+                    { name: "1st Basses", alias: "Subsection", capacity: "Performer" },
+                    { name: "2nd Basses", alias: "Subsection", capacity: "Performer" }
+                ]
             }
+        ],
+        orchestra: [
+            { name: "Strings", alias: "Section", capacity: "Performer" },
+            { name: "Percussion", alias: "Section", capacity: "Performer" },
+            { name: "Woodwinds", alias: "Section", capacity: "Performer" },
+            { name: "Brass", alias: "Section", capacity: "Performer" }
         ]
+    }
 
     const types = await Promise.all(
         ensembleTypes.map(async type => {
             return await prisma.ensembleType.create({
                 data: type,
                 select: {
-                    name: true,
-                    id: true
+                    id: true,
+                    name: true
                 }
             })
         })
     )
 
-    const ensembleTypeIds = {}
-    types.forEach(type => {
-        ensembleTypeIds[type.name] = type.id;
-    })
-    const divs = [
-        { name: "Sopranos", cap: "Performer", alias: "Section", ensembleType: "chorus"},
-        { name: "Altos", cap: "Performer", alias: "Section", ensembleType: "chorus"},
-        { name: "Tenors", cap: "Performer", alias: "Section", ensembleType: "chorus"},
-        { name: "Basses", cap: "Performer", alias: "Section", ensembleType: "chorus" },
-        { name: "Administration", cap: "Staff", alias: "Department", ensembleType: "chorus" },
-        { name: "Stage", cap: "Crew", alias: "Role", ensembleType: "chorus" }        
-    ]
-
     const divisions = await Promise.all(
-        divs.map(async div => {
+        typeDivisions.chorus.map(async div => {
             return await prisma.division.create({
                 data: {
                     name: div.name,
-                    capacity: div.cap,
-                    divisionAlias: div.alias,
-                    ensembleTypeId: ensembleTypeIds[div.ensembleType]
+                    alias: div.alias,
+                    capacity: div.capacity,
+                    ensembleType:
+                        { connect: { id: types.find(type => type.name === "chorus").id } },
+                    childDivisions: {
+                        createMany: {
+                            data: div.childDivisions
+                        }
+                    }
                 },
                 select: {
                     name: true,
                     id: true
                 }
-            })
-        })
-        
-    )
-
-    const getDivisionId = (divname) => {
-        const result = divisions.find(div => {
-            return div.name === divname;
-        })
-        return result.id
-    }
-
-    const subdivs = [
-        { name: "1st Sopranos", alias: "Subsection", division: "Sopranos" },
-        { name: "1st Altos", alias: "Subsection", division: "Altos" },
-        { name: "1st Tenors", alias: "Subsection", division: "Tenors" },
-        { name: "1st Basses", alias: "Subsection", division: "Basses" },
-        { name: "2nd Sopranos", alias: "Subsection", division: "Sopranos" },
-        { name: "2nd Altos", alias: "Subsection", division: "Altos" },
-        { name: "2nd Tenors", alias: "Subsection", division: "Tenors" },
-        { name: "2nd Basses", alias: "Subsection", division: "Basses" },
-        { name: "Executive Director", alias: "Title", division: "Administration" },
-        { name: "Creative Director", alias: "Title", division: "Administration" },
-        { name: "Accompianist", alias: "Title", division: "Stage" }
-    ]
-
-    const subDivisions = await Promise.all(
-        subdivs.map(async sd => {
-            return await prisma.subDivision.create({
-                data: {
-                    name: sd.name,
-                    subDivisionAlias: sd.alias,
-                    divisionId: getDivisionId(sd.division)
-                },
-                select: {
-                    name: true,
-                    id: true
-                }
-            })
+            });
         })
     )
 
-    console.log({types, divisions, subDivisions})
+    const eventTypes = await prisma.eventType.createMany({
+        data: [
+            {
+                name: "Rehearsal",
+                color: '{"type":"hsl", "values": [50, 80, 50]}'
+            },
+            {
+                name: "Dress Rehearsal",
+                color: '{"type":"hsl", "values": [100, 80, 50]}'
+            },
+            {
+                name: "Performance",
+                color: '{"type":"hsl", "values": [150, 80, 50]}'
+            },
+            {
+                name: "Social",
+                color: '{"type":"hsl", "values": [200, 80, 50]}'
+            },
+            {
+                name: "Admin",
+                color: '{"type":"hsl", "values": [250, 80, 50]}'
+            },
+            {
+                name: "Audition",
+                color: '{"type":"hsl", "values": [300, 80, 50]}'
+            }
+        ]
+    })
+
+    console.log({ types, divisions, eventTypes })
         
 }
 

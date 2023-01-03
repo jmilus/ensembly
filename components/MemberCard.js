@@ -1,62 +1,70 @@
-import { useRef } from 'react';
 import { useRouter } from 'next/router';
 import { getInitials } from '../utils';
-import { ItemTypes } from '../config/constants';
 import { useDrag } from 'react-dnd';
 
-import styles from '../styles/ProfileCard.module.css'
-
-const MemberCard = ({ member, subtitle="", presentation, format }) => {
+const MemberCard = ({ member, subtitle="", presentation, cardType, format }) => {
     const router = useRouter();
-    const { name } = member;
+    const { aka } = member;
 
-    const initials = getInitials(name).substring(0,3);
+    const initials = getInitials([member.firstName, member.middleName, member.lastName].join(" ")).substring(0,3);
     const heroIcon = <div>{initials}</div>
 
     switch (format) {
-        case "minimal":
+        case "detail":
             return (
-                <div className={styles.cardContainer}>
-                    <div className={styles.header} onClick={() => router.push(`/members/${member.id}`)}>
-                        <div className={styles.heroIcon} style={{width: "50px", height: "50px"}}>{heroIcon}</div>
-                        <div className={styles.cardCaption}>
-                            <div className={styles.cardName}>{name}</div>
-                            <div className={styles.subtitle}>{subtitle}</div>
+                <div className="card-container clickable" onClick={() => router.push(`/members/${member.id}`)}>
+                    <div className="card-header">
+                        <div className="hero-icon" style={{width: "50px", height: "50px"}}>{heroIcon}</div>
+                        <div className="card-caption">
+                            <div className="card-name">{aka}</div>
+                            <div className="card-subtitle">{subtitle}</div>
                         </div>
                     </div>
                 </div>
             );
         case "drag":
-            const [{ isDragging, didDrop }, drag, preview] = useDrag(() => ({
-                type: ItemTypes.CARD,
+            const [{ isDragging }, drag, preview] = useDrag(() => ({
+                type: cardType,
                 item: member,
-                end: () => console.log("membercard dropped in a container:", didDrop),
                 collect: monitor => ({
                     isDragging: !!monitor.isDragging(),
-                    didDrop: !!monitor.didDrop()
                 })
             }))
             
             return (
-                <div ref={drag} className={styles.cardContainer} style={isDragging ? { opacity: 0 } : {}}>
-                    <div className={styles.header} >
-                        <div className={styles.heroIcon} style={{ width: "50px", height: "50px" }}>{heroIcon}</div>
-                        <div className={styles.cardCaption}>
-                            <div className={styles.cardName}>{name}</div>
-                            <div className={styles.subtitle}>{subtitle}</div>
+                <div ref={drag} className="card-container" style={isDragging ? { opacity: 0 } : {}}>
+                    <div className="card-header" >
+                        <div className="hero-icon" style={{ width: "50px", height: "50px" }}>{heroIcon}</div>
+                        <div className="card-caption">
+                            <div className="card-name">{aka}</div>
+                            <div className="card-subtitle">{subtitle}</div>
                         </div>
                         <i className="link-text" onClick={() => router.push(`/members/${member.id}`)} style={{marginLeft: "auto", color: "var(--gray4)"}}>account_box</i>
                     </div>
                 </div>
             )
+        case "wait":
+            return (
+                <div ref={drag} className="card-container">
+                    <div className="card-header" >
+                        <div className="hero-icon cold" style={{ width: "50px", height: "50px" }}>{heroIcon}</div>
+                        <div className="card-caption">
+                            <div className="card-name cold">{aka}</div>
+                            <div className="card-subtitle">{subtitle}</div>
+                        </div>
+                        <i className="link-text" onClick={() => router.push(`/members/${member.id}`)} style={{marginLeft: "auto", color: "var(--gray4)"}}>account_box</i>
+                    </div>
+                </div>
+            )
+        case "minimal":
         default:
             return (
-                <div className={styles.cardContainer}>
-                    <div className={styles.header} onClick={() => router.push(`/members/${member.id}`)}>
-                        <div className={styles.heroIcon} style={{width: "50px", height: "50px"}}>{heroIcon}</div>
-                        <div className={styles.cardCaption}>
-                            <div className={styles.cardName}>{name}</div>
-                            <div className={styles.subtitle}>{subtitle}</div>
+                <div className="card-container clickable" onClick={() => router.push(`/members/${member.id}`)}>
+                    <div className="card-header">
+                        <div className="hero-icon" style={{width: "50px", height: "50px"}}>{heroIcon}</div>
+                        <div className="card-caption">
+                            <div className="card-name">{aka}</div>
+                            <div className="card-subtitle">{subtitle}</div>
                         </div>
                     </div>
                 </div>

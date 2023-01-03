@@ -2,8 +2,8 @@ import { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/router';
 import useLoader from '../../hooks/useLoader';
 
-import getAllEnsembles from '../../lib/ensembles/_fetchAllEnsembles';
-import getEnsembleTypes from '../../lib/ensembles/_fetchAllEnsembleTypes';
+import {fetchManyEnsembles} from '../api/ensembles/getManyEnsembles';
+import {fetchManyEnsembleTypes} from '../api/ensembles/getManyEnsembleTypes';
 
 import Meta from '../../components/Meta';
 import EnsembleCard from '../../components/EnsembleCard';
@@ -15,8 +15,8 @@ import { GlobalContext } from "../_app";
 import basePageStyles from '../../styles/basePage.module.css';
 
 export async function getServerSideProps(context) {
-    const ensembles = await getAllEnsembles();
-    const ensembleTypes = await getEnsembleTypes();
+    const ensembles = await fetchManyEnsembles();
+    const ensembleTypes = await fetchManyEnsembleTypes();
 
     return {
         props: {
@@ -30,10 +30,10 @@ export async function getServerSideProps(context) {
 
 export default function ensemblesPage(initialProps) {
     const { dispatch } = useContext(GlobalContext);
-    const [ensembles, setEnsembles] = useState(initialProps.ensembles)
+    const [ensembles, setEnsembles] = useState(initialProps.ensembles);
     const router = useRouter();
 
-    useLoader("all-ensembles", setEnsembles, `/api/ensembles/fetchAllEnsembles`);
+    useLoader("all-ensembles", setEnsembles, `/api/ensembles/getManyEnsembles`);
 
     const newEnsembleModal = () => {
         const submitModal = (newRecord) => {
@@ -42,8 +42,8 @@ export default function ensemblesPage(initialProps) {
 
         const modalBody = 
             <section className="modal-fields">
-                <V.Text id="newEnsembleName" name="name" label="Ensemble Name" />
-                <V.Select id="newEnsembleType" name="typeId" label="Ensemble Type" options={ initialProps.ensembleTypes } />
+                <V.Text id="newEnsembleName" field="name" label="Ensemble Name" />
+                <V.Select id="newEnsembleType" field="typeId" label="Ensemble Type" options={ initialProps.ensembleTypes } />
             </section>
         
         dispatch({
@@ -56,7 +56,7 @@ export default function ensemblesPage(initialProps) {
                     URL: "/ensembles/createNewEnsemble"
                 },
                 buttons: [
-                    { name: "submit", caption: "Create Ensemble", style: "hero" },
+                    { name: "submit", caption: "Create Ensemble", class: "hero" },
                     { name: "dismiss", caption: "Cancel" }
                 ],
                 followUp: submitModal
@@ -64,8 +64,8 @@ export default function ensemblesPage(initialProps) {
         })
     }
 
-    console.log({ ensembles })
-    
+    // console.log({ ensembles })
+
 
     let ensemblesGrid = null;
     if (ensembles) {
@@ -97,8 +97,7 @@ export default function ensemblesPage(initialProps) {
                     </div>
                 </div>
                 <div className={basePageStyles.actionSection}>
-                    <input type="text" placeholder="Search..." />
-                    <button className="icon-and-label" onClick={() => newEnsembleModal()}>New Ensemble</button>
+                    <button className="icon-and-label" onClick={() => newEnsembleModal()}><i>add_circle</i>New Ensemble</button>
                 </div>
             </div>
         </>
