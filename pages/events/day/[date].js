@@ -41,8 +41,8 @@ const DayProfile = (initialProps) => {
                 </div>
                 <div className={basePageStyles.pageDetails}>
                     {
-                        events.map(event => {
-                            return <EventNode event={event} inheritedStyle={{ fontSize: "1em" }} />
+                        events.map((event, e) => {
+                            return <EventNode key={e} event={event} inheritedStyle={{ fontSize: "1em" }} />
                         })
                     }
                     

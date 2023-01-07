@@ -92,12 +92,12 @@ const ModelProfile = (initialProps) => {
                         <fieldset className="grid-rows-2">
                             <legend>Events</legend>
                             {
-                                model.events.map(event => {
+                                model.events.map((event, e) => {
                                     event.model = {}
                                     event.model.name = new Date(event.startDate).toDateString();
                                     event.model.eventType = model.eventType;
                                     return (
-                                        <EventNode event={event} showDate inheritedStyle={{ fontSize: "1em" }} />
+                                        <EventNode key={e} event={event} showDate inheritedStyle={{ fontSize: "1em" }} />
                                     )
                                 })
                             }
