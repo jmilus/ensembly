@@ -3,7 +3,7 @@ import { useDrop } from 'react-dnd';
 
 const DropContainer = ({ caption, value, onDrop, acceptTypes, hoverStyle, children }) => {
     const [{ isOver }, drop] = useDrop(() => ({
-        accept: acceptTypes,
+        accept: acceptTypes || "nothing",
         drop: onDrop ? (item) => onDrop({item, value}) : null,
         collect: monitor => ({
             isOver: !!monitor.isOver()
