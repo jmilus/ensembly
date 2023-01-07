@@ -35,7 +35,7 @@ const ProfilePage = ({ entity, updateEntity, formSaved }) => {
                 </div>
             </div>
             <div className={styles.actionSection}>
-                <Link href="/members"><button className="icon-and-label"><i>arrow_back</i>Back to Members</button></Link>
+                <Link href="/members"><button className="icon-and-label" passHref ><i>arrow_back</i>Back to Members</button></Link>
                 <button type="submit" className="icon-and-label" onClick={() => document.forms["profile"].requestSubmit()}><i>save</i>Save</button>
             </div>
         </div>

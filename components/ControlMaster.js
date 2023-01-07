@@ -18,4 +18,13 @@ VControl.Check = (props) => <CheckBox {...props} />;
 VControl.Multi = (props) => <MultiSelect {...props} />
 VControl.File = (props) => <File {...props} />;
 
+VControl.Text.displayName = "Text";
+VControl.Number.displayName = "Number";
+VControl.Date.displayName = "Date";
+VControl.Select.displayName = "Select";
+VControl.Check.displayName = "Check";
+VControl.Multi.displayName = "Multi";
+VControl.File.displayName = "File";
+
+
 export default VControl;

@@ -32,7 +32,7 @@ export async function getServerSideProps() {
     }
 }
 
-export default function eventsPage(initialProps) {
+export default function EventsPage(initialProps) {
     const { dispatch } = useContext(GlobalContext);
     const [events, setEvents] = useState(initialProps.events)
     const [searchString, setSearchString] = useState("");

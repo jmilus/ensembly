@@ -16,7 +16,7 @@ export const updateOneEnsemble = async (data) => {
     return updatedEnsemble;
 }
 
-const updateOneEnsemble = async (req, res) => {
+const updateEnsemble = async (req, res) => {
     console.log("update request data:", req.body);
     let response = [];
     try {
@@ -31,4 +31,4 @@ const updateOneEnsemble = async (req, res) => {
     }
 }
 
-export default updateOneEnsemble;
+export default updateEnsemble;

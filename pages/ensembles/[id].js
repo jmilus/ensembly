@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { useImmer } from 'use-immer';
 import { useRouter } from 'next/router';
 import useLoader from '../../hooks/useLoader';
@@ -34,7 +34,7 @@ export async function getServerSideProps(context) {
     }
 }
 
-const ensembleProfile = (initialProps) => {
+const EnsembleProfile = (initialProps) => {
     const { dispatch } = useContext(GlobalContext);
     
     const [ensemble, updateEnsemble] = useImmer(initialProps.ensemble);
@@ -427,4 +427,4 @@ const ensembleProfile = (initialProps) => {
     
 }
 
-export default ensembleProfile;
+export default EnsembleProfile;

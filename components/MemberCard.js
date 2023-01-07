@@ -4,6 +4,14 @@ import { useDrag } from 'react-dnd';
 
 const MemberCard = ({ membership, subtitle = "", presentation, cardType, format }) => {
     const { member } = membership;
+    const [{ isDragging }, drag, preview] = useDrag(() => ({
+        type: cardType,
+        item: membership,
+        collect: monitor => ({
+            isDragging: !!monitor.isDragging(),
+        })
+    }))
+    
     const router = useRouter();
     const { aka } = member;
 
@@ -26,13 +34,6 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType, format 
                 </div>
             );
         case "drag":
-            const [{ isDragging }, drag, preview] = useDrag(() => ({
-                type: cardType,
-                item: membership,
-                collect: monitor => ({
-                    isDragging: !!monitor.isDragging(),
-                })
-            }))
             
             return (
                 <div ref={drag} className="card-container" style={isDragging ? { opacity: 0 } : {}}>

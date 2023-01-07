@@ -28,7 +28,7 @@ export async function getServerSideProps(context) {
 
 //
 
-export default function ensemblesPage(initialProps) {
+export default function EnsemblesPage(initialProps) {
     const { dispatch } = useContext(GlobalContext);
     const [ensembles, setEnsembles] = useState(initialProps.ensembles);
     const router = useRouter();

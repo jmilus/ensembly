@@ -12,7 +12,7 @@ const FilterList = ({listSet, Elem, filters, search}) => {
             <div className="filter-control-bar">
                 {
                     filters.map((filt, f) => {
-                        return <div className="filter-button" onClick={() => filterList(filt.method)}>{filt.name}</div>
+                        return <div key={f} className="filter-button" onClick={() => filterList(filt.method)}>{filt.name}</div>
                     })
                 }
                 {search &&

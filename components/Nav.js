@@ -38,7 +38,7 @@ const Nav = ({ menuOptions }) => {
                         menuOptions.map((option, i) => {
                             return (
                                 <li key={i} className={x.menuItem}>
-                                    <Link href={`/${option.route}`}><button className="icon-and-label"><i>{option.icon}</i>{option.name}</button></Link>
+                                    <Link href={`/${option.route}`} passHref ><button className="icon-and-label"><i>{option.icon}</i>{option.name}</button></Link>
                                 </li>
                             )
                         })

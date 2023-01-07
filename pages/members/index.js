@@ -23,7 +23,7 @@ export async function getServerSideProps(context) {
     }
 }
 
-export default function membersPage(initialProps) {
+export default function MembersPage(initialProps) {
     const { dispatch } = useContext(GlobalContext);
     const [members, setMembers] = useState(initialProps.members)
     const [searchString, setSearchString] = useState("");

@@ -30,7 +30,7 @@ export async function getServerSideProps(context) {
     }
 }
 
-const eventProfile = (initialProps) => {
+const EventProfile = (initialProps) => {
     const { dispatch } = useContext(GlobalContext);
     const [event, setEvent] = useState(initialProps.event);
     const [addressException, setAddressException] = useState(initialProps.event.location != undefined);
@@ -156,4 +156,4 @@ const eventProfile = (initialProps) => {
     )
 }
 
-export default eventProfile;
+export default EventProfile;

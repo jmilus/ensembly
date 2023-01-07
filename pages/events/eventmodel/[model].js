@@ -31,7 +31,7 @@ export async function getServerSideProps(context) {
     }
 }
 
-const modelProfile = (initialProps) => {
+const ModelProfile = (initialProps) => {
     const { dispatch } = useContext(GlobalContext);
     const [model, setModel] = useState(initialProps.model);
     const [hasRecurrence, setHasRecurrence] = useState(initialProps.model.recEndCount > 1);
@@ -124,4 +124,4 @@ const modelProfile = (initialProps) => {
     )
 }
 
-export default modelProfile;
+export default ModelProfile;

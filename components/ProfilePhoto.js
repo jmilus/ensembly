@@ -1,8 +1,9 @@
 import styles from '../styles/ProfilePhoto.module.css'
+import Image from 'next/image';
 
 const ProfilePhoto = ({ name, profilePic, styling }) => {
 
-    const pic = profilePic ? <img src={profilePic} /> : null;
+    const pic = profilePic ? <Image src={profilePic} alt="" /> : null;
     return (
         <object id={`profile-photo-${name}`} className={styles.profilePhotoBase} style={styling}>
             {pic}

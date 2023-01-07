@@ -14,7 +14,7 @@ const DropDownMenu = () => {
         if (dropdown) {
             updateDdoptions(dropdown.options)
         }
-    }, [parameters])
+    })
 
     const hideDropDown = () => {
         dispatch({type: "dropdown", payload: null})

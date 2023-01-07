@@ -27,7 +27,7 @@ export async function getServerSideProps(context) {
     }
 }
 
-const memberProfile = (initialProps) => {
+const MemberProfile = (initialProps) => {
     const { dispatch } = useContext(GlobalContext);
 
     const [member, updateMember] = useImmer(initialProps.member);
@@ -212,4 +212,4 @@ const memberProfile = (initialProps) => {
 
 }
 
-export default memberProfile;
+export default MemberProfile;

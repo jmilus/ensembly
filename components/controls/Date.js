@@ -12,7 +12,7 @@ const DateTime = (props) => {
         if (new Date(min) > new Date(controlValue)) {
             handleControlValueChange(min)
         }
-    }, [min])
+    })
 
     useEffect(() => {
         setControlValue(value);
