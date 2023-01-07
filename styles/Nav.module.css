@@ -1,35 +1,9 @@
-.slideOut {
-    transition: all ease 0.2s;
-    transition-delay: 1s;
-}
-.slideOut.now {
-    transition-delay: 0s;
-}
 
-.mainMenuPanel {
-    overflow: hidden;
-    z-index: 10;
-    background: var(--p-fill);
-    display:flex;
-    flex-direction:column;
-    width: 40px;
-    color: white;
-}
-.mainMenuPanel:hover {
-    width: 250px;
-}
-
-.mainMenuPanel:hover .appFullTitle {
-    opacity: 1;
-}
-
-.appFullTitle {
-    opacity: 0;
-}
 
 .appLogo {
     flex: 1;
     font-size: 32px;
+    cursor: default;
 }
 
 .menuOptions {
@@ -47,7 +21,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
-    user-select:none;
+    user-select: none;
     margin-top: 5px;
 }
 .menuItem:last-child {

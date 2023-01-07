@@ -146,11 +146,11 @@ CREATE TABLE "EventSchemas" (
 -- CreateTable
 CREATE TABLE "SchemaAssignment" (
     "id" SERIAL NOT NULL,
-    "memberId" TEXT NOT NULL,
+    "membershipId" TEXT NOT NULL,
     "schemaId" TEXT NOT NULL,
     "capacity" "Capacity" NOT NULL,
     "divisionId" INTEGER NOT NULL,
-    "title" VARCHAR(64) NOT NULL,
+    "title" VARCHAR(64),
 
     CONSTRAINT "SchemaAssignment_pkey" PRIMARY KEY ("id")
 );
@@ -326,13 +326,7 @@ CREATE UNIQUE INDEX "PhotoSet_memberId_key" ON "PhotoSet"("memberId");
 CREATE UNIQUE INDEX "Photo_photoSetId_key" ON "Photo"("photoSetId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PhoneNumber_phonenumber_key" ON "PhoneNumber"("phonenumber");
-
--- CreateIndex
 CREATE UNIQUE INDEX "PhoneNumber_memberId_key" ON "PhoneNumber"("memberId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Email_email_key" ON "Email"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Email_memberId_key" ON "Email"("memberId");
@@ -383,7 +377,7 @@ ALTER TABLE "EventSchemas" ADD CONSTRAINT "EventSchemas_eventId_fkey" FOREIGN KE
 ALTER TABLE "EventSchemas" ADD CONSTRAINT "EventSchemas_schemaId_fkey" FOREIGN KEY ("schemaId") REFERENCES "Schema"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SchemaAssignment" ADD CONSTRAINT "SchemaAssignment_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SchemaAssignment" ADD CONSTRAINT "SchemaAssignment_membershipId_fkey" FOREIGN KEY ("membershipId") REFERENCES "EnsembleMembership"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SchemaAssignment" ADD CONSTRAINT "SchemaAssignment_schemaId_fkey" FOREIGN KEY ("schemaId") REFERENCES "Schema"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -2,7 +2,16 @@ import prisma from '../../../lib/prisma';
 import { formatDBObject } from '../../../utils';
 
 export const fetchManyMembers = async () => {
-    const fetchedMembers = await prisma.member.findMany()
+    const fetchedMembers = await prisma.member.findMany({
+        include: {
+            memberships: {
+                where: {status: "Active"}
+            }
+        },
+        orderBy: {
+            lastName: 'asc'
+        }
+    })
     
     const processedMembers = fetchedMembers.map(member => {
         return formatDBObject(member);

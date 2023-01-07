@@ -46,7 +46,7 @@ const CalDay = ({ day, events = [], inMonth }) => {
 const Calendar = ({ firstDay, events, viewDays = 34 }) => {
     let d = new Date(firstDay);
 
-    const thisMonth = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 6).getMonth();
+    const thisMonth = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 13).getMonth();
 
     const displayDays = {};
     

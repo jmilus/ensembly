@@ -8,8 +8,17 @@ export const fetchOneSchema = async (id) => {
         },
         include: {
             assignments: {
+                where: {
+                    membership: {
+                        is: {
+                            status: "Active"
+                        }
+                    }
+                },
                 include: {
-                    member: true,
+                    membership: {
+                        include: { member: true }
+                    },
                     division: true
                 }
             }

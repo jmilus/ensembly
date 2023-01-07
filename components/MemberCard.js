@@ -2,7 +2,8 @@ import { useRouter } from 'next/router';
 import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
-const MemberCard = ({ member, subtitle="", presentation, cardType, format }) => {
+const MemberCard = ({ membership, subtitle = "", presentation, cardType, format }) => {
+    const { member } = membership;
     const router = useRouter();
     const { aka } = member;
 
@@ -20,12 +21,14 @@ const MemberCard = ({ member, subtitle="", presentation, cardType, format }) => 
                             <div className="card-subtitle">{subtitle}</div>
                         </div>
                     </div>
+                    <div className="card-body">
+                    </div>
                 </div>
             );
         case "drag":
             const [{ isDragging }, drag, preview] = useDrag(() => ({
                 type: cardType,
-                item: member,
+                item: membership,
                 collect: monitor => ({
                     isDragging: !!monitor.isDragging(),
                 })
@@ -34,7 +37,7 @@ const MemberCard = ({ member, subtitle="", presentation, cardType, format }) => 
             return (
                 <div ref={drag} className="card-container" style={isDragging ? { opacity: 0 } : {}}>
                     <div className="card-header" >
-                        <div className="hero-icon" style={{ width: "50px", height: "50px" }}>{heroIcon}</div>
+                        <div className="hero-icon" style={{ minWidth: "50px", minHeight: "50px" }}>{heroIcon}</div>
                         <div className="card-caption">
                             <div className="card-name">{aka}</div>
                             <div className="card-subtitle">{subtitle}</div>

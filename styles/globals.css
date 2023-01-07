@@ -33,7 +33,10 @@ body {
   --gray2: hsl(0, 0%, 95%);
   --gray3: hsl(0, 0%, 90%);
   --gray4: hsl(0, 0%, 85%);
-  --gray: hsl(0, 0%, 50%);
+  --gray5: hsl(0, 0%, 70%);
+  --gray6: hsl(0, 0%, 40%);
+  --gray7: hsl(0, 0%, 25%);
+  --gray8: hsl(0, 0%, 10%);
 
   --shadow1: 0px 2px 5px -1px hsl(0, 0%, 70%);
 }
@@ -140,6 +143,72 @@ fast-grid {
 }
 
 
+/************************* NAVBAR *************************/
+
+#nav-base {
+  position: relative;
+  width: 40px;
+  height: 100%;
+}
+
+.main-menu-panel {
+  position: absolute;
+  overflow: hidden;
+  z-index: 10;
+  background: var(--p-fill);
+  display:flex;
+  flex-direction:column;
+  height: 100%;
+  width: 40px;
+  color: white;
+}
+.main-menu-panel:hover {
+  width: 250px;
+  box-shadow: var(--shadow1);
+}
+
+.main-menu-panel:hover .app-full-title {
+  opacity: 1;
+}
+
+.app-full-title {
+  opacity: 0;
+}
+
+.slide-out {
+  transition: all ease 0.2s;
+  transition-delay: 1s;
+}
+.slide-out.now {
+  transition-delay: 0s;
+}
+
+.user-menu {
+  background: hsl(var(--p-hue), var(--p-sat), calc(var(--p-lum) + 20%));
+}
+
+.user-menu.show {
+  padding: 5px 0;
+
+}
+
+.user-menu li {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  height: 0;
+  transition: height 0.1s ease;
+}
+
+.main-menu-panel:hover .user-menu.show li{
+  margin: 0;
+  padding: 5px 15px;
+  font-size: 1em;
+  height: 30px;
+  justify-content: right;
+}
+
+
 /************************* DRAG-N-DROP *************************/
 
 .drop-container {
@@ -189,7 +258,7 @@ fast-grid {
 
 .collapsible {
   overflow: hidden;
-  transition: height 0.2s ease, width 0.2s ease;
+  transition: height 0.2s ease, width 0.2s ease, min-width 0.2s ease;
 }
 
 .link-text {
@@ -222,6 +291,7 @@ i.btn.active {
 
 button {
   font-size: inherit;
+  font-family: inherit;
   cursor: pointer;
   --b-hue: 0;
   --b-sat: 0%;
@@ -286,6 +356,12 @@ legend {
   color: var(--p-fill);
   font-weight: 700;
 }
+
+fieldset.card-set {
+  overflow-y: scroll;
+}
+
+
 
 section {
   display: flex;
@@ -428,7 +504,6 @@ article {
   display: flex;
   flex-direction: column;
   background: white;
-  flex: 1 1;
   border: 1px solid var(--gray2);
   border-radius: 5px;
   margin: 5px;
@@ -502,7 +577,6 @@ i.drop-down-arrow{
 .option-set {
   position: absolute;
   top: calc(100% + 1px);
-  width: 100%;
   background: var(--gray1);
   z-index: 1;
   border-radius: 5px;
@@ -512,9 +586,8 @@ i.drop-down-arrow{
 }
 
 .select-option {
-  padding: 0px;
+  padding: 10px;
   font-size: 14px;
-  height: 0px;
   overflow: hidden;
   transition: height 0.05s ease;
   border-width: 0;
@@ -523,11 +596,11 @@ i.drop-down-arrow{
   background: var(--gray2);
   cursor: pointer;
 }
-.expanded .select-option {
+.select-option {
   padding: 10px;
   height: var(--option-height);
 }
-.expanded .select-option.selected {
+.select-option.selected {
   border: 1px solid var(--p-fill);
   background: var(--p-transparent);
 }
@@ -691,6 +764,46 @@ i.dot.selected {
   color: black;
 }
 
+#dropdown-area {
+  z-index: 200;
+}
+
+#dropdown-backing {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+fieldset.buttons {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  border: none;
+  padding: 0;
+  margin: 10px 5px;
+}
+
+fieldset.buttons > legend {
+  color: var(--gray7);
+  font-weight: normal;
+  margin-bottom: 3px;
+  font-size: 0.8em;
+}
+
+fieldset.buttons > button {
+  margin: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--gray5);
+}
+
+fieldset.buttons > button:first-of-type {
+  border-radius: 5px 5px 0 0;
+}
+fieldset.buttons > button:last-of-type {
+  border-radius: 0 0 5px 5px;
+  border-bottom: none;
+}
+
 
 /************************* PROFILE CARDS *************************/
 
@@ -707,6 +820,9 @@ i.dot.selected {
 }
 .clickable {
   cursor: pointer;
+}
+.clickable:hover {
+  outline: 1px solid var(--p-fill);
 }
 
 .card-container > * {
@@ -762,6 +878,7 @@ i.dot.selected {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
 .tab-row {
@@ -780,6 +897,9 @@ i.dot.selected {
   /* background: white; */
   padding: 5px;
   overflow: hidden;
+}
+.tab-page.vert {
+  flex-direction: column;
 }
 
 .tab-button {

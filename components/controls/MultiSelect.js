@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+
+import { GlobalContext } from '../../pages/_app';
 
 import { packageOptions } from '../../utils';
 
@@ -8,6 +10,8 @@ const MultiSelect = (props) => {
     const optionsArray = foptions ? foptions : packageOptions(options);
     const [expanded, setExpanded] = useState(false);
     const [displayOptions, setDisplayOptions] = useState([]);
+
+    const { dispatch } = useContext(GlobalContext);
 
     if (debug) console.log(field, { props }, { controlValue }, { displayOptions });
 
@@ -87,16 +91,6 @@ const MultiSelect = (props) => {
 
     const clonedChildren = handleChildren();
 
-    const handleMouseOut = (event) => {
-        const selectObject = document.getElementById(`select-${id}`);
-        if (event.relatedTarget && event.relatedTarget.className) {
-            if (selectObject.compareDocumentPosition(event.relatedTarget) === 20) {
-                return null;
-            }
-        }
-        setExpanded(false);
-    }
-
     const setDisplaySelectedOptions = () => {
         return controlValue.map(cv => {
             return displayOptions.find(disp => disp.value === cv)?.short
@@ -105,9 +99,28 @@ const MultiSelect = (props) => {
     const displaySelectValue = setDisplaySelectedOptions();
 
     const selectOption = (option) => {
-        option.selected = !option.selected;
-        handleControlValueChange(option);
+        handleControlValueChange({...option, selected: !option.selected});
     }
+
+    useEffect(() => {
+        if (expanded && !readonly) {
+            const parentControl = document.getElementById(`select-${id}`)
+            dispatch({
+                type: "dropdown",
+                payload: {
+                    dim: { x: parentControl.offsetLeft, y: parentControl.offsetTop, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
+                    options: displayOptions,
+                    action: selectOption
+                }
+            })
+        } else {
+            dispatch({
+                type: "dropdown",
+                payload: null
+            })
+        }
+
+    }, [expanded])
 
     return (
         <>
@@ -118,25 +131,13 @@ const MultiSelect = (props) => {
                     <input
                         id={id}
                         field={field}
-                        defaultValue={displaySelectValue}
+                        value={displaySelectValue}
                         className="select-input"
                         type="text"
-                        // onKeyDown={(e) => handleSelectKeyDown(e)}
-                        // onChange={(e) => handleSelectChange(e.target.value)}
-                        onMouseLeave={(e) => handleMouseOut(e)}
                         autoComplete="do-not-autofill"
                         required={isRequired}
                         readOnly={readonly}
                     />
-                    { !readonly &&
-                        <div className="option-set" onMouseLeave={(e) => handleMouseOut(e)}>
-                            {
-                                displayOptions.map((option, i) => {
-                                    return <div key={i} className={`select-option${option.selected ? " selected" : ""}`} onClick={() => selectOption(option)} >{option.name}</div>
-                                })
-                            }
-                        </div>
-                    }
                 </div>
             </div>
             {

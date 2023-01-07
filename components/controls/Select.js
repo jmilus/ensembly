@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+
+import { GlobalContext } from '../../pages/_app';
 
 import { packageOptions } from '../../utils';
 
@@ -8,6 +10,8 @@ const Select = (props) => {
     const optionsArray = foptions ? foptions : packageOptions(options);
     const [expanded, setExpanded] = useState(false);
     const [displayOptions, setDisplayOptions] = useState(optionsArray);
+
+    const { dispatch } = useContext(GlobalContext);
 
     if (debug) console.log(field, { props }, { controlValue });
 
@@ -55,16 +59,6 @@ const Select = (props) => {
     }
 
     const clonedChildren = handleChildren();
-
-    const handleMouseOut = (event) => {
-        const selectObject = document.getElementById(`select-${id}`);
-        if (event.relatedTarget && event.relatedTarget.className) {
-            if (selectObject.compareDocumentPosition(event.relatedTarget) === 20) {
-                return null;
-            }
-        }
-        setExpanded(false);
-    }
 
     const findMatchingOption = () => {
         if(debug) console.log(field, "searching for", controlValue, "among options:", {optionsArray})
@@ -130,6 +124,26 @@ const Select = (props) => {
         }
     }
 
+    useEffect(() => {
+        if (expanded && !readonly) {
+            const parentControl = document.getElementById(`select-${id}`)
+            dispatch({
+                type: "dropdown",
+                payload: {
+                    dim: { x: parentControl.offsetLeft, y: parentControl.offsetTop, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
+                    options: displayOptions,
+                    action: selectOption
+                }
+            })
+        } else {
+            dispatch({
+                type: "dropdown",
+                payload: null
+            })
+        }
+
+    }, [expanded])
+
     return (
         <>
             <div id={`select-${id}`} className={`input-control-base select-box${tiny ? " tiny" : ""}${label ? "" : " unlabeled"} ${isRequired ? "flag" : ""}`} style={Vstyle}>
@@ -144,20 +158,10 @@ const Select = (props) => {
                         type="text"
                         onKeyDown={(e) => handleSelectKeyDown(e)}
                         onChange={(e) => handleSelectChange(e.target.value)}
-                        onMouseLeave={(e) => handleMouseOut(e)}
                         autoComplete="do-not-autofill"
                         required={isRequired}
                         readOnly={readonly}
                     />
-                    { !readonly &&
-                        <div className="option-set" onMouseLeave={(e) => handleMouseOut(e)}>
-                            {
-                                displayOptions.map((option, i) => {
-                                    return <div key={i} className="select-option" onClick={() => selectOption(option)} >{option.name}</div>
-                                })
-                            }
-                        </div>
-                    }
                 </div>
             </div>
             {

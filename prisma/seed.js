@@ -58,6 +58,21 @@ async function Main() {
                     { name: "1st Basses", alias: "Subsection", capacity: "Performer" },
                     { name: "2nd Basses", alias: "Subsection", capacity: "Performer" }
                 ]
+            },
+            {
+                name: "Crew",
+                alias: "Crew",
+                capacity: "Crew",
+                childDivisions: [
+                    { name: "Hair/Makeup", alias: "Department", capacity: "Crew" },
+                    { name: "Audio", alias: "Department", capacity: "Crew" },
+                    { name: "Lighting", alias: "Department", capacity: "Crew" }
+                ]
+            },
+            {
+                name: "Staff",
+                alias: "Department",
+                capacity: "Staff"
             }
         ],
         orchestra: [
@@ -89,11 +104,11 @@ async function Main() {
                     capacity: div.capacity,
                     ensembleType:
                         { connect: { id: types.find(type => type.name === "chorus").id } },
-                    childDivisions: {
+                    childDivisions: div.childDivisions ? {
                         createMany: {
                             data: div.childDivisions
                         }
-                    }
+                    } : undefined
                 },
                 select: {
                     name: true,

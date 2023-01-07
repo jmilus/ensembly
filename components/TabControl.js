@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 export const Tab = (props) => {
     const { children } = props;
     return (
-        <div className="tab-page">{children}</div>
+        <div className={`tab-page ${props.direction}`}>{children}</div>
     )
 }
 

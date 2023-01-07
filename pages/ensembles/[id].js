@@ -10,6 +10,7 @@ import V from '../../components/ControlMaster';
 import MemberCard from '../../components/MemberCard';
 import TabControl, { Tab } from '../../components/TabControl';
 import DropContainer from '../../components/DropContainer';
+import FilterList from '../../components/FilterList';
 
 import { GlobalContext } from "../_app";
 
@@ -39,6 +40,7 @@ const ensembleProfile = (initialProps) => {
     const [ensemble, updateEnsemble] = useImmer(initialProps.ensemble);
     const [viewSchema, updateViewSchema] = useImmer(initialProps.baseSchema)
     const [showRoster, setShowRoster] = useState(false);
+    const [tabRoute, setTabRoute] = useState("Main");
     const router = useRouter();
 
     useLoader(ensemble.id, updateEnsemble, `/api/ensembles/getOneEnsemble?id=${ensemble.id}`);
@@ -53,6 +55,90 @@ const ensembleProfile = (initialProps) => {
         const fetchedSchema = await fetch(`/api/ensembles/getOneSchema?id=${schemaId}`)
         const loadedSchema = await fetchedSchema.json();
         updateViewSchema(loadedSchema);
+    }
+
+    const newSchemaModal = () => {
+        const submitModal = (newSchema) => {
+
+        }
+
+        const modalBody = <V.Text id="schema-name" field="name" label="New Schema Name" />
+            
+        
+        dispatch({
+            type: "modal",
+            payload: {
+                type: "form",
+                content: {
+                    title: "Create New Schema",
+                    body: modalBody,
+                    URL: "/ensembles/createSchema",
+                    additionalIds: {ensembleId: ensemble.id}
+                },
+                buttons: [
+                    { name: "submit", caption: "Create Schema", class: "hero" },
+                    { name: "dismiss", caption: "Cancel" }
+                ],
+                followUp: submitModal
+            }
+        })
+    }
+
+    const copySchemaModal = () => {
+        const submitModal = (newSchema) => {
+
+        }
+
+        const modalBody = <V.Text id="schema-name" field="name" label="New Schema Name" />
+            
+        
+        dispatch({
+            type: "modal",
+            payload: {
+                type: "form",
+                content: {
+                    title: "Copy Schema",
+                    body: modalBody,
+                    URL: "/ensembles/copySchema",
+                    additionalIds: {ensembleId: ensemble.id, schemaId: viewSchema.id}
+                },
+                buttons: [
+                    { name: "submit", caption: "Copy Schema", class: "hero" },
+                    { name: "dismiss", caption: "Cancel" }
+                ],
+                followUp: submitModal
+            }
+        })
+    }
+
+    const uploadMembersModal = () => {
+        const submitModal = (submission) => {
+            console.log({submission});
+        }
+
+        const modalBody = 
+            <section className="modal-fields">
+                <V.File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
+            </section>
+        
+        dispatch({
+            type: "modal",
+            payload: {
+                type: "form",
+                content: {
+                    title: "Upload Members from Excel File",
+                    body: modalBody,
+                    URL: "/members/uploadMembers",
+                    file: true,
+                    context: {ensembleId: ensemble.id}
+                },
+                buttons: [
+                    { name: "submit", caption: "Upload Members", class: "hero" },
+                    { name: "dismiss", caption: "Cancel" }
+                ],
+                followUp: submitModal
+            }
+        })
     }
 
     const handleDrop = async (payload) => {
@@ -74,7 +160,7 @@ const ensembleProfile = (initialProps) => {
                     })
                     draft.assignments[index] = { ...draft.assignments[index], divisionId: value.id, division: value, assignmentTempId: `${item.id}-${value.id}` }
                 } else {
-                    draft.assignments.push({ schemaId: viewSchema.id, member: item, memberId: item.id, capacity: value.capacity, divisionId: value.id, division: value, assignmentTempId: `${item.id}-${value.id}` });
+                    draft.assignments.push({ schemaId: viewSchema.id, membership: item, memberId: item.memberId, capacity: value.capacity, divisionId: value.id, division: value, assignmentTempId: `${item.id}-${value.id}` });
                 }
             }
 
@@ -86,7 +172,7 @@ const ensembleProfile = (initialProps) => {
             body: JSON.stringify({
                 id: item.assignmentId,
                 schemaId: viewSchema.id,
-                memberId: item.id,
+                membershipId: item.id,
                 capacity: value.capacity,
                 divisionId: value.id
             })
@@ -140,9 +226,8 @@ const ensembleProfile = (initialProps) => {
     }
 
     const rosterStyles = {
-        padding: "5px 0",
-        margin: "30px 0 0 10px",
-        display: "flex"
+        display: "flex",
+        flex: 1
     }
 
     const rosterGenerator = (source, filterFunction, div) => {
@@ -155,7 +240,7 @@ const ensembleProfile = (initialProps) => {
                     return (
                         <MemberCard
                             key={m}
-                            member={mem.member}
+                            membership={mem}
                             format="drag"
                             cardType="CARD-OUT"
                         />
@@ -169,7 +254,7 @@ const ensembleProfile = (initialProps) => {
                     return (
                         <MemberCard
                             key={m}
-                            member={{ ...ass.member, assignmentId: ass.id, capacity: "Performer", assignmentTempId: `${ass.member.id}-${ass.divisionId}` }}
+                            membership={{ ...ass.membership, assignmentId: ass.id, capacity: "Performer", assignmentTempId: `${ass.membership.memberId}-${ass.divisionId}` }}
                             subtitle={ass.division?.name}
                             presentation="grid"
                             format={ass.id ? "drag" : "wait"}
@@ -181,6 +266,52 @@ const ensembleProfile = (initialProps) => {
                 return null;
         }
     }
+
+    const rosterFilters = [
+        {
+            name: "Unassigned",
+            method: (item) => viewSchema?.assignments.find(assignment => assignment.membership.memberId === meitemm.memberId)
+        },
+        {
+            name: "All",
+            method: (item) => item
+        }
+    ]
+
+    const memberRosterBox = 
+        <div id="full-roster" className="collapsible" style={{ ...rosterStyles, minWidth: showRoster ? "250px" : "0px" }}>
+            <fieldset>
+            <legend>Members</legend>
+                <TabControl type="filters">
+                    <Tab id="Unassigned">
+                        <DropContainer acceptTypes={["CARD-IN"]}>
+                            <article>
+                                {
+                                    rosterGenerator("membership", (mem) => viewSchema?.assignments.find(assignment => assignment.membership.memberId === mem.memberId))
+                                }
+                            </article>
+                            <DropContainer caption="Remove Assignment" onDrop={removeAssignment} hoverStyle={{border: '2px solid red', backgroundColor: 'hsla(0, 0%, 100%, 50%)', color: 'red'}}/>
+                        </DropContainer>
+                    </Tab>
+                    <Tab id="All">
+                        <DropContainer acceptTypes={["CARD-IN"]}>
+                            <article>
+                                {
+                                    rosterGenerator("membership")
+                                }
+                            </article>
+                            <DropContainer caption="Remove Assignment" onDrop={removeAssignment} hoverStyle={{border: '2px solid red', backgroundColor: 'hsla(0, 0%, 100%, 50%)', color: 'red'}}/>
+                        </DropContainer>
+                    </Tab>
+                </TabControl>
+                {/* <FilterList
+                    listSet={{membership: membership}}
+                    Elem={MemberCard}
+                    filters={rosterFilters}
+                    search={true}
+                /> */}
+            </fieldset>
+        </div >
     
     return (
         <div className={basePageStyles.pageBase}>
@@ -192,135 +323,103 @@ const ensembleProfile = (initialProps) => {
                 </div>
                 <div className={basePageStyles.pageDetails}>
                     <TabControl type="large" >
-                        <Tab id="Main">
+                        <Tab id="Main" onTabLoad={() => setTabRoute("Main")}>
 
                         </Tab>
-                        <Tab id="Events" >
+                        <Tab id="Events" onTabLoad={() => setTabRoute("Events")}>
 
                         </Tab>
-                        <Tab id="Schemas">
-                            <V.Select id="schema-select" field="schema" value={ensemble.schema[0].id} options={ensemble.schema} updateForm={(v) => console.log(v.schema) } />
+                        <Tab id="Schemas" onTabLoad={() => setTabRoute("Schemas")} direction="vert">
+                            <V.Select id="schema-select" field="schema" initialValue={ensemble.schema[0].id} options={ensemble.schema} updateForm={(v) => loadSchema(v.schema) } />
                             <TabControl type="filters">
                                 <Tab id="Performer">
                                     {
-                                        divisions.map((div, i) => {
+                                        divisions.map((div, d) => {
                                             if (div.capacity != "Performer") return null;
                                             return (
-                                                <DropContainer key={i} onDrop={handleDrop} acceptTypes={["CARD-IN", "CARD-OUT"]}>
-                                                    <fieldset className="grid">
+                                                <DropContainer key={d} onDrop={handleDrop} acceptTypes={["CARD-IN", "CARD-OUT"]}>
+                                                    <fieldset className="card-set">
                                                         <legend>{div.name}</legend>
                                                         {
                                                             rosterGenerator("assignments", (ass) => ass.division.parentId != div.id, div)
-                                                            // viewSchema?.assignments.map((assignment, a) => {
-                                                            //     if (assignment.division.parentId != div.id) return null;
-                                                            //     return (
-                                                            //         <MemberCard
-                                                            //             key={a}
-                                                            //             member={{ ...assignment.member, assignmentId: assignment.id, capacity: "Performer" }}
-                                                            //             subtitle={assignment.division?.name}
-                                                            //             presentation="grid"
-                                                            //             cardType="CARD-IN"
-                                                            //             format="drag"
-                                                            //         />
-                                                            //     )
-                                                            // })
                                                         }
                                                     </fieldset>
                                                     {
-                                                        div.childDivisions.map((sd, k) => {
-                                                            const dropValue = {
-                                                                capacity: "Performer",
-                                                                divisionId: sd.id
-                                                            }
-                                                            return <DropContainer key={k} caption={sd.name}  value={sd} onDrop={handleDrop} hoverStyle={hoverStyle} />
+                                                        div.childDivisions.map((sd, c) => {
+                                                            return <DropContainer key={c} caption={sd.name}  value={sd} onDrop={handleDrop} hoverStyle={hoverStyle} />
                                                         })
                                                     }
                                                 </DropContainer>
                                             )
                                         })
                                     }
+                                    {memberRosterBox}
                                 </Tab>
                                 <Tab id="Crew">
-                                    <DropContainer acceptTypes={["CARD-IN", "CARD-OUT"]}>
-                                        <fieldset className="grid">
-                                            <legend>Personnel</legend>
-                                            {
-                                                membership.map((mem, i) => {
-                                                    if (mem.capacity != "Crew") return null;
-                                                    return (
-                                                        <MemberCard
-                                                            key={i}
-                                                            member={{ ...mem.member, membershipId: mem.id, capacity: "Crew" }}
-                                                            subtitle={mem.title}
-                                                            presentation="grid"
-                                                            cardType="CARD-IN"
-                                                            format="drag"
-                                                        />
-                                                    )
-                                                })
-                                            }
-                                        </fieldset>
-                                        <DropContainer caption="Crew" value={{capacity: "Crew"}} onDrop={handleDrop} hoverStyle={hoverStyle}/>
-                                    </DropContainer>
+                                    {
+                                        divisions.map((div, d) => {
+                                            if (div.capacity != "Crew") return null;
+                                            return (
+                                                <DropContainer key={d} acceptTypes={["CARD-IN", "CARD-OUT"]}>
+                                                    <fieldset className="card-set">
+                                                        <legend>Personnel</legend>
+                                                        {
+                                                            rosterGenerator("assignments", (ass) => ass.capacity != "Crew")
+                                                        }
+                                                    </fieldset>
+                                                    {
+                                                        div.childDivisions.map((sd, c) => {
+                                                            return <DropContainer key={c} caption={sd.name} value={sd} onDrop={handleDrop} hoverStyle={hoverStyle}/>
+                                                        })
+                                                    }
+                                                </DropContainer>
+                                            )
+                                        })
+                                    }
+                                    {memberRosterBox}
                                 </Tab>
                                 <Tab id="Staff">
-                                    <DropContainer acceptTypes={["CARD-IN", "CARD-OUT"]}>
-                                        <fieldset className="grid">
-                                            <legend>Personnel</legend>
-                                            {
-                                                membership.map((mem, i) => {
-                                                    if (mem.capacity != "Staff") return null;
-                                                    return (
-                                                        <MemberCard
-                                                            key={i}
-                                                            member={{ ...mem.member, membershipId: mem.id, capacity: "Staff" }}
-                                                            subtitle={mem.title}
-                                                            presentation="grid"
-                                                            cardType="CARD-IN"
-                                                            format="drag"
-                                                        />
-                                                    )
-                                                })
-                                            }
-                                        </fieldset>
-                                        <DropContainer caption="Staff" value={{capacity: "Staff"}} onDrop={handleDrop} hoverStyle={hoverStyle}/>
-                                    </DropContainer>
+                                    {
+                                        divisions.map((div, d) => {
+                                            if (div.capacity != "Staff") return null;
+                                            return (
+                                                <DropContainer key={d} acceptTypes={["CARD-IN", "CARD-OUT"]}>
+                                                    <fieldset className="card-set">
+                                                        <legend>Personnel</legend>
+                                                        {
+                                                            rosterGenerator("assignments", (ass) => ass.capacity != "Staff")
+                                                        }
+                                                    </fieldset>
+                                                    {
+                                                        div.childDivisions.length ? 
+                                                        div.childDivisions.map((sd, c) => {
+                                                            return <DropContainer key={c} caption={sd.name} value={sd} onDrop={handleDrop} hoverStyle={hoverStyle}/>
+                                                        }) :
+                                                        <DropContainer key="x" caption="Staff" value={div} onDrop={handleDrop} hoverStyle={hoverStyle}/>
+                                                    }
+                                                </DropContainer>
+                                            )
+                                        })
+                                    }
+                                    {memberRosterBox}
                                 </Tab>
                             </TabControl>
-                            <div id="full-roster" className="collapsible" style={{ ...rosterStyles, width: showRoster ? "250px" : "0px" }}>
-                                <fieldset>
-                                <legend>Members</legend>
-                                    <TabControl type="filters">
-                                        <Tab id="Unassigned">
-                                            <DropContainer acceptTypes={["CARD-IN"]}>
-                                                <article>
-                                                    {
-                                                        rosterGenerator("membership", (mem) => viewSchema?.assignments.find(assignment => assignment.memberId === mem.memberId))
-                                                    }
-                                                </article>
-                                                <DropContainer caption="Remove Assignment" onDrop={removeAssignment} hoverStyle={{border: '2px solid red', backgroundColor: 'hsla(0, 0%, 100%, 50%)', color: 'red'}}/>
-                                            </DropContainer>
-                                        </Tab>
-                                        <Tab id="All">
-                                            <DropContainer acceptTypes={["CARD-IN"]}>
-                                                <article>
-                                                    {
-                                                        rosterGenerator("membership")
-                                                    }
-                                                </article>
-                                                <DropContainer caption="Remove Assignment" onDrop={removeAssignment} hoverStyle={{border: '2px solid red', backgroundColor: 'hsla(0, 0%, 100%, 50%)', color: 'red'}}/>
-                                            </DropContainer>
-                                        </Tab>
-                                    </TabControl>
-                                </fieldset>
-                            </div >
+                                
                         </Tab>
                     </TabControl>
                 </div>
             </div>
             <div className={basePageStyles.actionSection}>
                 <Link href="/ensembles"><button className="icon-and-label"><i>arrow_back</i>Back to Ensembles</button></Link>
-                <button className="icon-and-label" onClick={() => setShowRoster(!showRoster)}><i>reduce_capacity</i>Manage Members</button>
+                <button className="icon-and-label" onClick={uploadMembersModal}><i>upload</i>Upload Members</button>
+                {tabRoute === "Schemas" && 
+                    <fieldset className="buttons">
+                        <legend>Schema</legend>
+                        <button className="icon-and-label" onClick={() => setShowRoster(!showRoster)}><i>reduce_capacity</i>Manage Members</button>
+                        <button className="icon-and-label" onClick={newSchemaModal}><i>add_box</i>New Schema</button>
+                        <button className="icon-and-label" onClick={copySchemaModal}><i>library_add</i>Copy Schema</button>
+                    </fieldset>
+                }
             </div>
         </div>
 

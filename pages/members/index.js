@@ -78,11 +78,10 @@ export default function membersPage(initialProps) {
                     title: "Upload Members from Excel File",
                     body: modalBody,
                     URL: "/members/uploadMembers",
-                    file: true,
-                    context: "1234"
+                    file: true
                 },
                 buttons: [
-                    { name: "submit", caption: "Create Member", class: "hero" },
+                    { name: "submit", caption: "Upload Members", class: "hero" },
                     { name: "dismiss", caption: "Cancel" }
                 ],
                 followUp: submitModal
@@ -101,7 +100,7 @@ export default function membersPage(initialProps) {
             return (
                 <MemberCard
                     key={i}
-                    member={member}
+                    membership={{member}}
                     presentation={"grid"}
                     format={"detail"}
                 />

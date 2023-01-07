@@ -1,7 +1,7 @@
 import React, { Children, useContext, useState, useEffect } from 'react';
 import { getErrorMessage } from '../utils/';
 
-import { GlobalContext } from "../pages/_app";
+import { GlobalContext } from '../pages/_app';
 
 import VForm from '../components/VForm';
 
@@ -11,7 +11,7 @@ const Modal = () => {
     const { dispatch, parameters } = useContext(GlobalContext);
     const { modal } = parameters;
     const [modalIsFullscreen, setModalIsFullscreen] = useState(true)
-    console.log("rendering modal with:", modal);
+    // console.log("rendering modal with:", modal);
 
     const hideModal = () => {
         if (modal.type === "load") {

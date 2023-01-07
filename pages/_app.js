@@ -1,15 +1,21 @@
 import Frame from '../components/Frame';
-import { createContext, useReducer } from 'react';
+import { useState, createContext, useReducer } from 'react';
 //
 import '../styles/globals.css';
 
 export const GlobalContext = createContext();
 
 const contextReducer = (parameters, action) => {
-  // console.log({parameters}, {action});
+  console.log({parameters}, {action});
   switch (action.type) {
     case "modal":
       parameters.modal = action.payload;
+      return { ...parameters };
+    case "dropdown":
+      parameters.dropdown = action.payload;
+      return { ...parameters };
+    case "auth":
+      parameters.user = action.payload;
       return { ...parameters };
     default:
       return null;
@@ -19,6 +25,8 @@ const contextReducer = (parameters, action) => {
 const ContextProvider = ({ children }) => {
   const initialState = {
     modal: { type: "hide", content: {} },
+    dropdown: null,
+    user: {name: "debug"},
     config: {}
   };
 
@@ -32,6 +40,7 @@ const ContextProvider = ({ children }) => {
 }
 
 function MyApp({ Component, pageProps }) {
+  
   return (
     <ContextProvider>
       <Frame>

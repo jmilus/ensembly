@@ -26,7 +26,7 @@ const VForm = ({ id, APIURL, recordId, additionalIds, context, timeout = 1000, m
             console.log("before we append:", vFormData.current);
             const formData = new FormData()
             formData.append('file', vFormData.current);
-            formData.append('context', context);
+            if(context) Object.keys(context).forEach(key => formData.append(key, context[key]));
             return await fetch(`/api${APIURL}`, {
                 method: 'POST',
                 body: formData

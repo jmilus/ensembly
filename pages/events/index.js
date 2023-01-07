@@ -132,7 +132,7 @@ export default function eventsPage(initialProps) {
         setFocusDay(new Date(newFocusDay))
     }
 
-    const monthName = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 6).getMonth();
+    const monthName = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 13).getMonth();
 
     return (
         <>

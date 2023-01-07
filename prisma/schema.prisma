@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
-  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model EnsembleType {
@@ -39,7 +39,6 @@ model Member {
   memberBio    MemberBio?
   photos       PhotoSet?
   memberships  EnsembleMembership[]
-  schemas      SchemaAssignment[]
   phoneNumbers PhoneNumber[]
   addresses    Address[]
   emails       Email[]
@@ -71,6 +70,7 @@ model EnsembleMembership {
   status        MembershipStatus?
   statusDate    DateTime?
   statusNote    String?      @db.VarChar(128)
+  assignments   SchemaAssignment[]
 
   @@unique([memberId, ensembleId])
 }
@@ -129,15 +129,15 @@ model EventSchemas {
 }
 
 model SchemaAssignment {
-  id            Int           @id @default(autoincrement())
-  member        Member        @relation(fields: [memberId], references: [id])
-  memberId      String
-  schema        Schema        @relation(fields: [schemaId], references: [id])
+  id            Int                   @id @default(autoincrement())
+  membership    EnsembleMembership    @relation(fields: [membershipId], references: [id])
+  membershipId  String
+  schema        Schema                @relation(fields: [schemaId], references: [id])
   schemaId      String
   capacity      Capacity
-  division      Division      @relation(fields: [divisionId], references: [id])
+  division      Division              @relation(fields: [divisionId], references: [id])
   divisionId    Int
-  title         String?       @db.VarChar(64)
+  title         String?               @db.VarChar(64)
 }
 
 model Division {

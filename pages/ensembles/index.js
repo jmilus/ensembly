@@ -53,7 +53,7 @@ export default function ensemblesPage(initialProps) {
                 content: {
                     title: "Create New Ensemble",
                     body: modalBody,
-                    URL: "/ensembles/createNewEnsemble"
+                    URL: "/ensembles/createEnsemble"
                 },
                 buttons: [
                     { name: "submit", caption: "Create Ensemble", class: "hero" },

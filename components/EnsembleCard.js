@@ -149,7 +149,7 @@ const EnsembleCard = ({ membership, ensemble, presentation, format }) => {
                     <VForm id={`membership-${membershipName}`} APIURL="/members/updateMembership" recordId={membership.id} >
                         <section>
                             {statusIcon}
-                            <V.Date id="" field="statusDate" label="Status" value={membership.statusDate} />
+                            <V.Date id="" field="statusDate" label={membership.status} value={membership.statusDate} />
                             <SubMenu options={ensembleOptions} style={{ margin: "auto 0 10px 0" }} />
                         </section>
                     </VForm>
