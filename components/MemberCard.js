@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
-const MemberCard = ({ membership, subtitle = "", presentation, cardType, format }) => {
+const MemberCard = ({ membership, subtitle = "", presentation, cardType="no-drag", format }) => {
     const { member } = membership;
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: cardType,
@@ -11,7 +11,7 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType, format 
             isDragging: !!monitor.isDragging(),
         })
     }))
-    
+
     const router = useRouter();
     const { aka } = member;
 

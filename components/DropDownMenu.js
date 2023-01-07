@@ -10,7 +10,7 @@ const DropDownMenu = () => {
 
 
     useEffect(() => {
-        console.log("rendering drop-down with:", { dropdown })
+        // console.log("rendering drop-down with:", { dropdown })
         if (dropdown) {
             updateDdoptions(dropdown.options)
         }
