@@ -5,6 +5,9 @@ export const fetchManyDivisions = async (typeId) => {
         where: {
             ensembleTypeId: typeId ? parseInt(typeId) : undefined
         },
+        orderBy: {
+            id: "asc"
+        },
         include: {
             childDivisions: true
         }

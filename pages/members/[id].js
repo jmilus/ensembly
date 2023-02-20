@@ -8,10 +8,9 @@ import ProfilePhoto from '../../components/ProfilePhoto';
 import EnsembleCard from '../../components/EnsembleCard';
 import Meta from '../../components/Meta';
 
-import VForm from '../../components/VForm';
-import V from '../../components/ControlMaster';
+import V from '../../components/Vcontrols/VerdantControl';
 
-import { GlobalContext } from "../_app";
+import { GlobalContext } from '../_app';
 
 import {fetchOneMember} from '../api/members/getOneMember';
 import { Race, Sex, HairColor, EyeColor, EmailRank, AddressRank, PhoneRank, Capacity } from '@prisma/client';
@@ -43,6 +42,12 @@ const MemberProfile = (initialProps) => {
         const ensembleList = await response.json()
 
         const updateMembershipPanel = (data) => {
+            dispatch({
+                type: "modal",
+                payload: {
+                    type: "hide"
+                }
+            })
             console.log({ data });
             const newMembership = data[0];
             const newCapacity = {
@@ -66,21 +71,23 @@ const MemberProfile = (initialProps) => {
             updateMember({...member, ensembles: updatedEnsembles})
         }
 
+        const modalBody = 
+            <V.Form id="add-membership-form" APIURL="/members/updateMembership" additionalIds={{ memberId: member.id }} followUp={updateMembershipPanel}>
+                <V.Select id="ensembleName" name="ensembleId" label="Ensemble" options={ensembleList} />
+                <section className="modal-buttons">
+                    <button name="submmit">Submit</button>
+                    <button name="cancel">Cancel</button>
+                </section>
+            </V.Form>
+
         dispatch({
-            type: "modal",
+            route: "modal",
             payload: {
                 type: "form",
                 content: {
                     title: "Add Member To...",
-                    body: <V.Select id="ensembleName" field="ensembleId" label="Ensemble" options={ensembleList} />,
-                    URL: "/members/updateMembership",
-                    additionalIds: { memberId: member.id }
-                },
-                buttons: [
-                    { name: "submit", caption: "Add", class: "hero" },
-                    { name: "dismiss", caption: "Cancel" }
-                ],
-                followUp: updateMembershipPanel
+                    body: modalBody
+                }
             }
         })
     }
@@ -96,9 +103,10 @@ const MemberProfile = (initialProps) => {
         })
     }
     const localUpdateAddress = (address) => {
-        updateMember(draft => {
-            draft.addresses[0] = address;
-        })
+        console.log({address})
+        // updateMember(draft => {
+        //     draft.addresses[0] = address;
+        // })
     }
 
     let emailAddress = member.emails?.length > 0 ? member.emails[0] : "";
@@ -123,44 +131,44 @@ const MemberProfile = (initialProps) => {
         <div className={basePageStyles.pageBase}>
             <div className={basePageStyles.formSection}>
                 <div className={basePageStyles.pageHeader}>
-                    <VForm id="memberName" APIURL="/members/updateMember" recordId={member.id}>
-                        <V.Text id="aka" field="aka" value={member.aka} hero isRequired />
-                    </VForm>
+                    <V.Form id="memberName" APIURL="/members/updateMember" recordId={member.id}>
+                        <V.Text id="aka" name="aka" value={member.aka} hero isRequired />
+                    </V.Form>
                 </div>
                 <div className={basePageStyles.pageDetails}>
                     <article className="padded">
                         <div id="member-photo" className={basePageStyles.profileSegment}>
                             <ProfilePhoto
-                                field={member.lastName}
+                                name={member.lastName}
                                 profilePic=""
                                 // profilePic="http://localhost:3100/images/HAPPYJOSH.jpg"
                             />
                         </div>
                         <div id="member-bio" className={basePageStyles.profileSegment}>
-                            <VForm id="member-profile" APIURL="/members/updateMember" recordId={member.id} >
+                            <V.Form id="member-profile" APIURL="/members/updateMember" recordId={member.id} auto debug >
                                 <fieldset>
                                     <legend>Bio</legend>
                                     <section>
-                                        <V.Text id="firstName" field="firstName" label="First Name" value={member.firstName} isRequired />
-                                        <V.Text id="middleName" field="middleName" label="Middle Name" value={member.middleName} />
-                                        <V.Text id="lastName" field="lastName" label="Last Name" value={member.lastName} isRequired />
+                                        <V.Text id="firstName" name="firstName" label="First Name" value={member.firstName} isRequired />
+                                        <V.Text id="middleName" name="middleName" label="Middle Name" value={member.middleName} />
+                                        <V.Text id="lastName" name="lastName" label="Last Name" value={member.lastName} isRequired />
                                     </section>
                                     <section>
-                                        <V.Select id="sex" field="sex" label="Sex" value={member.memberBio?.sex} options={Sex} />
-                                        <V.Date id="birthday" field="birthday" label="Birthday" value={member.memberBio?.birthday} />
+                                        <V.Select id="sex" name="sex" label="Sex" value={member.memberBio?.sex} options={Sex} />
+                                        <V.Select id="hair" name="hair" label="Hair Color" value={member.memberBio?.hair} options={HairColor} />
+                                        <V.Select id="eyes" name="eyes" label="Eye Color" value={member.memberBio?.eyes} options={EyeColor} />
                                     </section>
                                     <section>
-                                        <V.Select id="hair" field="hair" label="Hair Color" value={member.memberBio?.hair} options={HairColor} />
-                                        <V.Select id="eyes" field="eyes" label="Eye Color" value={member.memberBio?.eyes} options={EyeColor} />
-                                        <V.Number id="height" field="height" label="Height" format="height" value={member.memberBio?.height} />
-                                        <V.Number id="weight" field="weight" label="Weight" format="weight" value={member.memberBio?.weight} />
+                                        <V.Date id="birthday" name="birthday" label="Birthday" value={member.memberBio?.birthday} />
+                                        <V.Number id="height" name="height" label="Height" format="height" value={member.memberBio?.height} />
+                                        <V.Number id="weight" name="weight" label="Weight" format="weight" value={member.memberBio?.weight} />
                                     </section>
                                     <section>
-                                        <V.Select id="race" field="race" label="Race" value={member.memberBio?.race} options={Race} />
-                                        <V.Text id="ethnicity" field="ethnicity" label="Ethnicity" value={member.memberBio?.ethnicity} />
+                                        <V.Select id="race" name="race" label="Race" value={member.memberBio?.race} options={Race} />
+                                        <V.Text id="ethnicity" name="ethnicity" label="Ethnicity" value={member.memberBio?.ethnicity} />
                                     </section>
                                 </fieldset>
-                            </VForm>
+                            </V.Form>
                         </div>
                     </article>
                         
@@ -169,22 +177,22 @@ const MemberProfile = (initialProps) => {
                             <fieldset>
                                 <legend>Contact Info</legend>
                                 <section>
-                                    <VForm id="member_email" APIURL="/members/updateEmail" additionalIds={{memberId: member.id}} followUp={localUpdateEmail} >
-                                        <V.Text id="email" field="email" label="Email" value={emailAddress?.email} recordId={emailAddress?.id} />
-                                    </VForm>
-                                    <VForm id="member_phone" APIURL="/members/updatePhoneNumber" additionalIds={{memberId: member.id}} followUp={localUpdatePhone} >
-                                        <V.Text id="phone" field="phonenumber" label="Phone Number" format="phone" value={phoneNumber?.phonenumber} recordId={phoneNumber?.id} />
-                                    </VForm>
+                                    <V.Form id="member_email" APIURL="/members/updateEmail" additionalIds={{memberId: member.id}} followUp={localUpdateEmail} auto >
+                                        <V.Text id="email" name="email" label="Email" value={emailAddress?.email} recordId={emailAddress?.id} />
+                                    </V.Form>
+                                    <V.Form id="member_phone" APIURL="/members/updatePhoneNumber" additionalIds={{memberId: member.id}} followUp={localUpdatePhone} auto >
+                                        <V.Text id="phone" name="phonenumber" label="Phone Number" format="phone" value={phoneNumber?.phonenumber} recordId={phoneNumber?.id} />
+                                    </V.Form>
                                 </section>
-                                <VForm id="address" APIURL="/general/updateAddress" additionalIds={{memberId: member.id}}  recordId={mailingAddress?.id} followUp={localUpdateAddress} >
-                                    <V.Text id="street1" field="street" label="Street" value={mailingAddress?.street} />
-                                    <V.Text id="street2" field="street2" label="Street 2" value={mailingAddress?.street2} />
+                                <V.Form id="address" APIURL="/general/updateAddress" additionalIds={{ memberId: member.id }} recordId={mailingAddress?.id} followUp={localUpdateAddress} auto >
+                                    <V.Text id="street1" name="street" label="Street" value={mailingAddress?.street} />
+                                    <V.Text id="street2" name="street2" label="Street 2" value={mailingAddress?.street2} />
                                     <section>
-                                        <V.Text id="city" field="city" label="City" value={mailingAddress?.city} Vstyle={{ flex: 4 }} />
-                                        <V.Text id="state" field="state" label="State" value={mailingAddress?.state} />
-                                        <V.Text id="postalCode" field="postalCode" label="Zip Code" value={mailingAddress?.postalCode} Vstyle={{ flex: 2 }}/>
+                                        <V.Text id="city" name="city" label="City" value={mailingAddress?.city} Vstyle={{ flex: 4 }} />
+                                        <V.Text id="state" name="state" label="State" value={mailingAddress?.state} />
+                                        <V.Text id="postalCode" name="postalCode" label="Zip Code" value={mailingAddress?.postalCode} Vstyle={{ flex: 2 }}/>
                                     </section>
-                                </VForm>
+                                </V.Form>
                             </fieldset>
                             
                         </div>
@@ -205,7 +213,7 @@ const MemberProfile = (initialProps) => {
                 </div>
             </div>
             <div className={basePageStyles.actionSection}>
-                <Link href="/members"><button className="icon-and-label"><i>arrow_back</i>Back to Members</button></Link>
+                <button className="icon-and-label" onClick={() => router.push("/members")}><i>arrow_back</i>Back to Members</button>
             </div>
         </div>
     )

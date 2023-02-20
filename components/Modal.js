@@ -1,9 +1,9 @@
 import React, { Children, useContext, useState, useEffect } from 'react';
 import { getErrorMessage } from '../utils/';
 
-import { GlobalContext } from '../pages/_app';
+import V from '../components/Vcontrols/VerdantControl';
 
-import VForm from '../components/VForm';
+import { GlobalContext } from '../pages/_app';
 
 import styles from '../styles/Modal.module.css'
 
@@ -11,22 +11,27 @@ const Modal = () => {
     const { dispatch, parameters } = useContext(GlobalContext);
     const { modal } = parameters;
     const [modalIsFullscreen, setModalIsFullscreen] = useState(true)
-    // console.log("rendering modal with:", modal);
+    console.log("rendering modal with:", modal, modalIsFullscreen);
+
+    useEffect(() => {
+        setModalIsFullscreen(true)
+    }, [modal])
 
     const hideModal = () => {
-        if (modal.type === "load") {
+        if (modal.mode === "load") {
+            console.log("setting fullscreen to false")
             setModalIsFullscreen(false)
         } else {
-            dispatch({ type: "modal", payload: null })
+            dispatch({ route: "modal", payload: null })
         }
     }
     
-    let modalBody, modalActions = null;
+    let modalBody = null;
 
     if (modal) {
-        if (modal.type != "hide") {
+        if (modal.mode != "hide") {
             const { content } = modal;
-            switch (modal.type) {
+            switch (modal.mode) {
                 case "load":
                     modalBody =
                         <div className="loading">
@@ -46,33 +51,13 @@ const Modal = () => {
                         </>
                     break;
                 case "form":
-                    modalActions =
-                        <section id="modal-actions" className="panel-buttons">
-                            {
-                                modal.buttons.map((button, i) => {
-                                    let action = button.name === "dismiss" ? hideModal : button.action;
-                                    return <button key={i} name={button.name} className={button.class} onClick={action}>{button.caption}</button>
-                                })
-                            }
-                        </section>
                     modalBody =
-                        <VForm id="modal-form" APIURL={content.URL} manual="true" followUp={modal.followUp} recordId={content.recordId} additionalIds={content.additionalIds} fileUpload={content.file} context={content.context} >
+                        < >
                             <div className={styles.modalHeader}>{content.title}</div>
                             {content.body}
-                            {modalActions}
-                        </VForm>
+                        </>
                     break;
                 case "message":
-                    modalActions =
-                        <section id="modal-actions" className="panel-buttons" onClick={hideModal}>
-                            {
-                                modal.buttons.map((button, i) => {
-                                    let action = button.name === "dismiss" ? hideModal : button.action;
-                                    return <button key={i} name={button.name} className={button.class} onClick={action}>{button.caption}</button>
-                                })
-                            }
-                            
-                        </section>
                     modalBody = 
                         <>
                             <div className={styles.modalHeader}>{content.title}</div>
@@ -80,7 +65,6 @@ const Modal = () => {
                                 <i>help</i>
                                 <div className="modal-message">{content.body}</div>
                             </div>
-                            {modalActions}
                         </>
                 default:
                     console.log("no modal type specified");
@@ -88,7 +72,7 @@ const Modal = () => {
             }
             return (
                 <div className="modal-base">
-                    <div className={`modal-body ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : setModalIsFullscreen(true)}>
+                    <div className={`modal-body ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : () => setModalIsFullscreen(true)}>
                         {modalBody}
                     </div>
                     {modalIsFullscreen ? <div className={styles.modalBackdrop} onClick={hideModal}></div> : null}

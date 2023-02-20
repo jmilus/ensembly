@@ -1,37 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export const Tab = (props) => {
-    const { children } = props;
+export const Tab = ({ id, direction, hidePage, tabStyle, onLoad, children }) => {
+    useEffect(() => {
+        if(onLoad && !hidePage) onLoad(id)
+    }, [hidePage])
+
     return (
-        <div className={`tab-page ${props.direction}`}>{children}</div>
+        <div key={`page-${id}`} id={`page-${id}`} className={`tab-page ${direction ? direction : ""}`} style={{...tabStyle, display: hidePage && "none"}}>{children}</div>
     )
 }
 
-const TabControl = (props) => {
-    const { type, children } = props;
-    const [activeTabPage, setActiveTabPage] = useState();
-    
-    let activePage;
-    const tabs = React.Children.map(children, child => {
-        if (child.props.id === activeTabPage) {
-            activePage = React.cloneElement(child, children)
-            if (child.props.onTabLoad) child.props.onTabLoad()
-            if (props.onAnyTabLoad) props.onAnyTabLoad();
-        }
-        return child.props.id;
+const TabControl = ({ type, onChange, children }) => {
+    const [activeTab, setActiveTab] = useState(0);
+
+    useEffect(() => {
+        if (onChange) onChange(activeTab);
+    }, [activeTab])
+
+    let tabs = [];
+    let pages = [];
+    React.Children.forEach(children, (child, c) => {
+        const newTab = <li key={`tab-${child.props.id}`} id={`tab-${child.props.id}`}className={`tab-button ${c === activeTab && "active"}`} onClick={() => setActiveTab(c)}>{child.props.id}</li>
+        tabs.push(newTab)
+        const newPage = React.cloneElement(child, { key: c, hidePage: c != activeTab }, child.props.children)
+        pages.push(newPage)
     })
-    if (!activeTabPage) setActiveTabPage(tabs[0]);
 
     return (
         <div className={`tab-wrapper ${type}`}>
             <ul className="tab-row">
-                {
-                    tabs.map((tab, t) => {
-                        return <li key={t} className={`tab-button ${activeTabPage === tab ? "active" : ""}`} onClick={() => setActiveTabPage(tab)}>{tab}</li>
-                    })
-                }
+                { tabs }
             </ul>
-            {activePage}
+            { pages }
         </div>
     )
 }

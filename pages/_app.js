@@ -1,21 +1,21 @@
 import Frame from '../components/Frame';
 import { useState, createContext, useReducer } from 'react';
 //
+import { supabase } from '../lib/supabase-client';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
+//
 import '../styles/globals.css';
 
 export const GlobalContext = createContext();
 
 const contextReducer = (parameters, action) => {
-  console.log({parameters}, {action});
-  switch (action.type) {
+  // console.log({parameters}, {action});
+  switch (action.route) {
     case "modal":
       parameters.modal = action.payload;
       return { ...parameters };
     case "dropdown":
       parameters.dropdown = action.payload;
-      return { ...parameters };
-    case "auth":
-      parameters.user = action.payload;
       return { ...parameters };
     default:
       return null;
@@ -24,13 +24,13 @@ const contextReducer = (parameters, action) => {
 
 const ContextProvider = ({ children }) => {
   const initialState = {
-    modal: { type: "hide", content: {} },
+    modal: { mode: "hide", content: {} },
     dropdown: null,
     user: {name: "debug"},
     config: {}
   };
 
-  const [parameters, dispatch] = useReducer(contextReducer, initialState);
+  const [ parameters, dispatch ] = useReducer(contextReducer, initialState);
 
   return (
     <GlobalContext.Provider value={{ parameters, dispatch }}>
@@ -42,11 +42,16 @@ const ContextProvider = ({ children }) => {
 function MyApp({ Component, pageProps }) {
   
   return (
-    <ContextProvider>
-      <Frame>
-        <Component {...pageProps} />
-      </Frame>
-    </ContextProvider>
+    <SessionContextProvider
+      supabaseClient={supabase}
+      initialSession={pageProps.initialSession}
+    >
+      <ContextProvider>
+        <Frame>
+          <Component {...pageProps} />
+        </Frame>
+      </ContextProvider>
+    </SessionContextProvider>
   );
 }
 

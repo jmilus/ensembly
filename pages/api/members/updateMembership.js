@@ -12,10 +12,10 @@ export const updateOneMembership = async (data) => {
         },
         create: {
             member: {
-                connect: { id: memberId }
+                connect: { id: memberId || "" }
             },
             ensemble: {
-                connect: { id: ensembleId }
+                connect: { id: ensembleId || "" }
             },
             startDate: startDate ? new Date(startDate) : new Date(),
             statusDate: startDate ? new Date(startDate) : new Date(),

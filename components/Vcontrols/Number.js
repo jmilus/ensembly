@@ -1,25 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { floor } from 'lodash';
 
 const Number = (props) => {
-    const { id, field, label, value, initialValue, format, Vstyle, hero, isRequired, recordId, updateForm, readonly, debug } = props;
+    const { id, name, label, value, extraAction, initialValue, format, Vstyle, hero, isRequired, recordId, updateForm, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || initialValue || 0);
+    const [touched, setTouched] = useState(false);
 
-    if (debug) console.log(field, { props }, { controlValue });
+    if (debug) console.log(name, { props }, { controlValue });
+
+    useEffect(() => {
+        if (extraAction) extraAction(controlValue);
+    }, [controlValue])
 
     const handleControlValueChange = (input) => {
-        console.log("sending this to VForm:", input)
-        if (updateForm) updateForm({ [field]: input }, recordId);
-        setControlValue(parseInt(input));
-    }
-
-    const handleNumberChange = (input) => {
         const rawNumber = input.replace(/[^0-9]*/gm, '');
+        let finalValue;
 
         switch (format) {
             case "weight":
-                handleControlValueChange(parseInt(rawNumber));
+                finalValue = parseInt(rawNumber);
                 break;
             case "height":
                 let inches = parseInt(rawNumber.slice(-2));
@@ -28,14 +28,18 @@ const Number = (props) => {
                     feet = feet + rawNumber.slice(-2, -1);
                     inches = parseInt(rawNumber.slice(-1));
                 }
-                const heightInInches = (feet * 12) + inches;
-                handleControlValueChange(heightInInches);
+                finalValue = (feet * 12) + inches;
                 break;
-            case "phone":
             default:
-                handleControlValueChange(rawNumber);
+                finalValue = rawNumber;
                 break;
         }
+
+        setControlValue(finalValue);
+    }
+
+    const handleBlur = () => {
+        if(!touched) setTouched(true);
     }
 
     let displayNumberValue = 0;
@@ -69,17 +73,23 @@ const Number = (props) => {
     }
     
     return (
-        <div className={`input-control-base text-box${label ? "" : " unlabeled"} ${isRequired ? "flag" : ""}`} style={Vstyle}>
+        <div className={`input-control-base number-box${label ? "" : " unlabeled"}${touched ? " touched" : ""}`} style={Vstyle}>
             <label htmlFor={id} className="label">{label}</label>
             <input
                 id={id}
-                field={field}
                 value={displayNumberValue}
                 type="text"
-                className="text-input"
-                onChange={(e) => handleNumberChange(e.target.value)}
+                className="number-input"
+                onChange={(e) => handleControlValueChange(e.target.value)}
+                onBlur={handleBlur}
                 required={isRequired}
                 autoComplete="do-not-autofill"
+            />
+            <input
+                name={name}
+                value={controlValue}
+                style={{ display: "none" }}
+                readOnly
             />
         </div>
     );

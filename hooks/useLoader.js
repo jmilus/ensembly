@@ -18,14 +18,14 @@ function useLoader(swrKey, setter, fetchAPI, params) {
     //
     useEffect(() => {
         const swrReturn = () => {
-            if (!data && !error) return { type: "load" }
-            if (error) return { type: "error", message: error }
+            if (!data && !error) return { mode: "load" }
+            if (error) return { mode: "error", message: error }
             setter(data);
-            return {type: "hide"}
+            return {mode: "hide"}
         }
         const payload = swrReturn();
 
-        dispatch({type:"modal", payload: payload})
+        dispatch({route:"modal", payload: payload})
     }, [data])
 
     return null;

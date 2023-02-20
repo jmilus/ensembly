@@ -3,8 +3,14 @@ import prisma from '../../../lib/prisma';
 const updateOneSchemaAssignment = async (data) => {
     const { id, schemaId, membershipId, capacity, divisionId, title } = data;
 
-    const updatedEnsemble = await prisma.schemaAssignment.upsert({
-        where: { id: id ? parseInt(id) : 0 },
+    const updatedAssignment = await prisma.schemaAssignment.upsert({
+        where: { 
+            membershipId_schemaId_divisionId: {
+                membershipId: membershipId,
+                schemaId: schemaId,
+                divisionId: divisionId
+            }
+         },
         create: {
             membership: { connect: { id: membershipId } },
             schema: { connect: { id: schemaId } },
@@ -18,7 +24,7 @@ const updateOneSchemaAssignment = async (data) => {
             title: title
         }
     })
-    return updatedEnsemble;
+    return updatedAssignment;
 }
 
 const updateSchemaAssignment = async (req, res) => {

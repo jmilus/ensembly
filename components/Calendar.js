@@ -50,7 +50,6 @@ const Calendar = ({ firstDay, events, viewDays = 34 }) => {
 
     const displayDays = {};
     
-
     for (var x = 0; x <= viewDays; x++) {
         const day = new Date(d);
         displayDays[day.toLocaleDateString()] = {value: day, events: []}

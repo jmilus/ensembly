@@ -8,7 +8,7 @@ import {fetchManyEnsembleTypes} from '../api/ensembles/getManyEnsembleTypes';
 import Meta from '../../components/Meta';
 import EnsembleCard from '../../components/EnsembleCard';
 
-import V from '../../components/ControlMaster';
+import V from '../../components/Vcontrols/VerdantControl';
 
 import { GlobalContext } from "../_app";
 
@@ -37,6 +37,12 @@ export default function EnsemblesPage(initialProps) {
 
     const newEnsembleModal = () => {
         const submitModal = (newRecord) => {
+            dispatch({
+                type: "modal",
+                payload: {
+                    type: "hide"
+                }
+            })
             router.push(`/ensembles/${newRecord[0].id}`)
         }
 

@@ -2,15 +2,26 @@ import { useRouter } from 'next/router';
 import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
-const MemberCard = ({ membership, subtitle = "", presentation, cardType="no-drag", format }) => {
+const MemberCard = ({ membership, subtitle = "", presentation, cardType="no-drag", format, dropAction }) => {
     const { member } = membership;
+    const doSomething = (junk) => {
+        dropAction(junk)
+    }
     const [{ isDragging }, drag, preview] = useDrag(() => ({
         type: cardType,
         item: membership,
+        end(item, monitor) {
+            const dropResult = monitor.getDropResult()
+            console.log(dropResult);
+            if (item && dropResult) {
+                const { value } = dropResult;
+                doSomething({ membership: item, division: value });
+            }
+        },
         collect: monitor => ({
             isDragging: !!monitor.isDragging(),
         })
-    }))
+    }), [dropAction])
 
     const router = useRouter();
     const { aka } = member;

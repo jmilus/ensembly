@@ -1,44 +1,43 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
-import Link from 'next/link';
-import _ from 'lodash';
-import cx from 'classnames';
-import x from '../styles/Nav.module.css';
+import { supabase } from '../lib/supabase-client';
 
-// import '../styles/Nav.css';
+import { MENUOPTIONS } from '../config';
 
 
+const Nav = () => {
+    const [expandMenu, setExpandMenu] = useState(false)
 
+    const router = useRouter();
 
+    const signOut = async () => {
+        const { error } = await supabase.auth.signOut()
+    }
 
-const Nav = ({ menuOptions }) => {
-    const [expanded, setExpanded] = useState(false)
-    const [expandNow, setExpandNow] = useState(false)
-
-    const collapseNav = () => {
-        setExpanded(false);
-        setExpandNow(false);
+    const goToModule = (module) => {
+        router.push(module)
     }
 
     return (
         <div id="nav-base">
-            <div className={`main-menu-panel slide-out ${expandNow ? "now" : ""}`} onMouseLeave={() => collapseNav()} onClick={() => setExpandNow(true)}>
-                <div className={x.menuHeader}>
-                    <div className={ cx( x.appLogo, "fancy") }>E<span className="app-full-title slide-out">nsembly</span></div>
-                    <div className={x.profileBtn} onClick={() => setExpanded(!expanded)}>
-                        <div className={x.profileIcon}>JM</div>
+            <div className={`main-menu-panel ${expandMenu ? "expanded" : ""}`} onMouseLeave={() => setExpandMenu(false)}>
+                <div className="menu-header" onClick={() => setExpandMenu(!expandMenu)}>
+                    <div className="app-logo fancy">E<span className="app-full-title">nsembly</span></div>
+                    <div className="profile-button">
+                        <div className="profile-icon">JM</div>
                     </div>
                 </div>
-                <ul className={`user-menu${expanded ? " show" : ""}`}>
-                    <li className={x.menuItem}>Personal Settings</li>
-                    <li className={x.menuItem} onClick={() => console.log("signing out!")}>Sign Out</li>
+                <ul className={`user-menu`}>
+                    <li className="menu-item" onClick={() => router.push("/account")}>Personal Settings<i>manage_accounts</i></li>
+                    <li className="menu-item" onClick={signOut}>Sign Out<i>logout</i></li>
                 </ul>
-                <ul className={cx(x.menuOptions, "fancy")}>
+                <ul className="menu-options fancy">
                     {
-                        menuOptions.map((option, i) => {
+                        MENUOPTIONS.map((option, i) => {
                             return (
-                                <li key={i} className={x.menuItem}>
-                                    <Link href={`/${option.route}`} passHref ><button className="icon-and-label"><i>{option.icon}</i>{option.name}</button></Link>
+                                <li key={i} className="menu-item" onClick={() => goToModule(`/${option.route}`)}>
+                                    <button className="icon-and-label" ><i>{option.icon}</i>{option.name}</button>
                                 </li>
                             )
                         })

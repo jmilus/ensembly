@@ -113,7 +113,7 @@ model Event {
 
 model Schema {
   id            String              @id @default(cuid())
-  name          String              @unique
+  name          String              @db.VarChar(64) @unique
   ensemble      Ensemble            @relation(fields: [ensembleId], references: [id], onDelete: Cascade)
   ensembleId    String
   events        EventSchemas[]
@@ -129,7 +129,6 @@ model EventSchemas {
 }
 
 model SchemaAssignment {
-  id            Int                   @id @default(autoincrement())
   membership    EnsembleMembership    @relation(fields: [membershipId], references: [id])
   membershipId  String
   schema        Schema                @relation(fields: [schemaId], references: [id])
@@ -138,6 +137,8 @@ model SchemaAssignment {
   division      Division              @relation(fields: [divisionId], references: [id])
   divisionId    Int
   title         String?               @db.VarChar(64)
+
+  @@id([membershipId, schemaId, divisionId])
 }
 
 model Division {
@@ -208,7 +209,7 @@ model Photo {
 model PhoneNumber {
   id          String    @id @default(cuid())
   prefix       String?   @db.VarChar(4)
-  phonenumber String    @db.VarChar(12)
+  phonenumber String    @db.VarChar(20)
   rank        PhoneRank @default(Home)
   member      Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId    String    @unique

@@ -1,25 +1,28 @@
 import prisma from '../../../lib/prisma';
 
 export const createNewEvent = async (data) => {
-    const { name, startDate, endDate, details, typeId, ensembles } = data; 
+    const { name, startDate, startDate_time, endDate, endDate_time, details, typeId, ensembles } = data; 
 
     console.log({ data });
 
-    const eventEnsembles = Array.isArray(ensembles) ? ensembles : [{ensembleId: ensembles}]
+    const eventEnsembles = Array.isArray(ensembles) ? ensembles : [{ ensembleId: ensembles }]
+    
+    const myStartDate = new Date(`${startDate}:${startDate_time}`);
+    const myEndDate = new Date(`${endDate}:${endDate_time}`);
 
     const newEvent = await prisma.event.create({
         data: {
-            anchorDate: new Date(startDate).toLocaleDateString(),
-            startDate: new Date(startDate),
-            endDate: new Date(endDate),
+            anchorDate: new Date(myStartDate).toLocaleDateString(),
+            startDate: new Date(myStartDate),
+            endDate: new Date(myEndDate),
             model: {
                 create: {
                     name,
                     details,
-                    modStartDate: new Date(startDate),
-                    modEndDate: new Date(endDate),
+                    modStartDate: myStartDate,
+                    modEndDate: myEndDate,
                     eventType: {
-                        connect: { id: typeId }
+                        connect: { id: parseInt(typeId) }
                     },
                     recEndCount: 1,
                     ensembles: {

@@ -8,7 +8,7 @@ import {fetchManyEnsembles} from '../api/ensembles/getManyEnsembles';
 
 import Meta from '../../components/Meta';
 import Calendar from '../../components/Calendar';
-import V from '../../components/ControlMaster';
+import V from '../../components/Vcontrols/VerdantControl';
 
 import { CAL } from '../../utils/constants';
 import CALENDAR from '../../utils/calendarUtils';
@@ -19,7 +19,7 @@ import basePageStyles from '../../styles/basePage.module.css';
 const TODAY = new Date();
 
 export async function getServerSideProps() {
-    const events = await fetchManyEvents(CALENDAR.getCalendarView());
+    const events = await fetchManyEvents({ ...CALENDAR.getCalendarView(), bufferDays: 35 });
     const eventTypes = await fetchManyEventTypes();
     const ensembles = await fetchManyEnsembles();
 
@@ -34,7 +34,7 @@ export async function getServerSideProps() {
 
 export default function EventsPage(initialProps) {
     const { dispatch } = useContext(GlobalContext);
-    const [events, setEvents] = useState(initialProps.events)
+    const [events, setEvents] = useState(initialProps.events);
     const [searchString, setSearchString] = useState("");
     const initialFocus = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() - 7);
 
@@ -44,16 +44,16 @@ export default function EventsPage(initialProps) {
 
     const { startDate, endDate } = CALENDAR.getCalendarView(focusDay);
 
-    useLoader("all-events", setEvents, `/api/events/getManyEvents`, {startDate, endDate});
+    useLoader("all-events", setEvents, `/api/events/getManyEvents`, { startDate, endDate, bufferDays: 35 });
 
-    console.log("loaded events:", events)
+    console.log("loaded:", events, initialProps)
 
     useEffect(() => {
         (async function () {
             const x = fetch('/api/events/getManyEvents', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ startDate, endDate })
+                body: JSON.stringify({ startDate, endDate, bufferDays: 35 })
             })
                 .then(res => res.json())
                 .then(events => setEvents(events))
@@ -73,39 +73,44 @@ export default function EventsPage(initialProps) {
 
     const newEventModal = () => {
         const submitModal = (newRecord) => {
-            router.push(`/events/eventmodel/${newRecord[0].model.id}`)
+            console.log("returned event record:", newRecord);
+            dispatch({
+                type: "modal",
+                payload: {
+                    type: "hide"
+                }
+            })
+            router.push(`/events/eventmodel/${newRecord.model.id}`)
         }
 
         const modalBody = 
-            <>
+            <V.Form id="new-event-modal-form" APIURL="/events/createEvent" followUp={submitModal} debug>
                 <section className="modal-fields">
-                    <V.Text id="newEventName" field="name" label="Event Name" value="" limit="64"/>
+                    <V.Text id="newEventName" name="name" label="Event Name" value="" limit="64" isRequired/>
                 </section>
                 <section className="modal-fields">
-                    <V.Select id="newEventEnsemble" field="ensembles" label="Ensemble" value="" options={initialProps.ensembles} />
-                    <V.Select id="newEventType" field="typeId" label="Event Type" value="" options={initialProps.eventTypes} />
+                    <V.Select id="newEventEnsemble" name="ensembles" label="Ensemble" value="" options={initialProps.ensembles} isRequired />
+                    <V.Select id="newEventType" name="typeId" label="Event Type" value="" options={initialProps.eventTypes} isRequired />
                 </section>
                 <section className="modal-fields">
-                    <V.Date id="newEventStart" field="startDate" label="Event Start" value="" includeTime>
-                        <V.Date id="newEventEnd" field="endDate" label="Event End" value="" includeTime/>
+                    <V.Date id="newEventStart" name="startDate" label="Event Start" value="" includeTime isRequired>
+                        <V.Date id="newEventEnd" name="endDate" label="Event End" value="" includeTime isRequired/>
                     </V.Date>
                 </section>
-            </>
+                <section className="modal-buttons">
+                    <button name="submit">Create Event</button>
+                    <button >Cancel</button>
+                </section>
+            </V.Form>
 
         dispatch({
             type: "modal",
             payload: {
                 type: "form",
                 content: {
-                    title: "Create Event",
-                    body: modalBody,
-                    URL: "/events/createEvent"
-                },
-                buttons: [
-                    { name: "submit", caption: "Create Event", class: "hero" },
-                    { name: "dismiss", caption: "Cancel" }
-                ],
-                followUp: submitModal
+                    title: "Create New Event",
+                    body: modalBody
+                }
             }
         })
     }
@@ -145,13 +150,13 @@ export default function EventsPage(initialProps) {
                     <div className={basePageStyles.pageDetails}>
                         <article>
                             <div className="calendar-month"></div>
-                            <div className="calendar-control">
+                            <section className="calendar-control">
                                 <button onClick={() => changeFocus(-1, "month")}>Prev Month</button>
                                 <button onClick={() => changeFocus(-7)}>Prev Week</button>
                                 <button onClick={() => setFocusDay(initialFocus)}>Today</button>
                                 <button onClick={() => changeFocus(7)}>Next Week</button>
                                 <button onClick={() => changeFocus(1, "month")}>Next Month</button>
-                            </div>
+                            </section>
                             <Calendar firstDay={startDate} events={events} />
                         </article>
                     </div>

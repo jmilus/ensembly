@@ -1,33 +1,27 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
 
-const DropContainer = ({ caption, value, onDrop, acceptTypes, hoverStyle, children }) => {
-    const [{ isOver }, drop] = useDrop(() => ({
+const DropContainer = ({ caption, value, acceptTypes, dropStyles, children }) => {
+    const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: acceptTypes || "nothing",
-        drop: onDrop ? (item) => onDrop({item, value}) : null,
+        drop: () => ({value}),
         collect: monitor => ({
-            isOver: !!monitor.isOver()
+            isOver: !!monitor.isOver(),
+            canDrop: !!monitor.canDrop()
         })
     }))
 
-    const subDrops = [];
-    const dropchildren = [];
-    React.Children.map(children, child => {
-        if (child?.type.name === "DropContainer") {
-            subDrops.push(React.cloneElement(child, {acceptTypes: acceptTypes}));
-        } else if (child?.type.name != ""){
-            dropchildren.push(child);
-        }
-    })
+    let containerStyle;
+    if (dropStyles) {
+        if(dropStyles.baseStyle) containerStyle = { ...dropStyles.baseStyle }
+        if (canDrop && dropStyles.canDropStyle) containerStyle = { ...containerStyle, ...dropStyles.canDropStyle };
+        if (isOver && dropStyles.hoverStyle) containerStyle = { ...containerStyle, ...dropStyles.hoverStyle };
+    }
 
-    const subDropsNode = subDrops && <div className="subdrop-wrapper">{subDrops}</div>
-
-    const dropStyle = isOver ? hoverStyle : null;
     return (
-        <object className={`drop-container ${isOver ? "hovered" : ""}`} ref={drop} style={dropStyle}>
+        <object className={`drop-container ${canDrop ? "hovered" : ""}`} ref={drop} style={containerStyle}>
             {caption && <div className="dc-name">{caption}</div>}
-            {isOver && subDropsNode}
-            {dropchildren}
+            {children}
         </object>
     )
 

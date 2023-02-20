@@ -301,7 +301,6 @@ const uploadMembers = async (req, res) => {
         console.log("importSet has records")
         try {
             importResult = await createManyMembers(importSet)
-                .then(async () => await prisma.$disconnect());
             res.status(201);
             res.json(importResult);
         }

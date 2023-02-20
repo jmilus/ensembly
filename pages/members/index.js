@@ -7,7 +7,7 @@ import {fetchManyMembers} from '../api/members/getManyMembers';
 import Meta from '../../components/Meta';
 import MemberCard from '../../components/MemberCard';
 
-import V from '../../components/ControlMaster';
+import V from '../../components/Vcontrols/VerdantControl';
 
 import { GlobalContext } from "../_app";
 
@@ -33,29 +33,36 @@ export default function MembersPage(initialProps) {
     
     const newMemberModal = () => {
         const submitModal = (newRecord) => {
-            router.push(`/members/${newRecord[0].id}`)
+            console.log("follow up data:", newRecord)
+            dispatch({
+                type: "modal",
+                payload: {
+                    type: "hide"
+                }
+            })
+            router.push(`/members/${newRecord.id}`)
         }
 
         const modalBody = 
-            <section className="modal-fields">
-                <V.Text id="newMemberFirstName" field="firstName" label="First Name" value=""/>
-                <V.Text id="newMemberLastName" field="lastName" label="Last Name" value=""/>
-            </section>
+            <V.Form id="new-member-modal-form" APIURL="/members/createMember" debug >
+                <section className="modal-fields">
+                    <V.Text id="newMemberFirstName" name="firstName" label="First Name" value=""/>
+                    <V.Text id="newMemberLastName" name="lastName" label="Last Name" value=""/>
+                </section>
+                <section className="modal-buttons">
+                    <button name="submit">Submit</button>
+                    <button name="cancel">Cancel</button>
+                </section>
+            </V.Form>
 
         dispatch({
-            type: "modal",
+            route: "modal",
             payload: {
                 type: "form",
                 content: {
                     title: "Create New Member",
                     body: modalBody,
-                    URL: "/members/createMember"
-                },
-                buttons: [
-                    { name: "submit", caption: "Create Member", class: "hero" },
-                    { name: "dismiss", caption: "Cancel" }
-                ],
-                followUp: submitModal
+                }
             }
         })
     }

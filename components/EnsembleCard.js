@@ -1,9 +1,7 @@
 import { useRouter } from 'next/router';
 import { getInitials } from '../utils';
 
-import VForm from './VForm';
-import V from './ControlMaster';
-import SubMenu from './SubMenu';
+import V from './Vcontrols/VerdantControl';
 
 import { Status, Capacity } from '@prisma/client';
 
@@ -146,13 +144,12 @@ const EnsembleCard = ({ membership, ensemble, presentation, format }) => {
                             </div>
                         </div>
                     </section>
-                    <VForm id={`membership-${membershipName}`} APIURL="/members/updateMembership" recordId={membership.id} >
+                    <V.Form id={`membership-${membershipName}`} APIURL="/members/updateMembership" recordId={membership.id} >
                         <section>
                             {statusIcon}
                             <V.Date id="" field="statusDate" label={membership.status} value={membership.statusDate} />
-                            <SubMenu options={ensembleOptions} style={{ margin: "auto 0 10px 0" }} />
                         </section>
-                    </VForm>
+                    </V.Form>
                 </div>
             )
         case "minimal":

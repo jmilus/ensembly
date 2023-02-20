@@ -1,11 +1,17 @@
 import prisma from '../../../lib/prisma';
 
-const deleteOneSchemaAssignment = async ({id}) => {
+const deleteOneSchemaAssignment = async ({membershipId, schemaId, divisionId}) => {
 
-    const updatedEnsemble = await prisma.schemaAssignment.delete({
-        where: { id: parseInt(id) },
+    const deletedAssignment = await prisma.schemaAssignment.delete({
+        where: { 
+            membershipId_schemaId_divisionId: {
+                membershipId: membershipId,
+                schemaId: schemaId,
+                divisionId: divisionId
+            }
+         }
     })
-    return updatedEnsemble;
+    return deletedAssignment;
 }
 
 const deleteSchemaAssignment = async (req, res) => {

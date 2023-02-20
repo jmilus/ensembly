@@ -1,5 +1,7 @@
 const dev = process.env.NODE_ENV !== 'production';
 
+export const HOSTURL = dev ? 'http://localhost:3000' : 'https://testing-lake-seven.vercel.app';
+
 export const MENUOPTIONS = [
     {
         name: "Dashboard",
@@ -32,5 +34,3 @@ export const MENUOPTIONS = [
         route: "settings"
     },
 ];
-
-export const server = dev ? 'http://localhost:3000' : '';

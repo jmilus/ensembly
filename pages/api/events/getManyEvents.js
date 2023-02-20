@@ -1,13 +1,22 @@
 import prisma from '../../../lib/prisma';
 import { formatDBObject } from '../../../utils';
 
-export const fetchManyEvents = async (props) => {
-    console.log({props})
+export const fetchManyEvents = async ({ startDate, endDate, bufferDays, message }) => {
+    console.log({startDate}, {endDate}, {bufferDays}, {message})
+
+    const bufferStartDate = new Date(startDate);
+    const bufferEndDate = new Date(endDate);
+    
+    if (bufferDays) {
+        bufferStartDate.setDate(bufferStartDate.getDate() - bufferDays)
+        bufferEndDate.setDate(bufferEndDate.getDate() + bufferDays)
+        console.log({bufferStartDate}, {bufferEndDate})
+    }
 
     const fetchedEvents = await prisma.event.findMany({
         where: {
-            endDate: { gte: new Date(props?.startDate) || undefined },
-            startDate: { lte: new Date(props?.endDate) || undefined }
+            endDate: { gte: new Date(bufferStartDate) || undefined },
+            startDate: { lte: new Date(bufferEndDate) || undefined }
         },
         include: {
             model: {

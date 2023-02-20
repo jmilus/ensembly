@@ -3,7 +3,6 @@ import useLoader from '../../../hooks/useLoader';
 
 import Link from 'next/link';
 
-import VForm from '../../../components/VForm';
 import V from '../../../components/ControlMaster';
 import { EventNode } from '../../../components/Calendar';
 

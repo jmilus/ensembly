@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const File = (props) => {
-    const { id, field, label="Browse Files", limit, Vstyle, hero, isRequired, fileType, updateForm, handling, readonly, debug } = props;
+    const { id, field, label="Browse Files", limit, Vstyle, hero, isRequired, fileType, handling, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(label);
 
     if (debug) console.log(field, { props }, { controlValue });
@@ -15,7 +15,6 @@ const File = (props) => {
                     const extlen = fileType.length;
                     if (file.name.slice(-extlen) === fileType) {
                         setControlValue(`Selected File: ${file.name}`);
-                        if (updateForm) updateForm(file);
                     } else {
                         setControlValue('Selected file is of wrong type');
                     }
@@ -38,7 +37,6 @@ const File = (props) => {
                 <input
                     id={id}
                     field={field}
-                    // value={controlValue}
                     type="file"
                     className="text-input"
                     onChange={({ target }) => handleControlValueChange(target)}

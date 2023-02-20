@@ -2,18 +2,25 @@ export const isEmpty = (obj) => {
     return Object.keys(obj).length === 0;
 }
 
-export const packageOptions = (obj) => {
-    if (!obj) return [];
+export const packageOptions = (obj, valuesArray) => {
+    const selectionValues = Array.isArray(valuesArray) ? valuesArray : [valuesArray];
+    // console.log("packaging options", obj, selectionValues)
+    if (!obj) return {};
     
-    //db query
+    let newObj = {};
     if (Array.isArray(obj)) {
-        return obj;
+        //db query
+        obj.forEach(o => {
+            newObj[o.id] = { ...o, selected: selectionValues.includes(o.id), value: o.value || o.id };
+        });
+    } else {
+        //enums
+        Object.keys(obj).forEach(key => {
+            newObj[key] = {id: key, value: key, name: obj[key], selected: selectionValues.includes(key)}
+        })
     }
-
-    //enums
-    return Object.keys(obj).map(key => {
-        return {id: key, value: obj[key], name: obj[key]}
-    })
+    // console.log("packaged options:", {newObj})
+    return newObj;
 }
 
 export const deleteRecord = async (APIURL, id) => {

@@ -2,6 +2,7 @@ import prisma from '../../../lib/prisma';
 
 export const updateOneMember = async (data) => {
     const { id, firstName, middleName, lastName, aka, suffix, birthday, sex, height, weight, race, ethnicity, hair, eyes } = data;
+
     const payload = {
         birthday: birthday ? new Date(birthday) : undefined,
         sex: sex,
@@ -53,6 +54,7 @@ export const updateOneMember = async (data) => {
 
 const updateMember = async (req, res) => {
     console.log("update request data:", req.body);
+    
     let response = [];
     try {
         response = await updateOneMember(req.body);

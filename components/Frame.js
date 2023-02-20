@@ -1,47 +1,45 @@
-import { useEffect, useContext } from 'react';
+import { useContext } from 'react';
 
 import Meta from './Meta';
 import Nav from './Nav';
 import DropDownMenu from '../components/DropDownMenu';
+
 import Modal from '../components/Modal';
+import LoginBox from '../components/LoginBox';
 import { GlobalContext } from '../pages/_app';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+//
+import { useSession } from '@supabase/auth-helpers-react';
 
-import { MENUOPTIONS } from '../config/index';
-
-import styles from '../styles/Frame.module.css';
 
 const Frame = ({ children }) => {
-    const { parameters, dispatch } = useContext(GlobalContext);
+    const { parameters } = useContext(GlobalContext);
     
-    return (
-        <>
-            <Meta />
-            <div className="app-body">
-                <DropDownMenu />
-                <Modal />
-                {true ?
+    const session = useSession();
+    
+    if (session) {
+        return (
+            <>
+                <Meta />
+                <div className="app-body">
+                    {parameters.dropdown && <DropDownMenu />}
+                    <Modal />
                     <>
-                        <Nav menuOptions={MENUOPTIONS} />
+                        <Nav />
                         <DndProvider backend={HTML5Backend}>
                             {children}
                         </DndProvider>
                     </>
-                    :
-                    <div className={styles.signinBox}>
-                        <div className={styles.signinHeader}>
-                            Login to Ensembly
-                        </div>
-                        <div className={styles.signinBody}>
-                            
-                        </div>
-                    </div>
-                }
-            </div>
-        </>
-    )
+                </div>
+            </>
+        )
+    } else {
+        return (
+            <LoginBox />
+        )
+    }
 }
 
 export default Frame;

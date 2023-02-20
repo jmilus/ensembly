@@ -3,24 +3,18 @@ import React, { useState, useEffect } from 'react';
 import CALENDAR from '../../utils/calendarUtils';
 
 const DateTime = (props) => {
-    const { id, field, label, value, initialValue, max, min, Vstyles=[null, null], hero, isRequired, children, recordId, updateForm, readonly, debug } = props;
-    const [controlValue, setControlValue] = useState(value || initialValue);
+    const { id, name, label, value, extraAction, max, min, Vstyles=[null, null], hero, isRequired, children, recordId, readonly, debug } = props;
+    const [controlValue, setControlValue] = useState(value);
+    const [touched, setTouched] = useState(false);
 
-    if (debug) console.log(field, { props }, { controlValue });
-
-    useEffect(() => {
-        if (new Date(min) > new Date(controlValue)) {
-            handleControlValueChange(min)
-        }
-    })
+    if (debug) console.log(name, { props }, { controlValue });
 
     useEffect(() => {
-        setControlValue(value);
-    }, [value])
+        if (extraAction) extraAction(controlValue);
+    }, [controlValue])
 
     const handleControlValueChange = (input) => {
-        console.log("sending this to VForm:", input)
-        if (updateForm) updateForm({ [field]: input }, recordId);
+        console.log("new value:", input)
         setControlValue(new Date(input).toISOString());
     }
 
@@ -50,7 +44,7 @@ const DateTime = (props) => {
 
     const handleDateChildren = () => {
         return React.Children.map(children, child => {
-            if (debug) console.log(field, child);
+            if (debug) console.log(name, child);
             let childValue;
             if (child.props.value) {
                 const childDate = new Date(child.props.value)
@@ -58,7 +52,7 @@ const DateTime = (props) => {
             }
             if (debug) console.log({ childValue });
             
-            return React.cloneElement(child, { min: controlValue, updateForm: updateForm, readonly: readonly }, child.props.children)
+            return React.cloneElement(child, { value: childValue, min: controlValue, readonly: readonly }, child.props.children)
         })
     }
     
@@ -66,11 +60,11 @@ const DateTime = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"} ${isRequired ? "flag" : ""}`} style={Vstyles[0]}>
-                <label htmlFor={field} className="label" style={{top: "3px", left: "3px"}}>{`${label} Date`}</label>
+            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}${touched ? " touched" : ""}`} style={Vstyles[0]}>
+                <label htmlFor={name} className="label" style={{top: "3px", left: "3px"}}>{`${label} Date`}</label>
                 <input
                     id={id}
-                    field={field}
+                    name={name}
                     value={displayDate}
                     type="date"
                     className=""
@@ -83,17 +77,17 @@ const DateTime = (props) => {
                 />
             </div>
             {props.includeTime && 
-                <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"} ${isRequired ? "flag" : ""}`} style={Vstyles[1]}>
-                <label htmlFor={field} className="label" style={{top: "3px", left: "3px"}}>{`${label} Time`}</label>
+                <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}${touched ? " touched" : ""}`} style={Vstyles[1]}>
+                <label htmlFor={name} className="label" style={{top: "3px", left: "3px"}}>{`${label} Time`}</label>
                     <input
                         id={id}
-                        field={field}
+                        name={`${name}_time`}
                         value={displayTime}
                         type="time"
                         className=""
                         onChange={(e) => handleTimeChange(e.target.value)}
                         max={max}
-                        min={min}
+                        min={CALENDAR.get24Time(min)}
                         required={isRequired}
                         autoComplete="do-not-autofill"
                         readOnly={readonly}

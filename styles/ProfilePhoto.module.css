@@ -1,11 +1,10 @@
 .profilePhotoBase {
     display: flex;
-    border-radius: 7px;
     overflow: hidden;
     align-items: center;
     justify-content: center;
     height:100%;
-    width: 100%;
+    padding: 20px;
 }
 
 .profilePhotoBase > img {
@@ -17,6 +16,8 @@
 
 .photoBackdrop {
     display: flex;
+    border-radius: 7px;
+    overflow: hidden;
     background: var(--gray4);
     color: var(--p-text);
     justify-content: center;
@@ -24,7 +25,7 @@
     color: var(--p-text);
     font-size: 2em;
     height:100%;
-    width: 100%;
+    flex:1;
 }
 
 .photoBackdrop > i {

@@ -29,7 +29,7 @@ export const fetchOneSchema = async (id) => {
 }
 
 const getOneSchema = async (req, res) => {
-    
+    console.log("request to fetch schema with id", req.query.id)
     let response = [];
     try {
         response = await fetchOneSchema(req.query.id);
