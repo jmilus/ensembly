@@ -52,7 +52,7 @@ const LoginBox = () => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider,
             options: {
-                redirectTo: redirectURL
+                redirectTo: 'https://testing-lake-seven.vercel.app/'
             }
         })
         if (error) console.log("problem signing in with Google:", error);
