@@ -3,7 +3,7 @@ import useLoader from '../../../hooks/useLoader';
 
 import Link from 'next/link';
 
-import V from '../../../components/ControlMaster';
+import V from '../../../components/Vcontrols/VerdantControl';
 import { EventNode } from '../../../components/Calendar';
 
 import basePageStyles from '../../../styles/basePage.module.css';
