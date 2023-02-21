@@ -47,7 +47,10 @@ const LoginBox = () => {
 
     const signInWithGoogle = async (provider) => {
         const { data, error } = await supabase.auth.signInWithOAuth({
-          provider: provider,
+            provider: provider,
+            options: {
+                redirectTo: getURL()
+              }
         })
         if (error) console.log("problem signing in with Google:", error);
     }
