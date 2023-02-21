@@ -23,7 +23,6 @@ const LoginBox = () => {
     };
 
     const redirectURL = getURL();
-    console.log("got this for the redirectURL:", {redirectURL}, HOSTURL)
 
     const sendMagicLink = async (signInData) => {
         const email = signInData["login-data"]?.email

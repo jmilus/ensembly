@@ -35,7 +35,7 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
 
     const sendToFileAPI = async (data) => {
         return await fetch(`/api${APIURL}`, {
-            method: 'POST',
+            method: 'PUT',
             body: data
         })
             .then(response => response.json())
