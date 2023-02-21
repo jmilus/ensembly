@@ -22,6 +22,9 @@ const LoginBox = () => {
         return url;
     };
 
+    const redirectURL = getURL();
+    console.log("got this for the redirectURL:", {redirectURL})
+
     const sendMagicLink = async (signInData) => {
         const email = signInData["login-data"]?.email
         let returnMessage = "";
@@ -49,8 +52,8 @@ const LoginBox = () => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider,
             options: {
-                redirectTo: HOSTURL
-              }
+                redirectTo: redirectURL
+            }
         })
         if (error) console.log("problem signing in with Google:", error);
     }
