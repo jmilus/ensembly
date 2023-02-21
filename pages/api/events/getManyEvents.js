@@ -2,7 +2,7 @@ import prisma from '../../../lib/prisma';
 import { formatDBObject } from '../../../utils';
 
 export const fetchManyEvents = async ({ startDate, endDate, bufferDays, message }) => {
-    console.log({startDate}, {endDate}, {bufferDays}, {message})
+    // console.log({startDate}, {endDate}, {bufferDays}, {message})
 
     const bufferStartDate = new Date(startDate);
     const bufferEndDate = new Date(endDate);
@@ -10,7 +10,6 @@ export const fetchManyEvents = async ({ startDate, endDate, bufferDays, message 
     if (bufferDays) {
         bufferStartDate.setDate(bufferStartDate.getDate() - bufferDays)
         bufferEndDate.setDate(bufferEndDate.getDate() + bufferDays)
-        console.log({bufferStartDate}, {bufferEndDate})
     }
 
     const fetchedEvents = await prisma.event.findMany({
