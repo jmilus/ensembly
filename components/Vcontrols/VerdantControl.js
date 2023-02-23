@@ -65,57 +65,53 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
             }
         }
 
-        const formData = new FormData(e.target.form ? e.target.form : e.target);
+        const formElement = e.target.form ? e.target.form : e.target;
+        const formData = new FormData(formElement);
 
-        let APIResponse, fileInput;
-        if (e.target.elements) fileInput = Object.values(e.target.elements).find(input => input.files)
-        
-        if (fileInput) {
-            console.log("has files", fileInput.files);
-            formData.append('file', fileInput.files[0]);
-            Object.keys(additionalIds).forEach(key => {
-                formData.append(key, additionalIds[key]);
-            })
+        const dataObject = { id: recordId, ...additionalIds }
+        const iterator = [...formData.entries()]
 
-            APIResponse = await sendToFileAPI(formData)
-            return null;
-
-        } else {
-            const dataObject = { id: recordId, ...additionalIds }
-            const iterator = [...formData.entries()]
-
-            iterator.forEach(item => {
-                const key = item[0];
-                const val = item[1];
-                if (dataObject[key]) {
-                    if (Array.isArray(dataObject[key])) {
-                        dataObject[key].push(val);
-                    } else {
-                        dataObject[key] = [dataObject[key], val]
-                    }
+        iterator.forEach(item => {
+            const key = item[0];
+            const val = item[1];
+            if (dataObject[key]) {
+                if (Array.isArray(dataObject[key])) {
+                    dataObject[key].push(val);
                 } else {
-                    dataObject[key] = val;
+                    dataObject[key] = [dataObject[key], val]
                 }
-            })
+            } else {
+                dataObject[key] = val;
+            }
+        })
 
-            if (debug) console.log("form data:", dataObject);
-
-            if (altSubmit) altSubmit(dataObject);
-
-            subActions?.forEach(action => {
-                action(dataObject);
-            })
-
-            APIResponse = await sendToJsonAPI(dataObject)
+        const fileInput = Object.values(formElement).find(thing => thing.type === "file")
+        if (fileInput) {
+            const files = fileInput.files;
+            console.log({files})
+            dataObject.files = files;
         }
 
-        console.log({ APIResponse });
+        if (debug) console.log("processed form data:", dataObject);
 
-        if (APIResponse[0]?.err) {
-            console.error(err);
-        } else {
-            if (followUp) followUp(APIResponse);
-        }
+        if (APIURL) {
+            let APIResponse = await sendToJsonAPI(dataObject)
+
+            console.log({ APIResponse });
+
+            if (APIResponse[0]?.err) {
+                console.error(err);
+            } else {
+                if (followUp) followUp(APIResponse);
+            }
+            
+        }  
+
+        if (altSubmit) altSubmit(dataObject);
+
+        subActions?.forEach(action => {
+            action(dataObject);
+        })        
         
     }
 

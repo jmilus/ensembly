@@ -20,6 +20,8 @@ import { fetchOneEnsemble } from '../api/ensembles/getOneEnsemble';
 import { fetchManyDivisions } from '../api/ensembles/getManyDivisions';
 import { fetchOneSchema } from '../api/ensembles/getOneSchema';
 
+import memberImportFromExcel from '../../lib/memberImportFromExcel';
+
 export async function getServerSideProps(context) {
     const ensemble = await fetchOneEnsemble(context.params.id);
     const baseSchema = await fetchOneSchema(ensemble.schema[0].id)
@@ -142,8 +144,29 @@ const EnsembleProfile = (initialProps) => {
             })
         }
 
+        const handleFileImport = async (importData) => {
+            const data = await memberImportFromExcel(importData, ensemble.id);
+            console.log({data})
+            const importResult = await fetch('/api/members/uploadMembers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(records => {
+                    console.log("records:", records)
+                    return records;
+                })
+                .catch((err, message) => {
+                    console.error('failed to remove assignment:', message);
+                    return err;
+                })
+            
+            submitModal(importResult);
+        }
+
         const modalBody = 
-            <V.Form id="upload-members-form" additionalIds={{ensembleId: ensemble.id}} APIURL="/members/uploadMembers" followUp={submitModal} debug >
+            <V.Form id="upload-members-form" additionalIds={{ensembleId: ensemble.id}} altSubmit={handleFileImport} followUp={submitModal} debug >
                 <section className="modal-fields">
                     <V.File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
                 </section>
