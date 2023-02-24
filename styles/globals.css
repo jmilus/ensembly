@@ -136,6 +136,9 @@ form {
 .form-message.error {
   color: red;
 }
+.form-message.warn {
+  color: orange;
+}
 
 /* modules */
 

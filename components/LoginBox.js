@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { supabase } from '../lib/supabase-client';
 import { HOSTURL } from '../config'
 
@@ -9,6 +11,10 @@ import GoogleIcon from '../public/images/GoogleIcon.png'
 import styles from '../styles/LoginBox.module.css';
 
 const LoginBox = () => {
+    const blankMessage = {message: "", vibe: ""}
+    const [formMessage, setFormMessage] = useState({...blankMessage})
+
+    console.log("form message:", formMessage)
 
     const getURL = () => {
         let url =
@@ -24,9 +30,25 @@ const LoginBox = () => {
 
     const redirectURL = getURL();
 
+    const signInHandler = async (data, route) => {
+        let message
+        switch (route) {
+            case "link":
+                message = await sendMagicLink(data);
+                break;
+            case "password":
+                message = await signInWithPassword(data);
+                break;
+            default:
+                break;
+        }
+        if (message) setFormMessage(message);
+    }
+
     const sendMagicLink = async (signInData) => {
-        const email = signInData["login-data"]?.email
-        let returnMessage = "";
+        console.log({signInData})
+        const email = signInData.email
+        let formResponseMessage = "";
         if (email) {
             const { data, error } = await supabase.auth.signInWithOtp({
               email: email,
@@ -36,15 +58,15 @@ const LoginBox = () => {
             })
             if (error) {
                 console.log("magic link error", {error})
-                returnMessage = error.message;
+                formResponseMessage = { message: error.message, vibe: "error" };
             } else {
                 console.log("magic link sent", data)
-                returnMessage = `A Magic Link was sent to ${email}`;
+                formResponseMessage = {message: `A Magic Link was sent to ${email}`, vibe: ""};
             }
         } else {
-            returnMessage = "Please enter your Email Address";
+            formResponseMessage = { message: "Please enter your Email Address", vibe: "warn" };
         }
-        return returnMessage;
+        return formResponseMessage;
     }
 
     const signInWithGoogle = async (provider) => {
@@ -58,20 +80,20 @@ const LoginBox = () => {
     }
 
     const signInWithPassword = async (credentials) => {
-        let returnMessage = "";
+        let formResponseMessage = "";
         console.log("sign-in with password:", credentials)
         const { data, error } = await supabase.auth.signInWithPassword({
-            email: credentials["login-data"].email,
-            password: credentials["login-data"].password
+            email: credentials.email,
+            password: credentials.password
         })
         if (error) {
             console.log("login error", { error })
-            returnMessage = error.message;
+            formResponseMessage = { message: error.message, vibe: "error" };
         } else {
             console.log("logging in...");
-            returnMessage = "Logging in...";
+            formResponseMessage = "Logging in...";
         }
-        return returnMessage;
+        return formResponseMessage;
     }
 
     return (
@@ -81,7 +103,7 @@ const LoginBox = () => {
                     Login to Ensembly
                 </div>
                 <div className={styles.signinBody}>
-                    <TabControl tabsStyle={{padding: "15px"}} >
+                    <TabControl tabsStyle={{padding: "15px"}} onChange={() => setFormMessage({...blankMessage})}>
                         <Tab id="Social">
                             <article>
                                 <button className="fat centered" onClick={() => signInWithGoogle('google')}>
@@ -93,21 +115,21 @@ const LoginBox = () => {
 
                         </Tab>
                         <Tab id="Magic Link">
-                            <V.Form id="login-link" recordId="login-data" altSubmit={sendMagicLink} manual >
+                            <V.Form id="login-link" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "link")} debug >
                                 <article>
-                                    <V.Text id="magic-link-email" field="email" label="Email" format="email" isRequired />
+                                    <V.Text id="magic-link-email" name="email" label="Email" format="email" isRequired />
                                     <button name="submit" className="fat hero centered" ><i>forward_to_inbox</i>Send Magic Link</button>
-                                    <span name="form-message" ></span>
+                                    <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
                                 </article>
                             </V.Form>
                         </Tab>
                         <Tab id="Password">
-                            <V.Form id="login-with-password" recordId="login-data" altSubmit={signInWithPassword} manual >
+                            <V.Form id="login-with-password" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "password")} >
                                 <article>
-                                    <V.Text id="login-email" field="email" label="Email" format="email" isRequired />
-                                    <V.Text id="password" field="password" label="Password" format="password" isRequired />
+                                    <V.Text id="login-email" name="email" label="Email" format="email" isRequired />
+                                    <V.Text id="password" name="password" label="Password" format="password" isRequired />
                                     <button name="submit" className="fat hero" >Sign In</button>
-                                    <span name="form-message" ></span>
+                                    <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
                                 </article>
                             </V.Form>
                         </Tab>
