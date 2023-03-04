@@ -26,7 +26,10 @@ export const MENUOPTIONS = [
     {
         name: "Communications",
         icon: "email",
-        route: "communications"
+        route: "messages"
+    },
+    {
+        spacer: true
     },
     {
         name: "Settings",

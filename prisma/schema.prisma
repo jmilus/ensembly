@@ -43,7 +43,6 @@ model Member {
   addresses    Address[]
   emails       Email[]
   attendance   Attendance[]
-  user         User?
 }
 
 model MemberBio {
@@ -239,14 +238,17 @@ model Email {
   memberId String    @unique
 }
 
-model User {
-  id         String   @id @default(cuid())
-  login      String   @unique @db.VarChar(32)
-  password   String   @db.VarChar(256)
-  created_at DateTime @default(now())
-  updated_at DateTime
-  member     Member   @relation(fields: [memberId], references: [id])
-  memberId   String   @unique
+model Profile {
+  userEmail      String      @unique @db.VarChar(96)
+  permissions    Permissions @relation(fields: [permissionsId], references: [id])
+  permissionsId  String
+}
+
+model Permissions {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  security    Json      @db.JsonB
+  profile      Profile[]
 }
 
 model Configuration {

@@ -207,7 +207,7 @@ const EnsembleProfile = (initialProps) => {
             }
             
         } else {
-            newAssignments.push({ assignmentId: `${membership.id}-${viewSchema.id}-${division.id}`, schemaId: viewSchema.id, membership: membership, memberId: membership.memberId, capacity: division.capacity, divisionId: division.id, division: division });
+            newAssignments.unshift({ assignmentId: `${membership.id}-${viewSchema.id}-${division.id}`, schemaId: viewSchema.id, membership: membership, memberId: membership.memberId, capacity: division.capacity, divisionId: division.id, division: division });
         }
 
         setSchemaAssignments(newAssignments);
@@ -269,7 +269,7 @@ const EnsembleProfile = (initialProps) => {
 
     const removeSectionDropStyle = {
         baseStyle: { height: "0px" },
-        canDropStyle: { height: "100px" },
+        canDropStyle: { height: "100px", minHeight: "100px" },
         hoverStyle: {
             ['--drop-h']: 0,
             ['--drop-s']: '100%',
@@ -335,7 +335,7 @@ const EnsembleProfile = (initialProps) => {
 
     const memberRosterBox = 
         <div id="full-roster" className="collapsible" style={{ ...rosterStyles, maxWidth: showRoster ? "250px" : "0px" }}>
-            <fieldset>
+            <fieldset className="card-set">
             <legend>Members</legend>
                 <TabControl type="filters">
                     <Tab id="Unassigned">

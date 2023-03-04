@@ -14,6 +14,7 @@ import { GlobalContext } from '../_app';
 
 import {fetchOneMember} from '../api/members/getOneMember';
 import { Race, Sex, HairColor, EyeColor, EmailRank, AddressRank, PhoneRank, Capacity } from '@prisma/client';
+import { useUser } from '@supabase/auth-helpers-react';
 
 import basePageStyles from '../../styles/basePage.module.css';
 
@@ -28,6 +29,9 @@ export async function getServerSideProps(context) {
 
 const MemberProfile = (initialProps) => {
     const { dispatch } = useContext(GlobalContext);
+    const user = useUser();
+
+    console.log({user})
 
     const [member, updateMember] = useImmer(initialProps.member);
     const router = useRouter();
@@ -131,7 +135,7 @@ const MemberProfile = (initialProps) => {
         <div className={basePageStyles.pageBase}>
             <div className={basePageStyles.formSection}>
                 <div className={basePageStyles.pageHeader}>
-                    <V.Form id="memberName" APIURL="/members/updateMember" recordId={member.id}>
+                    <V.Form id="memberName" APIURL="/members/updateMember" recordId={member.id} auto>
                         <V.Text id="aka" name="aka" value={member.aka} hero isRequired />
                     </V.Form>
                 </div>

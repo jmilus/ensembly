@@ -8,13 +8,13 @@ import TabControl, { Tab } from '../components/TabControl';
 import V from './Vcontrols/VerdantControl';
 
 import GoogleIcon from '../public/images/GoogleIcon.png'
+import DiscordIcon from '../public/images/DiscordIcon.png'
+import LinkedInIcon from '../public/images/LinkedInIcon.png'
 import styles from '../styles/LoginBox.module.css';
 
 const LoginBox = () => {
     const blankMessage = {message: "", vibe: ""}
     const [formMessage, setFormMessage] = useState({...blankMessage})
-
-    console.log("form message:", formMessage)
 
     const getURL = () => {
         let url =
@@ -69,14 +69,14 @@ const LoginBox = () => {
         return formResponseMessage;
     }
 
-    const signInWithGoogle = async (provider) => {
+    const signInWithSocial = async (provider) => {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider,
             options: {
                 redirectTo: HOSTURL
             }
         })
-        if (error) console.log("problem signing in with Google:", error);
+        if (error) console.log(`problem signing in with ${provider}`, error);
     }
 
     const signInWithPassword = async (credentials) => {
@@ -106,11 +106,18 @@ const LoginBox = () => {
                     <TabControl tabsStyle={{padding: "15px"}} onChange={() => setFormMessage({...blankMessage})}>
                         <Tab id="Social">
                             <article>
-                                <button className="fat centered" onClick={() => signInWithGoogle('google')}>
+                                <button className="fat centered" onClick={() => signInWithSocial('google')}>
                                     <Image src={GoogleIcon} alt="google-logo" width={25} height={25} />
                                     Sign in With Google
                                 </button>
-
+                                <button className="fat centered" onClick={() => signInWithSocial('discord')}>
+                                    <Image src={DiscordIcon} alt="discord-logo" width={25} height={25} />
+                                    Sign in With Discord
+                                </button>
+                                <button className="fat centered" onClick={() => signInWithSocial('linkedin')}>
+                                    <Image src={LinkedInIcon} alt="discord-logo" width={25} height={25} />
+                                    Sign in With LinkedIn
+                                </button>
                             </article>
 
                         </Tab>

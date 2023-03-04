@@ -43,7 +43,7 @@ const ModelProfile = (initialProps) => {
 
     const updateEvent = (record) => {
         console.log("update event data:", record)
-        const updatedEvent = JSON.parse(JSON.stringify(record))
+        const updatedEventModel = JSON.parse(JSON.stringify(record))
         console.log({updatedEventModel})
         setModel(updatedEventModel);
     }

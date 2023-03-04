@@ -147,7 +147,38 @@ async function Main() {
         ]
     })
 
-    console.log({ types, divisions, eventTypes })
+    const permissionsArray = [
+        {
+            name: "admin",
+            security: {
+                dashboard: { module: true },
+                ensembles: { module: true },
+                events: { module: true },
+                members: { module: true },
+                messages: { module: true },
+                settings: { module: true }
+            },
+        },
+        {
+            name: "member",
+            security: {
+                dashboard: { module: false },
+                ensembles: { module: false },
+                events: { module: true },
+                members: { module: true },
+                messages: { module: true },
+                settings: { module: false }
+            }
+        }
+    ]
+    
+    const prismaPerms = permissionsArray.map(perm => JSON.stringify(perm))
+
+    const permissions = await prisma.permissions.createMany({
+        data: [prismaPerms]
+    })
+
+    console.log({ types, divisions, eventTypes, permissions })
         
 }
 

@@ -267,8 +267,9 @@ fast-grid {
   user-select: none;
   margin-top: 5px;
 }
-.menu-item:last-child {
-  margin-top: auto;
+
+.menu-options .spacer {
+  flex: 1;
 }
 
 .menu-item button {
@@ -484,6 +485,7 @@ legend {
 
 fieldset.card-set {
   overflow-y: scroll;
+  margin: 10px 5px;
 }
 
 
@@ -999,11 +1001,12 @@ fieldset.buttons > button:last-of-type {
   box-shadow: 0px 2px 5px hsla(0, 0%, 0%, 0.1);
   background-color: white;
 }
+.card-container.clickable:hover {
+  outline: 1px solid var(--p-fill);
+}
+
 .clickable {
   cursor: pointer;
-}
-.clickable:hover {
-  outline: 1px solid var(--p-fill);
 }
 
 .card-container > * {

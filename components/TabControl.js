@@ -5,8 +5,10 @@ export const Tab = ({ id, direction, hidePage, tabStyle, onLoad, children }) => 
         if(onLoad && !hidePage) onLoad(id)
     }, [hidePage])
 
+    const newTabStyle = hidePage ? { ...tabStyle, display: "none" } : { ...tabStyle }
+
     return (
-        <div key={`page-${id}`} id={`page-${id}`} className={`tab-page ${direction ? direction : ""}`} style={{...tabStyle, display: hidePage && "none"}}>{children}</div>
+        <div key={`page-${id}`} id={`page-${id}`} className={`tab-page ${direction ? direction : ""}`} style={newTabStyle}>{children}</div>
     )
 }
 

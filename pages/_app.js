@@ -1,5 +1,5 @@
 import Frame from '../components/Frame';
-import { useState, createContext, useReducer } from 'react';
+import { useState, useEffect, createContext, useReducer } from 'react';
 //
 import { supabase } from '../lib/supabase-client';
 import { SessionContextProvider } from '@supabase/auth-helpers-react';
@@ -17,6 +17,9 @@ const contextReducer = (parameters, action) => {
     case "dropdown":
       parameters.dropdown = action.payload;
       return { ...parameters };
+    case "permissions":
+      parameters.permissions = action.payload;
+      return { ...parameters };
     default:
       return null;
   }
@@ -30,7 +33,7 @@ const ContextProvider = ({ children }) => {
     config: {}
   };
 
-  const [ parameters, dispatch ] = useReducer(contextReducer, initialState);
+  const [parameters, dispatch] = useReducer(contextReducer, initialState);
 
   return (
     <GlobalContext.Provider value={{ parameters, dispatch }}>
