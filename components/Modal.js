@@ -1,24 +1,24 @@
+'use client'
+
 import React, { Children, useContext, useState, useEffect } from 'react';
 import { getErrorMessage } from '../utils/';
 
-import V from '../components/Vcontrols/VerdantControl';
+import { GlobalContext } from './ContextFrame';
 
-import { GlobalContext } from '../pages/_app';
-
-import styles from '../styles/Modal.module.css'
+import '../styles/modal.css';
 
 const Modal = () => {
     const { dispatch, parameters } = useContext(GlobalContext);
     const { modal } = parameters;
     const [modalIsFullscreen, setModalIsFullscreen] = useState(true)
-    console.log("rendering modal with:", modal, modalIsFullscreen);
+    // console.log("rendering modal with:", modal, modalIsFullscreen);
 
     useEffect(() => {
         setModalIsFullscreen(true)
     }, [modal])
 
     const hideModal = () => {
-        if (modal.mode === "load") {
+        if (modal.type === "load") {
             console.log("setting fullscreen to false")
             setModalIsFullscreen(false)
         } else {
@@ -29,9 +29,9 @@ const Modal = () => {
     let modalBody = null;
 
     if (modal) {
-        if (modal.mode != "hide") {
+        if (modal.type != "hide") {
             const { content } = modal;
-            switch (modal.mode) {
+            switch (modal.type) {
                 case "load":
                     modalBody =
                         <div className="loading">
@@ -42,10 +42,10 @@ const Modal = () => {
                     const errMessage = getErrorMessage(modal.errCode)
                     modalBody =
                         <>
-                            <div className={styles.error}>
+                            <div className="error">
                                 {errMessage}
                             </div>
-                            <div className={styles.modalActions}>
+                            <div className="modal-buttons">
                                 <button type="button" className="panel" onClick={hideModal}>OK</button>
                             </div>
                         </>
@@ -53,29 +53,34 @@ const Modal = () => {
                 case "form":
                     modalBody =
                         < >
-                            <div className={styles.modalHeader}>{content.title}</div>
+                            <div className="modal-header">{content.title}</div>
                             {content.body}
                         </>
                     break;
                 case "message":
-                    modalBody = 
+                    modalBody =
                         <>
-                            <div className={styles.modalHeader}>{content.title}</div>
-                            <div className={styles.modalAlertMessage}>
+                            <div className="modal-header">{content.title}</div>
+                            <div className="modal-alert-message">
                                 <i>help</i>
                                 <div className="modal-message">{content.body}</div>
                             </div>
                         </>
+                    break;
                 default:
                     console.log("no modal type specified");
                     break;
             }
             return (
                 <div className="modal-base">
-                    <div className={`modal-body ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : () => setModalIsFullscreen(true)}>
-                        {modalBody}
+                    <div className={`modal-wrapper ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : () => setModalIsFullscreen(true)}>
+                        <div className="modal-border">
+                            <div className="modal-container">
+                                {modalBody}
+                            </div>
+                        </div>
                     </div>
-                    {modalIsFullscreen ? <div className={styles.modalBackdrop} onClick={hideModal}></div> : null}
+                    {modalIsFullscreen ? <div className="modal-backdrop" onClick={hideModal}></div> : null}
                 </div>
             );
         }

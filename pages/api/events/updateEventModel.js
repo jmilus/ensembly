@@ -2,24 +2,22 @@ import prisma from '../../../lib/prisma';
 
 export const updateOneEventModel = async (data) => {
     console.log({ data });
-    const { id, name, modStartDate, modStartDate_time, modEndDate, modEndDate_time, details, eventType } = data;
-
-    const startDateAndTime = new Date(`${modStartDate}:${modStartDate_time}`);
-    const endDateAndTime = new Date(`${modEndDate}:${modEndDate_time}`);
+    const { id, name, modStartDate, modEndDate, details, eventType } = data;
 
     const result = prisma.eventModel.update({
         where: { id: id },
         data: {
             name: name,
-            modStartDate: new Date(startDateAndTime),
-            modEndDate: new Date(endDateAndTime),
+            modStartDate: new Date(modStartDate),
+            modEndDate: new Date(modEndDate),
             details: details,
             eventType: eventType ? { connect: { id: parseInt(eventType) } } : undefined
         },
         include: {
             eventType: true,
             location: true,
-            ensembles: true,
+            parentModel: true,
+            childModels: true,
             events: {
                 orderBy: {startDate: 'asc'}
             }

@@ -1,6 +1,25 @@
-const dev = process.env.NODE_ENV !== 'production';
+const getURL = () => {
+    console.log("env:", process.env.NODE_ENV)
+    if (process.env.NODE_ENV !== 'production') {
+        return 'http://localhost:3000'
+    } else {
+        let url =
+            process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
+            process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
+            'http://localhost:3000';
+        // Make sure to include `https://` when not localhost.
+        url = url.includes('http') ? url : `https://${url}`;
 
-export const HOSTURL = dev ? 'http://localhost:3000' : 'https://testing-lake-seven.vercel.app';
+        // Make sure to including trailing `/`.
+        url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
+
+        return url;
+    }
+}
+
+// export const HOSTURL = dev ?  : 'https://testing-lake-seven.vercel.app';
+
+export const HOSTURL = getURL();
 
 export const MENUOPTIONS = [
     {
@@ -14,9 +33,9 @@ export const MENUOPTIONS = [
         route: "ensembles"
     },
     {
-        name: "Events",
+        name: "Calendar",
         icon: "calendar_month",
-        route: "events"
+        route: "calendar"
     },
     {
         name: "Members",
@@ -24,7 +43,7 @@ export const MENUOPTIONS = [
         route: "members"
     },
     {
-        name: "Communications",
+        name: "Messages",
         icon: "email",
         route: "messages"
     },

@@ -18,9 +18,9 @@
 }
 
 .signinHeader {
-    background: var(--p-fill);
+    background: var(--color-p);
     color: white;
-    font-size: 1.2em;
+    font-size: 1.5em;
     text-align: center;
     padding: 20px;
 }

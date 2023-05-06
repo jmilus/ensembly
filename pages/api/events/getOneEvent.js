@@ -11,12 +11,13 @@ export const fetchOneEvent = async (id) => {
                 include: {
                     eventType: true,
                     location: true,
-                    ensembles: true
+                    parentModel: true
                 }
             },
             schemas: true,
             location: true,
-            attendance: true
+            attendance: true,
+            eventProgram: true
 		}
     })
 

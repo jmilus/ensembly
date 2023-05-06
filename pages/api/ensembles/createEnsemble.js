@@ -13,7 +13,7 @@ export const createNewEnsemble = async (data) => {
             },
             schema: {
                 create: {
-                    name: `${name} Base Schema`
+                    name: `Base Schema`
                 }
             }
         }

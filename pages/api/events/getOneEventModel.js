@@ -9,12 +9,23 @@ export const fetchOneEventModel = async (id) => {
 		include: {
 			eventType: true,
             location: true,
-            ensembles: true,
+            parentModel: {
+                include: {
+                    eventType: true
+                }
+            },
+            childModels: {
+                include: {
+                    eventType: true
+                }
+            },
             events: {
                 orderBy: {startDate: 'asc'}
             }
 		}
     })
+
+    console.log({fetchedInstance})
 
 	return formatDBObject(fetchedInstance);
 }

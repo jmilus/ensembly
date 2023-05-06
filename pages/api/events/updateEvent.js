@@ -1,5 +1,7 @@
 import prisma from '../../../lib/prisma';
 
+import CALENDAR from '../../../utils/calendarUtils';
+
 export const updateOneEvent = async (data) => {
     console.log({ data });
     const { id, startDate, endDate, exception, note } = data;
@@ -23,7 +25,7 @@ export const updateOneEvent = async (data) => {
                 include: {
                     eventType: true,
                     location: true,
-                    ensembles: true
+                    parentModel: true
                 }
             },
             schemas: true,

@@ -1,7 +1,7 @@
 import { useEffect, useContext } from 'react';
 
 import Meta from './Meta';
-import Nav from './Nav';
+// import Nav from './Nav';
 import DropDownMenu from '../components/DropDownMenu';
 
 import Modal from '../components/Modal';
@@ -21,30 +21,7 @@ const Frame = ({ children }) => {
     const session = useSession();
     const userId = session?.user.id;
 
-    useEffect(() => {
-        console.log({ session })
-        const getPermissions = async () => {
-            return await fetch('/api/general/getUserPermissions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({email: session.user.email})
-            })
-                .then(response => response.json())
-                .then(res => {
-                    console.log("permissions:", res.permissions.security);
-                    dispatch({
-                        route: "permissions",
-                        payload: res.permissions.security
-                    })
-                    return res;
-                })
-                .catch((err, message) => {
-                    console.log('failed to load user permissions');
-                })
-        }
-        if(session) getPermissions()
-        
-    }, [userId])
+    
     
     if (session) {
         return (
@@ -54,7 +31,7 @@ const Frame = ({ children }) => {
                     {parameters.dropdown && <DropDownMenu />}
                     <Modal />
                     <>
-                        <Nav />
+                        {/* <Nav /> */}
                         <DndProvider backend={HTML5Backend}>
                             {children}
                         </DndProvider>

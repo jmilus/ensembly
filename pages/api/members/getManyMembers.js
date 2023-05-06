@@ -6,7 +6,8 @@ export const fetchManyMembers = async () => {
         include: {
             memberships: {
                 where: {status: "Active"}
-            }
+            },
+            memberBio: true
         },
         orderBy: {
             lastName: 'asc'

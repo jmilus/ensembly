@@ -1,14 +1,14 @@
 import prisma from '../../../lib/prisma';
 
 const updateOneSchemaAssignment = async (data) => {
-    const { id, schemaId, membershipId, capacity, divisionId, title } = data;
+    const { id, schemaId, membershipId, capacity, oldDivisionId, divisionId, title } = data;
 
     const updatedAssignment = await prisma.schemaAssignment.upsert({
         where: { 
             membershipId_schemaId_divisionId: {
                 membershipId: membershipId,
                 schemaId: schemaId,
-                divisionId: divisionId
+                divisionId: oldDivisionId || divisionId
             }
          },
         create: {

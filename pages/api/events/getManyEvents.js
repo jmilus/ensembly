@@ -20,8 +20,7 @@ export const fetchManyEvents = async ({ startDate, endDate, bufferDays, message 
         include: {
             model: {
                 include: {
-                    eventType: true,
-                    ensembles: true
+                    eventType: true
                 }
             },
             location: true,

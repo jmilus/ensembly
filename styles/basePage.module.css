@@ -7,32 +7,41 @@
     flex:1;
     display: flex;
     flex-direction: column;
-    padding: 0 50px;
+    background-image: linear-gradient(var(--gray1), var(--gray2));
 }
 
 .actionSection {
     min-height: 150px;
-    background: hsl(0, 0%, 75%);
-    /* box-shadow: 10px 0px 20px -15px inset hsl(0, 0%, 40%); */
-    box-shadow: 15px 0px 10px -10px inset hsl(0, 0%, 40%);
-    padding: 20px;
+    background: var(--color-s);
     display: flex;
     flex-direction: column;
+    border-right: 1px solid var(--gray3);
+    width: 260px;
+}
+
+.actionSection button {
+    border-color: var(--color-c2);
+    background: transparent;
+    color: var(--text1);
+}
+
+.actionSection button:hover {
+    border-color: var(--color-c1);
+    background: var(--color-c3);
+}
+.actionSection button:active {
+    background: var(--color-c2);
 }
 
 .pageHeader {
-    padding: 20px;
+    padding: 20px 0;
     display: flex;
     justify-content: space-between;
 }
 
 .pageDetails {
     display: flex;
+    flex-direction: column;
     flex: 1;
-    /* padding: 0 10px; */
-    overflow-y: scroll;
-}
-
-.profileSegment {
-    flex:1;
+    overflow: hidden;
 }

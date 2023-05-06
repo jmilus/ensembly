@@ -1,80 +1,49 @@
 const ONEDAY = 86400000;
 
-export const CAL = {
-    weekday: {
-        short: [
-            "Sun",
-            "Mon",
-            "Tue",
-            "Wed",
-            "Thu",
-            "Fri",
-            "Sat"
-        ],
-        long: [
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday"
-        ]
-    },
-    month: {
-        short: [],
-        long: [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        ]
-    }
-}
-
 const doubleDigit = (num) => {
     let leadingNum = "";
     if (num < 10) leadingNum = "0";
     return `${leadingNum}${num}`;
 }
 
-export const getTime = (mydate) => {
-    const date = new Date(mydate);
-    const phase = date.getHours() > 12;
-    const hour = date.getHours() - (phase ? 12 : 0);
-    return `${hour === 0 ? 12 : hour}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()} ${phase ? "PM" : "AM"}`
+export const localizeDate = (input) => {
+    const date = new Date(input)
+    if (isNaN(date)) return undefined;
+    return new Date(date.getTime() - ((date.getTimezoneOffset() / 360) * ONEDAY));
 }
 
-export const getDashedDate = (mydate) => {
-    const date = new Date(mydate);
-    return `${date.getFullYear()}-${doubleDigit(date.getMonth() + 1)}-${doubleDigit(date.getDate())}`
+export const getTime = (input) => {
+    const date = new Date(input);
+    // const phase = date.getHours() > 12;
+    // const hour = date.getHours() - (phase ? 12 : 0);
+    // return `${hour === 0 ? 12 : hour}:${date.getMinutes() < 10 ? '0' : ''}${date.getMinutes()} ${phase ? "PM" : "AM"}`
+    const timeString = date.toLocaleTimeString();
+    const firstColon = timeString.indexOf(":");
+    return timeString.slice(0, firstColon + 3) + " " + timeString.slice(-2);
 }
 
-export const get24Time = (mydate) => {
-    const date = new Date(mydate);
+export const getDashedValue = (input) => {
+    // console.log({input})
+    return `${input.getFullYear()}-${doubleDigit(input.getMonth()+1)}-${doubleDigit(input.getDate())}T${doubleDigit(input.getHours())}:${doubleDigit(input.getMinutes())}:${doubleDigit(input.getSeconds())}}`
+}
+
+export const get24Time = (input) => {
+    const date = new Date(input);
     return `${doubleDigit(date.getHours())}:${doubleDigit(date.getMinutes())}:${doubleDigit(date.getSeconds())}`;
 }
 
-export const getFirstOfMonth = (myDate) => {
-    const thisDate = new Date(myDate)
-    return new Date(thisDate.getFullYear(), thisDate.getMonth(), 1);
+export const getFirstOfMonth = (input) => {
+    const date = new Date(input)
+    return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
-export const getLastOfMonth = (myDate) => {
-    const thisDate = new Date(myDate)
-    return new Date(thisDate.getFullYear(), thisDate.getMonth() + 1, 0);
+export const getLastOfMonth = (input) => {
+    const date = new Date(input)
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
 }
 
-export const getCalendarView = (myDate, totalDays = 34) => {
-    const d = myDate ? new Date(myDate) : new Date();
+export const getCalendarView = (input, totalDays = 34) => {
+    const d = input ? new Date(input) : new Date();
 
     const startDate = new Date(d.setDate(d.getDate() - d.getDay()));
     const endDate = new Date(d.setDate(d.getDate() + totalDays));
@@ -93,11 +62,12 @@ export const compareDates = (firstDate, secondDate) => {
 const CALENDAR = {
     getTime,
     get24Time,
-    getDashedDate,
+    getDashedValue,
     getFirstOfMonth,
     getLastOfMonth,
     getCalendarView,
     compareDates,
+    localizeDate
 }
 
 export default CALENDAR;

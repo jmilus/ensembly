@@ -12,8 +12,8 @@ export const fetchManyEventModels = async (props) => {
         include: {
             eventType: true,
             location: true,
-            ensembles: true,
-            instances: true
+            parentModel: true,
+            childModels: true
         }
     })
     

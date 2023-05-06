@@ -23,7 +23,6 @@ model Ensemble {
   membership  EnsembleMembership[]
   type        EnsembleType         @relation(fields: [typeId], references: [id])
   typeId      Int
-  event       EventEnsemble[]
   schema      Schema[]
 }
 
@@ -75,21 +74,23 @@ model EnsembleMembership {
 }
 
 model EventModel {
-  id             String      @id @default(cuid())
-  name           String      @db.VarChar(64)
-  modStartDate   DateTime    @db.Timestamptz(3)
-  modEndDate     DateTime    @db.Timestamptz(3)
-  details        String?     @db.VarChar(1000)
-  eventType      EventType   @relation(fields: [typeId], references: [id])
+  id             String        @id @default(cuid())
+  name           String        @db.VarChar(64)
+  modStartDate   DateTime      @db.Timestamptz(3)
+  modEndDate     DateTime      @db.Timestamptz(3)
+  details        String?       @db.VarChar(1000)
+  eventType      EventType     @relation(fields: [typeId], references: [id])
   typeId         Int
-  location       Address?    @relation(fields: [locationId], references: [id])
-  locationId     String?     @unique
-  interval       Int?        @db.SmallInt
+  location       Address?      @relation(fields: [locationId], references: [id])
+  locationId     String?       @unique
+  interval       Int?          @db.SmallInt
   period         Period?
-  occurrence     Json?       @db.JsonB
-  recEndCount    Int?        @db.SmallInt
-  recEndDate     DateTime?   @db.Timestamptz(3)
-  ensembles      EventEnsemble[]
+  occurrence     Json?         @db.JsonB
+  recEndCount    Int?          @db.SmallInt
+  recEndDate     DateTime?     @db.Timestamptz(3)
+  parentModelId  String?
+  parentModel    EventModel?   @relation("RelatedEvent", fields: [parentModelId], references: [id])
+  childModels    EventModel[]  @relation("RelatedEvent")
   events         Event[]
 }
 
@@ -117,14 +118,16 @@ model Schema {
   ensembleId    String
   events        EventSchemas[]
   assignments   SchemaAssignment[]
+
 }
 
 model EventSchemas {
-  id          Int             @id @default(autoincrement())
   event       Event           @relation(fields: [eventId], references: [id])
   eventId     String
   schema      Schema          @relation(fields: [schemaId], references: [id])
   schemaId    String
+
+  @@id([eventId, schemaId])
 }
 
 model SchemaAssignment {
@@ -181,14 +184,6 @@ model EventType {
   name        String    @db.VarChar(64)
   color       Json?     @db.JsonB
   eventModel  EventModel[]
-}
-
-model EventEnsemble {
-  id           String      @id @default(cuid())
-  eventModel   EventModel  @relation(fields: [eventModelId], references: [id], onDelete: Cascade)
-  eventModelId String
-  ensemble     Ensemble    @relation(fields: [ensembleId], references: [id])
-  ensembleId   String
 }
 
 model PhotoSet {

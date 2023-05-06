@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react';
 
 import { supabase } from '../lib/supabase-client';
@@ -5,30 +7,17 @@ import { HOSTURL } from '../config'
 
 import Image from 'next/image';
 import TabControl, { Tab } from '../components/TabControl';
-import V from './Vcontrols/VerdantControl';
+import { Form, Text } from './Vcontrols';
 
 import GoogleIcon from '../public/images/GoogleIcon.png'
 import DiscordIcon from '../public/images/DiscordIcon.png'
 import LinkedInIcon from '../public/images/LinkedInIcon.png'
-import styles from '../styles/LoginBox.module.css';
+
+import '../styles/modal.css';
 
 const LoginBox = () => {
     const blankMessage = {message: "", vibe: ""}
-    const [formMessage, setFormMessage] = useState({...blankMessage})
-
-    const getURL = () => {
-        let url =
-          process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
-          process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set by Vercel.
-          HOSTURL;
-        // Make sure to include `https://` when not localhost.
-        url = url.includes('http') ? url : `https://${url}`;
-        // Make sure to including trailing `/`.
-        url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
-        return url;
-    };
-
-    const redirectURL = getURL();
+    const [formMessage, setFormMessage] = useState({ ...blankMessage })
 
     const signInHandler = async (data, route) => {
         let message
@@ -97,51 +86,54 @@ const LoginBox = () => {
     }
 
     return (
-        <div className={styles.signinContainer}>
-            <div className={styles.signinBox}>
-                <div className={styles.signinHeader}>
-                    Login to Ensembly
-                </div>
-                <div className={styles.signinBody}>
-                    <TabControl tabsStyle={{padding: "15px"}} onChange={() => setFormMessage({...blankMessage})}>
-                        <Tab id="Social">
-                            <article>
-                                <button className="fat centered" onClick={() => signInWithSocial('google')}>
-                                    <Image src={GoogleIcon} alt="google-logo" width={25} height={25} />
-                                    Sign in With Google
-                                </button>
-                                <button className="fat centered" onClick={() => signInWithSocial('discord')}>
-                                    <Image src={DiscordIcon} alt="discord-logo" width={25} height={25} />
-                                    Sign in With Discord
-                                </button>
-                                <button className="fat centered" onClick={() => signInWithSocial('linkedin')}>
-                                    <Image src={LinkedInIcon} alt="discord-logo" width={25} height={25} />
-                                    Sign in With LinkedIn
-                                </button>
-                            </article>
+        <div className="modal-base">
+            <div className="modal-wrapper">
+                <div className="modal-border">
+                    <div className="modal-container">
+                        <div className="modal-header">
+                            Login to Ensembly
+                        </div>
+                        <div className="modal-body">
+                            <TabControl tabsStyle={{padding: "15px"}} onChange={() => setFormMessage({...blankMessage})}>
+                                <Tab id="Social">
+                                    <article>
+                                        <button className="fat centered" onClick={() => signInWithSocial('google')}>
+                                            <Image src={GoogleIcon} alt="google-logo" width={25} height={25} />
+                                            Sign in With Google
+                                        </button>
+                                        <button className="fat centered" onClick={() => signInWithSocial('discord')}>
+                                            <Image src={DiscordIcon} alt="discord-logo" width={25} height={25} />
+                                            Sign in With Discord
+                                        </button>
+                                        <button className="fat centered" onClick={() => signInWithSocial('linkedin')}>
+                                            <Image src={LinkedInIcon} alt="discord-logo" width={25} height={25} />
+                                            Sign in With LinkedIn
+                                        </button>
+                                    </article>
 
-                        </Tab>
-                        <Tab id="Magic Link">
-                            <V.Form id="login-link" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "link")} debug >
-                                <article>
-                                    <V.Text id="magic-link-email" name="email" label="Email" format="email" isRequired />
-                                    <button name="submit" className="fat hero centered" ><i>forward_to_inbox</i>Send Magic Link</button>
-                                    <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
-                                </article>
-                            </V.Form>
-                        </Tab>
-                        <Tab id="Password">
-                            <V.Form id="login-with-password" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "password")} >
-                                <article>
-                                    <V.Text id="login-email" name="email" label="Email" format="email" isRequired />
-                                    <V.Text id="password" name="password" label="Password" format="password" isRequired />
-                                    <button name="submit" className="fat hero" >Sign In</button>
-                                    <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
-                                </article>
-                            </V.Form>
-                        </Tab>
-                    </TabControl>
-                    
+                                </Tab>
+                                <Tab id="Magic Link">
+                                    <Form id="login-link" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "link")} debug >
+                                        <article>
+                                            <Text id="magic-link-email" name="email" label="Email" format="email" isRequired />
+                                            <button name="submit" className="fat hero centered" ><i>forward_to_inbox</i>Send Magic Link</button>
+                                            <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
+                                        </article>
+                                    </Form>
+                                </Tab>
+                                <Tab id="Password">
+                                    <Form id="login-with-password" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "password")} >
+                                        <article>
+                                            <Text id="login-email" name="email" label="Email" format="email" isRequired />
+                                            <Text id="password" name="password" label="Password" format="password" isRequired />
+                                            <button name="submit" className="fat hero" >Sign In</button>
+                                            <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
+                                        </article>
+                                    </Form>
+                                </Tab>
+                            </TabControl>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

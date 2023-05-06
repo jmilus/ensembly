@@ -1,0 +1,406 @@
+/* this is a comment */
+
+
+section>.input-control-base,
+section>form {
+    flex: 1;
+}
+
+.label {
+    font-size: 0.75em;
+    color: gray;
+    transition: all 0.2s ease-out;
+    margin: 5px 10px 2px;
+}
+
+.label.hide {
+    color: transparent;
+}
+
+.input-control-base {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+}
+
+.input-control-base input:focus-visible,
+.input-control-base select:focus-visible,
+.input-control-base textarea:focus-visible {
+    border-color: var(--gray3);
+}
+
+.select-box {
+    display: flex;
+    --option-height: 36px;
+}
+
+.number-input {
+    text-align: right;
+}
+
+input[type="date"][value=""] {
+    color: var(--gray4);
+
+}
+
+select {
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--gray5) 50%),
+        linear-gradient(135deg, var(--gray5) 50%, transparent 50%),
+        linear-gradient(to right, var(--gray5), var(--gray5));
+    background-position:
+        calc(100% - 20px) calc(1em + 3px),
+        calc(100% - 12px) calc(1em + 3px),
+        calc(100% - 2.5em) 0.5em;
+    background-size:
+        8px 8px,
+        8px 8px,
+        1px 1.9em;
+    background-repeat: no-repeat;
+}
+
+select:focus {
+    background-image:
+        linear-gradient(45deg, var(--gray3) 50%, transparent 50%),
+        linear-gradient(135deg, transparent 50%, var(--gray3) 50%),
+        linear-gradient(to right, var(--gray5), var(--gray5));
+    background-position:
+        calc(100% - 12px) calc(1em + 2px),
+        calc(100% - 20px) calc(1em + 2px),
+        calc(100% - 2.5em) 0.5em;
+    outline: 0;
+}
+
+select[multiple] {
+    background-image: none;
+    padding: 0 !important;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-snap-align: center;
+}
+
+/* select[multiple]:-internal-list-box {
+  } */
+
+select[multiple]>option {
+    padding: calc(1em - 3px);
+}
+
+select[multiple]>option:hover {
+    background-color: var(--gray2);
+    cursor: pointer;
+}
+
+select[multiple]>option~option {
+    border-top: 1px solid var(--gray2);
+}
+
+select[multiple]>option:checked {
+    background-color: var(--gray3);
+    border: 1px solid var(--gray4);
+}
+
+.input-control-base > input,
+.input-control-base > select,
+.input-control-base > textarea,
+.input-control-base > .collection-container {
+    width: 100%;
+    border: 1px solid var(--gray3);
+    outline: none;
+    font-size: 1em;
+    padding: 10px 15px;
+    background-color: white;
+    border-radius: 3px;
+}
+
+.input-control-base input::placeholder,
+.input-control-base textarea::placeholder {
+    font-size: 0.9em;
+}
+
+.input-control-base:hover input:not(:focus-visible):not([readonly]),
+.input-control-base:hover select:not(:focus-visible):not([readonly]),
+.input-control-base:hover textarea:not(:focus-visible):not([readonly]) {
+    border-color: var(--gray4);
+}
+
+.input-control-base input,
+.input-control-base select {
+    height: 3em;
+}
+.input-control-base .collection-container {
+    min-height: 3em;
+}
+
+.input-clear-button {
+    position: absolute;
+    right: 0.35em;
+    bottom: 0.35em;
+    font-size: 1.75em;
+    color: var(--gray3);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.input-clear-button.show {
+    color: var(--gray5);
+}
+
+.clearable {
+    padding-right: 2.5em;
+}
+
+.input-control-base textarea {
+    padding: 10px;
+    min-height: 10em;
+}
+
+.input-control-base input[readonly],
+.input-control-base select[readonly],
+.input-control-base textarea[readonly] {
+    border-color: var(--gray3);
+    outline: none;
+    cursor: default;
+    background-color: transparent;
+    background-image: none;
+    color: var(--gray6);
+}
+
+.option-set {
+    position: absolute;
+    top: calc(100% + 1px);
+    background: var(--gray1);
+    z-index: 1;
+    border-radius: 5px;
+    overflow-y: scroll;
+    box-shadow: var(--dd-shadow);
+    max-height: calc(5 * var(--option-height));
+}
+
+.select-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 14px;
+    overflow: hidden;
+    transition: height 0.05s ease;
+    border-width: 0;
+    height: var(--option-height);
+}
+
+.select-option:hover {
+    background: var(--gray2);
+    cursor: pointer;
+}
+
+.select-option>.color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 10px;
+    border: 1px solid white;
+}
+
+.input-control-base.hero > input {
+    font-size: 24px;
+    font-family: var(--brand-font);
+    padding: 20px;
+    border: none;
+    margin: 0;
+    background-color: transparent;
+}
+
+.input-control-base.hero>input:not([readonly]):hover {
+    background: var(--gray2);
+}
+
+.input-control-base.hero>input:not([readonly]):focus-visible {
+    outline: none;
+    background: white;
+}
+
+.input-control-base.hero>label {
+    display: none;
+}
+
+.hero > input::placeholder {
+    color: transparent;
+}
+
+.hero > input:hover::placeholder {
+    font-style:normal;
+    font-family:sans-serif;
+    color: var(--gray5);
+
+}
+
+.input-control-base.tiny {
+    height: auto;
+}
+
+.tiny input {
+    font-size: 0.65em;
+    padding: 2px 5px;
+    height: auto;
+    border: none;
+    background: var(--gray3);
+}
+
+.tiny .expanded .select-option {
+    font-size: 0.65em;
+    padding: 2px 5px;
+    height: 15px;
+}
+
+.uncontrolled-text {
+    border-radius: 5px;
+    border: 1px solid var(--gray2);
+    padding: 5px 10px;
+    margin: 5px;
+    height: 35px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gray2);
+    cursor: pointer;
+}
+
+div.dot.selected {
+    background: var(--gray3);
+}
+
+i.dot.selected {
+    color: var(--gray3);
+}
+
+
+
+.button-tray {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px;
+}
+
+.input-control-base.touched input:invalid {
+    border: 1px solid red;
+}
+
+.checkbox {
+    flex-direction: row;
+    background: transparent;
+    border: none;
+}
+
+.file-box label {
+    background: transparent;
+    border: 1px solid var(--gray4);
+    padding: 10px;
+    cursor: pointer;
+}
+
+.file-box input {
+    display: none;
+}
+
+.checkbox:not(.readonly) * {
+    cursor: pointer;
+}
+
+.checkbox.checked i {
+    color: hsl(120, 90%, 40%);
+}
+
+.checkbox.readonly {
+    color: var(--gray4);
+}
+
+.checkbox i {
+    font-size: 1.5em;
+    color: gray;
+}
+
+.checkbox input {
+    display: none;
+}
+
+.checkbox label {
+    left: 2em;
+    margin: 5px 10px;
+    color: black;
+}
+
+.radio-buttons-set {}
+
+.radio-option {
+    margin: 5px 0;
+}
+
+.radio-option>input {
+    display: none;
+    margin: 0;
+}
+
+.radio-option>label {
+    margin: 0;
+}
+
+.radio-button {
+    height: 1em;
+    width: 1em;
+    border-radius: 50%;
+    border: 1px solid var(--gray4);
+    margin-right: 10px;
+}
+
+.radio-option>label {
+    display: flex;
+    align-items: center;
+}
+
+.radio-option>input:checked~label>.radio-button {
+    border-color: var(--gray3);
+    background-image: radial-gradient(var(--gray3) 3px, transparent 2px)
+}
+
+#dropdown-area {
+    z-index: 200;
+}
+
+#dropdown-backing {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.input-control-base > .collection-container {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+}
+
+.collection-adder {
+    flex: 1;
+    border: none;
+    outline: none;
+    min-width: 4em;
+    margin-left: 10px;
+}
+
+.node-wrapper {
+    display: flex;
+    margin: 5px;
+    padding: 0.5em;
+    border: 1px solid var(--gray4);
+    border-radius: 5px;
+    background: var(--gray2);
+    color: var(--gray6);
+}
+
+.node-wrapper i {
+    margin: auto 0 auto 10px;
+}

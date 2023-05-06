@@ -29,7 +29,7 @@ export const fetchOneMember = async (id) => {
         }
     })
     
-    console.log("API", {fetchedMember});
+    // console.log("API", {fetchedMember});
 
     // const tempEnsembles = {};
     // fetchedMember.memberships.forEach((m, i) => {

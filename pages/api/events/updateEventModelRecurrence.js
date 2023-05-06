@@ -1,5 +1,6 @@
 import prisma from '../../../lib/prisma';
-import { CAL, compareDates } from '../../../utils/calendarUtils';
+import { CAL } from '../../../utils/constants';
+import { compareDates } from '../../../utils/calendarUtils';
 
 
 const generateRecurrenceModel = (recurrenceData) => {
@@ -140,7 +141,8 @@ export const updateRecurrence = async (data) => {
             include: {
                 eventType: true,
                 location: true,
-                ensembles: true,
+                parentModel: true,
+                childModels: true,
                 events: {
                     orderBy: {startDate: 'asc'}
                 }

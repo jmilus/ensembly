@@ -9,10 +9,12 @@ export default function SupabaseListener({ serverAccessToken }) {
   const router = useRouter()
 
   useEffect(() => {
+    // console.log("server-side auth session:", session);
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.access_token !== serverAccessToken) {
+        console.log("session updated:", {session})
         router.refresh()
       }
     })

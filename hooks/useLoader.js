@@ -1,7 +1,7 @@
 import { useEffect, useContext } from 'react';
 import useSWR from 'swr';
 
-import { GlobalContext } from "../pages/_app";
+import { GlobalContext } from "../components/ContextFrame";
 
 function useLoader(swrKey, setter, fetchAPI, params) {
     const { dispatch } = useContext(GlobalContext);

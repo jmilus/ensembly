@@ -1,0 +1,45 @@
+.page-base {
+    display: flex;
+    flex: 1;
+}
+
+.form-section {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    background-image: linear-gradient(var(--gray1), var(--gray2));
+    padding: 0 10px;
+}
+
+.action-section {
+    color: var(--text1);
+    min-height: 150px;
+    background: var(--color-s);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--gray3);
+    width: 263px;
+    padding-right:3px;
+    background-image: linear-gradient(0deg, var(--color-c3), var(--color-c2), var(--color-c1));
+    background-position: 260px 0;
+    background-repeat: no-repeat;
+}
+
+.action-section button {
+    color: var(--text1);
+    --edge-color: var(--color-c1);
+}
+
+
+.page-header {
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.page-details {
+    display: flex;
+    flex: 1;
+    color: var(--text2);
+    overflow-y: scroll;
+}

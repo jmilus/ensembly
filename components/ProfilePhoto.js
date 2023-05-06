@@ -1,3 +1,5 @@
+'use client'
+
 import styles from '../styles/ProfilePhoto.module.css'
 import Image from 'next/image';
 

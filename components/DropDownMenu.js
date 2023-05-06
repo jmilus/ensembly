@@ -1,10 +1,15 @@
-import { useContext } from 'react';
+'use client'
 
-import { GlobalContext } from '../pages/_app';
+import { useState, useContext } from 'react';
+
+import { GlobalContext } from './ContextFrame';
 
 const DropDownMenu = () => {
-    const { dispatch, parameters } = useContext(GlobalContext);
-    const { dropdown: { dim, options = [], value="", setSelectControlValue } = {} } = parameters;
+    const { dispatch, parameters: { dropdown } } = useContext(GlobalContext);
+    if (!dropdown) return null
+    const { dim, options = [], value = "", setSelectControlValue } = dropdown;
+
+    // console.log({ dropdown })
 
     const hideDropDown = () => {
         dispatch({ route: "dropdown", payload: null })
@@ -12,23 +17,28 @@ const DropDownMenu = () => {
     
     const selectOption = (option) => {
         setSelectControlValue({ ...option, selected: true });
+        hideDropDown();
     }
 
-    if (options) {
+    if (options.length > 0) {
         return (
-            <div id="dropdown-area">
+            <div id="dropdown-area" onKeyDown={(e) => console.log(e.target.value)}>
                 <div className="option-set" style={{left: dim.x, top: dim.y + dim.h, minWidth: dim.w}}>
                     {
-                        Object.values(options).map((option, o) => {
+                        options.map((option, o) => {
+                            if (value.includes(option.value)) return null;
+
                             let optionColor, myColor;
                             if (option.color) {
                                 optionColor = JSON.parse(option.color);
                                 myColor = `${optionColor.type}(${optionColor.values[0]},${optionColor.values[1]}%, ${optionColor.values[2]}%)`;
                             }
-                            return <div key={o} className={`select-option ${option.selected ? "selected" : ""}`} onClick={() => selectOption(option)}>
-                                {myColor && <div className="color-dot" style={{ backgroundColor: myColor }}></div>}
-                                {option.name}
-                            </div>
+                            return (
+                                <div key={o} className="select-option" onClick={() => selectOption(option)}>
+                                    {myColor && <div className="color-dot" style={{ backgroundColor: myColor }}></div>}
+                                    {option.name}
+                                </div>
+                            )
                         })
                     }
                 </div>

@@ -1,37 +1,37 @@
 import prisma from '../../../lib/prisma';
 
 export const createNewEvent = async (data) => {
-    const { name, startDate, startDate_time, endDate, endDate_time, details, typeId, ensembles } = data; 
+    const { eventName, modelName, startDate, endDate, details, typeId, modelId="new", parentModelId } = data; 
 
     console.log({ data });
 
-    const eventEnsembles = Array.isArray(ensembles) ? ensembles : [{ ensembleId: ensembles }]
-    
-    const myStartDate = new Date(`${startDate}:${startDate_time}`);
-    const myEndDate = new Date(`${endDate}:${endDate_time}`);
+    // const eventEnsembles = Array.isArray(ensembles) ? ensembles : [{ ensembleId: ensembles }]
 
     const newEvent = await prisma.event.create({
         data: {
-            anchorDate: new Date(myStartDate).toLocaleDateString(),
-            startDate: new Date(myStartDate),
-            endDate: new Date(myEndDate),
+            anchorDate: new Date(startDate).toLocaleDateString(),
+            startDate: new Date(startDate),
+            endDate: new Date(endDate),
+            name: eventName || modelName,
             model: {
-                create: {
-                    name,
-                    details,
-                    modStartDate: myStartDate,
-                    modEndDate: myEndDate,
-                    eventType: {
-                        connect: { id: parseInt(typeId) }
-                    },
-                    recEndCount: 1,
-                    ensembles: {
-                        createMany: {
-                            data: eventEnsembles
+                connectOrCreate: {
+                    where: { id: modelId },
+                    create: {
+                        name: modelName,
+                        details,
+                        modStartDate: new Date(startDate),
+                        modEndDate: new Date(endDate),
+                        eventType: {
+                            connect: { id: parseInt(typeId) }
+                        },
+                        recEndCount: 1,
+                        parentModel: {
+                            connect: { id: parentModelId }
                         }
-                    },
+                    }
                 }
             }
+
         },
         include: {
             model: true

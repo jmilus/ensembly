@@ -1,0 +1,140 @@
+/************************* MODALS *************************/
+
+.modal-base {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    display: flex;
+}
+
+.modal-backdrop {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: hsla(var(--p-hue), var(--p-sat), calc(var(--p-lum) / 3), 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.modal-wrapper {
+    margin: auto;
+    min-width: 25%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.5);
+    border-radius: 18px;
+    overflow: hidden;
+    z-index: 1;
+    transition: margin 0.1s ease;
+}
+
+.modal-wrapper.min {
+    min-width: unset;
+    margin: auto 0 0 auto;
+    border-radius: 7px 0 0 0;
+}
+
+.modal-border {
+    padding: 10px;
+    background-image: linear-gradient(45deg, var(--color-c3), var(--color-c2), var(--color-c1))
+}
+
+.modal-header {
+    background: var(--gray4);
+    font-size: 1.5em;
+    color: var(--text2);
+    padding: 20px;
+    margin-bottom: 10px;
+}
+
+.modal-container {
+    background: var(--gray1);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 5px 3px hsla(0, 0%, 0%, 0.2);
+}
+
+.modal-message {
+    margin: 10px;
+    max-width: 30em;
+}
+
+.modal-body {
+    background: var(--background);
+    padding: 10px 20px;
+}
+
+.loading {
+    width: 100%;
+    height: 100%;
+    background: var(--color-p);
+    border-radius: 7px;
+    color: var(--text1);
+    font-size: 1.25em;
+    padding: 20px;
+    transition: font-size 0.1s ease, padding 0.1s ease;
+}
+
+.min>.loading {
+    border-radius: 7px 0 0 0;
+    font-size: 1em;
+    padding: 10px;
+}
+
+.modal-fields {
+    margin: 0 20px;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+}
+
+.modal-buttons>button {
+    flex: 1;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 0;
+    padding: 20px;
+    --b-alp: 0.75;
+    margin: 0;
+    height: auto;
+}
+
+.modal-buttons>button~button {
+    margin-left: 1px;
+}
+
+.modal-buttons>button[name="submit"] {
+    color: var(--text1);
+    background: var(--color-moss);
+}
+
+.modal-alert-message {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    min-height: 100px;
+}
+
+.modal-alert-message > i {
+    font-size: 3em;
+    color: var(--gray4);
+    margin: 10px;
+}
+
+.error {
+    width: 100%;
+    height: 100%;
+    background: hsl(0, 90%, 60%);
+    padding: 20px;
+}
+
+.modal-activation {
+    display: flex;
+}
+
+.modal-activation > button {
+    flex: 1;
+}
