@@ -24,7 +24,7 @@ const TabControl = ({ type="normal", onChange, children }) => {
     let tabs = [];
     let pages = [];
     React.Children.forEach(children, (child, c) => {
-        const newTab = <div key={`tab-${child.props.id}`} id={`tab-${child.props.id}`} className={`tab-button ${c === activeTab && "active"}`} onClick={() => setActiveTab(c)}>{child.props.id}</div>
+        const newTab = <div key={`tab-${c}`} id={`tab-${child.props.id}`} className={`tab-button ${c === activeTab && "active"}`} onClick={() => setActiveTab(c)}>{child.props.id}</div>
         tabs.push(newTab)
         const newPage = React.cloneElement(child, { key: c, hidePage: c != activeTab }, child.props.children)
         pages.push(newPage)
@@ -38,7 +38,7 @@ const TabControl = ({ type="normal", onChange, children }) => {
                         {
                             pages.map((page, p) => {
                                 return (
-                                    <div>
+                                    <div key={p}>
                                         {tabs[p]}
                                         {page}
                                     </div>

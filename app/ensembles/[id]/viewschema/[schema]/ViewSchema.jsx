@@ -177,9 +177,9 @@ const SchemaView = ({ initialProps, params }) => {
                 >
                     <TabControl>
                         {
-                            ["Performer", "Crew", "Staff"].map(cap => {
+                            ["Performer", "Crew", "Staff"].map((cap, t) => {
                                 return (
-                                    <Tab id={cap}>
+                                    <Tab key={t} id={cap}>
                                         {
                                             divisions.map((div, d) => {
                                                 if (div.capacity != cap) return null;

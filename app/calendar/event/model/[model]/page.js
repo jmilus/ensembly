@@ -189,6 +189,16 @@ const EventModelPage = async (context) => {
                 }
             </FilterContainer>
         </Modal2>
+    
+    const initialAssignments = {}
+    model.events.forEach(ev => {
+        initialAssignments[ev.id] = {}
+        Object.keys(schemasObj).forEach(schemaId => {
+            initialAssignments[ev.id][schemaId] = ev.schemas.findIndex(schema => {
+                return schema.schema.id === schemaId;
+            }) >= 0;
+        })
+    })
 
     return (
         <div className="page-base">
@@ -255,6 +265,7 @@ const EventModelPage = async (context) => {
                                     <SchemaGrid
                                         model={model}
                                         schemasInModel={schemasObj}
+                                        initialAssignments={initialAssignments}
                                         allSchemas={schemas}
                                     />
                                 </Modal2>

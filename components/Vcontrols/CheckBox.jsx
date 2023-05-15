@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import './Vstyling.css';
 
@@ -39,7 +39,8 @@ const CheckBox = (props) => {
                     type="checkbox"
                     checked={controlValue}
                     onChange={handleControlValueChange} 
-                    readOnly={readonly} />
+                    readOnly={readonly}
+                />
                 {label}
             </label>
         </div>

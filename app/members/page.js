@@ -6,8 +6,8 @@ import { loadUserPermissions } from '../../pages/api/general/getUserPermissions'
 
 import FilterContainer from '../../components/FilterContainer';
 import MemberCard from '../../components/MemberCard';
-
-import {MemberNav} from './MembersHelpers';
+import Modal2 from '../../components/Modal2';
+import { Form, Text, File } from '../../components/Vcontrols';
 
 const MembersPage = async () => {
     const supabase = createClient();
@@ -25,7 +25,38 @@ const MembersPage = async () => {
         return (
             <div className="page-base">
                 <div className="action-section">
-                    <MemberNav  />
+                    <article >
+                        <h1>Members</h1>
+                        <Modal2
+                            modalButton={<button><i>person_add</i><span>New Member</span></button>}
+                            title="Create New Member"
+                        >
+                            <Form id="new-member-modal-form" APIURL="/members/createMember" debug >
+                                <section className="modal-fields">
+                                    <Text id="newMemberFirstName" name="firstName" label="First Name" value=""/>
+                                    <Text id="newMemberLastName" name="lastName" label="Last Name" value=""/>
+                                </section>
+                                <section className="modal-buttons">
+                                    <button name="submit">Create Member</button>
+                                    <button name="cancel">Cancel</button>
+                                </section>
+                            </Form>
+                        </Modal2>
+                        <Modal2
+                            modalButton={<button><i>upload</i><span>Upload Members</span></button>}
+                            title="Upload Members from Excel File"
+                        >
+                            <Form id="upload-members-modal-form" APIURL="/members/uploadMembers" debug>
+                                <section className="modal-fields">
+                                    <File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
+                                </section>
+                                <section className="modal-buttons">
+                                    <button name="submit">Upload</button>
+                                    <button name="cancel">Cancel</button>
+                                </section>
+                            </Form>
+                        </Modal2>
+                    </article>
                 </div>
                 <div className="form-section">
                     <div className="page-details">

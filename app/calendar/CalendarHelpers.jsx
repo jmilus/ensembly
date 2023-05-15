@@ -1,8 +1,7 @@
 'use client'
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 
 import {Form, Text, Select, DateTime, CheckBox} from '../../components/Vcontrols';
 import Modal2 from '../../components/Modal2';
@@ -105,24 +104,13 @@ export function ModelNav({model}) {
 
 }
 
-export function SchemaGrid({ model, schemasInModel, AllSchemas }) {
-    const [schemaAssignments, setSchemaAssignments] = useState({});
+export function SchemaGrid({ model, schemasInModel, initialAssignments, AllSchemas }) {
+    const [schemaAssignments, setSchemaAssignments] = useState(initialAssignments);
     const status = useStatus();
 
     const { dispatch } = useContext(GlobalContext)
 
-    useEffect(() => {
-        const initialAssignments = {}
-        model.events.forEach(ev => {
-            initialAssignments[ev.id] = {}
-            Object.keys(schemasInModel).forEach(schemaId => {
-                initialAssignments[ev.id][schemaId] = ev.schemas.findIndex(schema => {
-                    return schema.schema.id === schemaId;
-                }) >= 0;
-            })
-        })
-        setSchemaAssignments(initialAssignments);
-    }, [])
+    console.log(model, schemasInModel)
 
     const handleChangeSchemaAssignment = (action, eventId, schemaId) => {
         let tempAssignments = { ...schemaAssignments };
