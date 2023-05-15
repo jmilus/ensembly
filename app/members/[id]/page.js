@@ -1,16 +1,19 @@
 import 'server-only';
 
 import { fetchOneMember } from '../../../pages/api/members/getOneMember';
+import { fetchManyEnsembles } from '../../../pages/api/ensembles/getManyEnsembles';
 
 import SecurityWrapper from '../../../components/SecurityWrapper';
 import ProfilePhoto from '../../../components/ProfilePhoto';
 import EnsembleCard from '../../../components/EnsembleCard';
 import { Form, Text, Number, Select, DateTime } from '../../../components/Vcontrols';
+import Modal2 from '../../../components/Modal2';
 
 import { Race, Sex, HairColor, EyeColor, EmailRank, AddressRank, PhoneRank } from '@prisma/client';
 
 const MemberPage = async (context) => {
     const member = await fetchOneMember(context.params.id)
+    const ensembleList = await fetchManyEnsembles();
 
     return (
         <SecurityWrapper module="members" selfIdentifier={member.emails[0]?.email}>
@@ -83,6 +86,18 @@ const MemberPage = async (context) => {
                     <div id="memberships">
                         <fieldset className="button-stack">
                             <legend>Membership</legend>
+                            <Modal2
+                                modalButton={<button><i>add</i><span>Add Membership</span></button>}
+                                title="Add Membership"
+                            >
+                                <Form id="add-membership-form" APIURL="/members/updateMembership" additionalIds={{ memberId: member.id }} >
+                                    <Select id="ensembleName" name="ensembleId" label="Ensemble" options={ensembleList} />
+                                    <section className="modal-buttons">
+                                        <button name="submmit">Submit</button>
+                                        <button name="cancel">Cancel</button>
+                                    </section>
+                                </Form>
+                            </Modal2>
                             <div id="ensemble-membership-list">
                                 {
                                     member.memberships.map((membership, i) => {

@@ -12,7 +12,7 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@prisma/client": "^4.8.0",
+    "@prisma/client": "^4.14.0",
     "@supabase/auth-helpers-nextjs": "^0.5.9",
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.6",
@@ -20,7 +20,7 @@
     "classnames": "^2.3.1",
     "exceljs": "^4.3.0",
     "lodash": "^4.17.21",
-    "next": "^13.2.0",
+    "next": "^13.4.2",
     "nextjs": "^0.0.3",
     "node": "^17.7.2",
     "react": "^18.2.0",
@@ -34,7 +34,7 @@
   "devDependencies": {
     "eslint": "8.13.0",
     "eslint-config-next": "^13.3.1",
-    "prisma": "^4.8.0"
+    "prisma": "^4.14.0"
   },
   "browser": {
     "fs": false,

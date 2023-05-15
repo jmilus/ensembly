@@ -2,30 +2,29 @@
 
 import React, { useState, useEffect } from 'react';
 
+import { packageOptions } from '../../utils';
+
 import './Vstyling.css';
 
 const Radio = (props) => {
-    const { id, name, label, value, options, type, extraAction, Vstyle, isRequired = false, children, readonly, debug } = props;
+    const { id, name, label, value, options, type="default", extraAction, Vstyle, isRequired = false, children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value);
-    const [touched, setTouched] = useState(false);
+    const [sliderPosition, setSliderPosition] = useState(options.findIndex(op => op.name === value) || 0);
+
+    const packagedOptions = packageOptions(options, value);
+    const optionsCount = Object.keys(packagedOptions).length;
 
     if (debug) console.log(name, { props }, { controlValue });
 
-    useEffect(() => {
-        if (extraAction) extraAction(controlValue);
-    }, [controlValue])
-
-    const handleControlValueChange = (v) => {
-        setControlValue(v);
-    }
-
-    const handleBlur = () => {
-        if(!touched) setTouched(true);
+    const handleControlValueChange = (v, o) => {
+        if (extraAction) extraAction(v);
+        if(type === "slider") setSliderPosition(o)
+        setControlValue(v.value);
     }
 
     const handleChildren = () => {
         return React.Children.map(children, child => {
-            return React.cloneElement(child, { pattern: controlValue }, child.props.children)
+            return React.cloneElement(child, { pattern: controlValue.value }, child.props.children)
         })
     }
 
@@ -33,31 +32,33 @@ const Radio = (props) => {
 
     return (
         <>
-            <div id={`radio-${id}`} className={`radio-buttons-set ${type}${touched ? ' touched' : ''}`} style={Vstyle}>
+            <div id={`radio-${id}`} className={`radio-buttons-set ${type}`} onChange={(e) => console.log(e)} style={{...Vstyle, flex: optionsCount}}>
                 {
-                    options.map((option, o) => {
+                    Object.values(packagedOptions).map((option, o) => {
                         return (
                             <div key={o} className="radio-option">
                                 <input
-                                    id={`${name}-${option}`}
-                                    name={name}
-                                    value={option}
+                                    id={`${name}-${id}-${o}`}
+                                    name={`${name}-${id}`}
+                                    value={option.value}
                                     type="radio"
-                                    className="radio-option"
-                                    onChange={() => handleControlValueChange(option)}
-                                    onBlur={() => handleBlur()}
+                                    onChange={() => handleControlValueChange(option, o)}
                                     required={isRequired}
                                     readOnly={readonly}
                                 />
-                                <label htmlFor={`${name}-${option}`} className={`label${type === "filters" ? " tab-button" : ""}${controlValue === option ? " active" : ""}`}>
-                                    <div className="radio-button"></div>
-                                    {option}
+                                <label htmlFor={`${name}-${id}-${o}`} className={`label${controlValue === option.value ? " active" : ""}`}>
+                                    <div className={`radio-button ${type}`}></div>
+                                    {type === "default" && option.name}
                                 </label>
                             </div>
                         )
                     })
                 }
-                
+                {type === "slider" && 
+                    <div className={`radio-slider ${controlValue}`} style={{ width: `${100 / optionsCount}%`, left: `${(100 / optionsCount) * sliderPosition}%` }} >
+                        {controlValue}
+                    </div>
+                }
 
             </div>
             { clonedChildren }

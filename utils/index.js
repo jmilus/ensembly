@@ -2,21 +2,21 @@ export const isEmpty = (obj) => {
     return Object.keys(obj).length === 0;
 }
 
-export const packageOptions = (obj, valuesArray) => {
-    const selectionValues = Array.isArray(valuesArray) ? valuesArray : [valuesArray];
-    // console.log("packaging options", obj, selectionValues)
+export const packageOptions = (obj) => {
     if (!obj) return {};
+    console.log(obj)
     
     let newObj = {};
-    if (Array.isArray(obj)) {
+    if (Array.isArray(obj) && obj.length > 0) {
         //db query
         obj.forEach(o => {
-            newObj[o.id] = { ...o, selected: selectionValues.includes(o.id), value: o.value || o.id };
+            if(o != undefined) 
+                newObj[o.id] = { ...o, value: o.value || o.id };
         });
     } else {
         //enums
         Object.keys(obj).forEach(key => {
-            newObj[key] = {id: key, value: key, name: obj[key], selected: selectionValues.includes(key)}
+            newObj[key] = {id: key, value: key, name: obj[key]}
         })
     }
     // console.log("packaged options:", {newObj})

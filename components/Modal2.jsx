@@ -15,13 +15,11 @@ const Modal2 = ({ modalButton, title, children }) => {
 
     const modalBody =
         <div id="modal" className="modal-base">
-            <div className={`modal-wrapper`} >
+            <div className="modal-wrapper">
                 <div className="modal-border">
                     <div className="modal-container">
                         <div className="modal-header">{title}</div>
-                        {
-                            React.cloneElement(children, {onSubmit: () => console.log("******it works!******")}, children.props.children)
-                        }
+                        <div className="modal-body">{children}</div>
                     </div>
                 </div>
             </div>

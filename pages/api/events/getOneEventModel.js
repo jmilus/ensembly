@@ -20,7 +20,14 @@ export const fetchOneEventModel = async (id) => {
                 }
             },
             events: {
-                orderBy: {startDate: 'asc'}
+                orderBy: { startDate: 'asc' },
+                include: {
+                    schemas: {
+                        include: {
+                            schema: true
+                        }
+                    }
+                }
             }
 		}
     })

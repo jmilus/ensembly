@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
-const MemberCard = ({ membership, subtitle = "", presentation, cardType="no-drag", format, dropAction }) => {
-    const { member } = membership;
+const MemberCard = ({ membership, subtitle = "", presentation, cardType = "no-drag", format, dropAction }) => {
+    const { member, status } = membership;
     const doSomething = (junk) => {
         dropAction(junk)
     }
@@ -34,7 +34,7 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType="no-drag
     switch (format) {
         case "detail":
             return (
-                <div className="card-container clickable" onClick={() => router.push(`/members/${member.id}`)}>
+                <div className={`card-container ${status}`} onClick={() => router.push(`/members/${member.id}`)}>
                     <div className="card-header">
                         <div className="hero-icon" style={{width: "50px", height: "50px"}}>{heroIcon}</div>
                         <div className="card-caption">
@@ -49,7 +49,7 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType="no-drag
         case "drag":
             
             return (
-                <div ref={drag} className="card-container" style={isDragging ? { opacity: 0 } : {}}>
+                <div ref={drag} className={`card-container ${status}`} style={isDragging ? { opacity: 0 } : {}}>
                     <div className="card-header" >
                         <div className="hero-icon" style={{ minWidth: "50px", minHeight: "50px" }}>{heroIcon}</div>
                         <div className="card-caption">
@@ -62,7 +62,7 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType="no-drag
             )
         case "wait":
             return (
-                <div ref={drag} className="card-container">
+                <div ref={drag} className={`card-container ${status}`}>
                     <div className="card-header" >
                         <div className="hero-icon cold" style={{ width: "50px", height: "50px" }}>{heroIcon}</div>
                         <div className="card-caption">

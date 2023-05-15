@@ -20,7 +20,7 @@ model EnsembleType {
 model Ensemble {
   id          String               @id @default(cuid())
   name        String               @db.VarChar(64) @unique
-  membership  EnsembleMembership[]
+  roster      EnsembleMembership[]
   type        EnsembleType         @relation(fields: [typeId], references: [id])
   typeId      Int
   schema      Schema[]
@@ -65,10 +65,10 @@ model EnsembleMembership {
   ensemble      Ensemble     @relation(fields: [ensembleId], references: [id], onDelete: Cascade)
   ensembleId    String
   startDate     DateTime     @default(now())
+  assignments   SchemaAssignment[]
   status        MembershipStatus?
   statusDate    DateTime?
   statusNote    String?      @db.VarChar(128)
-  assignments   SchemaAssignment[]
 
   @@unique([memberId, ensembleId])
 }
@@ -133,6 +133,7 @@ model EventSchemas {
 model SchemaAssignment {
   membership    EnsembleMembership    @relation(fields: [membershipId], references: [id])
   membershipId  String
+  memberId      String                @db.VarChar(32)
   schema        Schema                @relation(fields: [schemaId], references: [id])
   schemaId      String
   capacity      Capacity
@@ -171,12 +172,13 @@ model Work {
 }
 
 model Attendance {
-  id            Int               @id @default(autoincrement())
   event         Event             @relation(fields: [eventId], references: [id])
   eventId       String
   member        Member            @relation(fields: [memberId], references: [id])
   memberId      String
   status        AttendanceStatus  @default(Uncounted)
+
+  @@unique([eventId, memberId])
 }
 
 model EventType {

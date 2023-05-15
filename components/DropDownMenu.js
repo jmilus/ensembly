@@ -16,7 +16,7 @@ const DropDownMenu = () => {
     }
     
     const selectOption = (option) => {
-        setSelectControlValue({ ...option, selected: true });
+        setSelectControlValue(option);
         hideDropDown();
     }
 

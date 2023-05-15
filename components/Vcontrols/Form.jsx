@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useRef, useEffect, useContext } from 'react';
+import useStatus from '../../hooks/useStatus';
 
 import { GlobalContext } from '../ContextFrame';
 
@@ -11,6 +12,7 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
     const saveTimer = useRef();
     const readOnlyInputs = useRef([]);
     const { dispatch } = useContext(GlobalContext);
+    const status = useStatus()
 
     const router = useRouter()
 
@@ -62,6 +64,7 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         if (debug) console.log("form submit event", e);
+        status.saving()
 
         if (readOnlyInputs.current.includes(e.target.name)) return null;
 
@@ -95,9 +98,10 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
         iterator.every(item => {
             if (readOnlyInputs.current.includes(item[0])) return true;
 
-            const key = item[0];
+            const uniqueNameDash = item[0].indexOf("-");
+            const key = uniqueNameDash > 0 ? item[0].slice(0, uniqueNameDash) : item[0];
             const val = item[1];
-            console.log("input value:", { key }, { val });
+            if (debug) console.log("input value:", { key }, { val });
             if (dataObject[key]) {
                 if (Array.isArray(dataObject[key])) {
                     dataObject[key].push(val);
@@ -128,7 +132,13 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
                 console.error(err);
             } else {
                 if (followUp) followUp(APIResponse);
-                if (followPath) router.push(followPath(APIResponse))
+                if (followPath) {
+                    router.push(followPath(APIResponse))
+                } else {
+                    status.saved();
+                    router.refresh();
+
+                }
             }
             
         }  

@@ -16,8 +16,8 @@ const contextReducer = (parameters, action) => {
       case "dropdown":
         parameters.dropdown = action.payload;
         return { ...parameters };
-      case "permissions":
-        parameters.permissions = action.payload;
+      case "status":
+        parameters.status = action.payload;
         return { ...parameters };
       default:
         return null;
@@ -28,7 +28,7 @@ const ContextProvider = ({ children }) => {
     const initialState = {
         modal: { type: "hide", content: {} },
         dropdown: null,
-        user: {name: "debug"},
+        status: null,
         config: {}
     };
   

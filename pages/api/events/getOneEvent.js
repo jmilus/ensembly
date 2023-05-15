@@ -14,7 +14,11 @@ export const fetchOneEvent = async (id) => {
                     parentModel: true
                 }
             },
-            schemas: true,
+            schemas: {
+                include: {
+                    schema: true
+                }
+            },
             location: true,
             attendance: true,
             eventProgram: true

@@ -1,11 +1,15 @@
 'use client'
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'
+import { useState, useEffect, useContext } from 'react';
 
-import {Form, Text, Select, DateTime} from '../../components/Vcontrols';
-
-import CALENDAR from '../../utils/calendarUtils';
+import {Form, Text, Select, DateTime, CheckBox} from '../../components/Vcontrols';
 import Modal2 from '../../components/Modal2';
+import { GlobalContext } from '../../components/ContextFrame';
+
+import './calendar.css'
+import useStatus from '../../hooks/useStatus';
 
 export function CalendarNav({ensembles, eventTypes}) {
 
@@ -99,4 +103,111 @@ export function ModelNav({model}) {
         </article>
     )
 
+}
+
+export function SchemaGrid({ model, schemasInModel, AllSchemas }) {
+    const [schemaAssignments, setSchemaAssignments] = useState({});
+    const status = useStatus();
+
+    const { dispatch } = useContext(GlobalContext)
+
+    useEffect(() => {
+        const initialAssignments = {}
+        model.events.forEach(ev => {
+            initialAssignments[ev.id] = {}
+            Object.keys(schemasInModel).forEach(schemaId => {
+                initialAssignments[ev.id][schemaId] = ev.schemas.findIndex(schema => {
+                    return schema.schema.id === schemaId;
+                }) >= 0;
+            })
+        })
+        setSchemaAssignments(initialAssignments);
+    }, [])
+
+    const handleChangeSchemaAssignment = (action, eventId, schemaId) => {
+        let tempAssignments = { ...schemaAssignments };
+
+        tempAssignments[eventId][schemaId] = action;
+        
+        setSchemaAssignments(tempAssignments)
+    }
+
+    const setAll = (schemaId) => {
+        let tempAssignments = { ...schemaAssignments };
+
+        const allChecked = Object.keys(tempAssignments).every(eventId => {
+            return tempAssignments[eventId][schemaId];
+        })
+
+        Object.keys(tempAssignments).forEach(key => {
+            tempAssignments[key][schemaId] = !allChecked;
+        })
+
+        setSchemaAssignments(tempAssignments);
+    }
+
+    const submitAssignments = async () => {
+        dispatch({
+            route: "modal",
+            payload: null
+        })
+        status.saving();
+        const apiReturn = await fetch('/api/events/updateManySchemas', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(schemaAssignments)
+        })
+            .then(response => response.json())
+            .then(res => res)
+            .catch((err, message) => {
+                console.error("update failed", message);
+                return err;
+            })
+        
+        console.log(apiReturn);
+        status.saved();
+    }
+
+    return (
+        <>
+            <div className="schema-grid">
+                <section>
+                    <div className="schema-header grid-column"></div>
+                    {
+                        Object.values(schemasInModel).map((ms, i) => {
+                            return (
+                                <div key={i} className="schema-header grid-column">
+                                    <div className="column-button" onClick={() => setAll(ms.id)}>{ms.name}</div>
+                                </div>
+                            )
+                        })
+                    }
+                </section>
+                {
+                    model.events.map((event, e) => {
+                        return (
+                            <section key={e} className="event-row">
+                                <div className="grid-column">
+                                    <div className="event-header">{new Date(event.startDate).toDateString()}</div>
+                                </div>
+                                {
+                                    Object.values(schemasInModel).map((schema, s) => {
+                                        const isChecked = schemaAssignments[event.id] ? schemaAssignments[event.id][schema.id] : false;
+                                        return (
+                                            <div key={s} className="grid-column">
+                                                <CheckBox id={`${e}-${s}`} shape={1} value={isChecked} extraAction={(action) => handleChangeSchemaAssignment(action, event.id, schema.id)} />
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </section>
+                        )
+                    })
+                }
+            </div>
+            <section className="modal-buttons">
+                <button name="submit" onClick={() => submitAssignments()}>Save</button>
+            </section>
+        </>
+    )
 }

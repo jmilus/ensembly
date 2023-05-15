@@ -7,13 +7,12 @@ export const fetchOneEnsemble = async (id) => {
             id: id
         },
         include: {
-			membership: {
+			roster: {
 				include: {
 					member: true,
 				}
 			},
             type: true,
-            event: true,
             schema: true
         }
     })

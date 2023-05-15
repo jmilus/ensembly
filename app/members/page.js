@@ -32,7 +32,7 @@ const MembersPage = async () => {
                         <FilterContainer
                             id="members-filter"
                             filterTag="member"
-                            display="grid"
+                            columns={{count: "auto-fill", width: "200px"}}
                             search={{ label: "Search Members", searchProp: "name" }}
                             filters={[
                                 { name: "sex", filterProp: "sex", buttons: ["male", "female", "unspecified"] }
@@ -44,7 +44,7 @@ const MembersPage = async () => {
                                         <MemberCard
                                             key={i}
                                             tag="member"
-                                            membership={{ member }}
+                                            membership={{member}}
                                             presentation={"grid"}
                                             format={"detail"}
                                             name={member.aka}

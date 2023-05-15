@@ -2,19 +2,23 @@
 
 import { packageOptions } from '../../utils';
 
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 
 import { GlobalContext } from '../ContextFrame';
 import './Vstyling.css';
 
 
 const Collection = (props) => {
-    const { id, name, label, value, options, filtersArray = [], extraAction, Vstyle, hero, isRequired, children, readonly, debug } = props;
-    const [controlValues, setControlValues] = useState(value || [])
+    const { id, name, label, value, options, extraAction, Vstyle, hero, isRequired, children, readonly, debug } = props;
+    const [controlValues, setControlValues] = useState([])
+
+    useEffect(() => {
+        setControlValues(Object.values(packageOptions(Array.isArray(value) ? value : [value])))
+    }, [value])
 
     let controlOptions = packageOptions(options, value)
 
-    console.log({controlValues})
+    if (debug) console.log({controlValues})
 
     const { dispatch } = useContext(GlobalContext);
 
@@ -29,16 +33,18 @@ const Collection = (props) => {
     const handleDropDownSelection = (input) => {
         dispatch({ route: "dropdown", payload: null })
         let controlValuesCopy = [...controlValues];
-        controlValuesCopy.push(input.value)
+        controlValuesCopy.push(input)
         console.log({controlValuesCopy})
         handleValueUpdate(controlValuesCopy)
     }
 
-    const removeSelection = (id) => {
-        const valuesCopy = [ ...controlValues ]
-        valuesCopy.forEach(val => {
-            if (val.id === id) val.selected = false;
+    const removeSelection = (value) => {
+        console.log(value)
+        const valuesCopy = controlValues.filter(cv => {
+            console.log(cv.id, value)
+            return cv.id != value
         })
+        
         handleValueUpdate(valuesCopy);
     }
 
@@ -52,6 +58,7 @@ const Collection = (props) => {
             payload: {
                 dim: { x: parentControl.offsetLeft, y: parentControl.offsetTop, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
                 options: valuesToShow,
+                value: controlValues.map(cv => cv.id),
                 setSelectControlValue: handleDropDownSelection
             }
         })
@@ -59,11 +66,19 @@ const Collection = (props) => {
 
     const ItemNode = ({data}) => {
         // console.log({data})
+        let nodecolor;
+        switch (data.nodeColor) {
+            case "dim":
+                nodecolor = "var(--gray5)"
+                break;
+            default:
+                break;
+        }
         return (
-            <div className="node-wrapper">
+            <div className="node-wrapper" style={{["--node-color"]: nodecolor}}>
                 {data.icon && data.icon}
                 <span>{data.name}</span>
-                <i onClick={() => removeSelection(data.id)}>cancel</i>
+                <i onClick={() => removeSelection(data.value)}>cancel</i>
             </div>
         )
     }
@@ -75,7 +90,7 @@ const Collection = (props) => {
                 <select
                     id={id}
                     name={name}
-                    value={controlValues}
+                    value={controlValues.map(cv => cv.value)}
                     onChange={() => null}
                     multiple={true}
                     required={isRequired}
@@ -90,8 +105,8 @@ const Collection = (props) => {
                 </select>
                 <div className="collection-container" >
                     {
-                        Object.values(controlOptions).map((option, i) => {
-                            return controlValues.includes(option.value) && <ItemNode key={i} data={option} />
+                        Object.values(controlValues).map((option, i) => {
+                            return <ItemNode key={i} data={option} />
                         })
                     }
                     <input type="text" className="collection-adder" onClick={() => showDropDown()} onChange={(e) => showDropDown(e.target.value)} />

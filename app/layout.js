@@ -5,6 +5,7 @@ import SupabaseListener from '../components/supabase-listener'
 import SupabaseProvider from '../components/supabase-provider'
 
 import Nav from '../components/Nav';
+import StatusBlip from '../components/StatusBlip';
 import Modal from '../components/Modal';
 import DropDownMenu from '../components/DropDownMenu';
 import ContextFrame from '../components/ContextFrame';
@@ -32,6 +33,7 @@ const RootLayout = async ({ children }) => {
                         {!session
                             ? <LoginBox />
                             : <div id="app-body">
+                                <StatusBlip />
                                 <DropDownMenu />
                                 <Modal />
                                 <Nav session={session} />

@@ -1,24 +1,25 @@
 'use client'
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
-import V from '../../../../../components/Vcontrols/VerdantControl';
 import MemberCard from '../../../../../components/MemberCard';
 import DropContainer from '../../../../../components/DropContainer';
 import FilterContainer from '../../../../../components/FilterContainer';
 import TabControl, { Tab } from '../../../../../components/TabControl';
 
+import useStatus from '../../../../../hooks/useStatus';
+
 const SchemaView = ({ initialProps, params }) => {
 
     const { ensemble, divisions, schema } = initialProps;
-    const { name, membership, typeId } = ensemble;
+    const { name, roster, typeId } = ensemble;
     const [workingSchema, setWorkingSchema] = useState(schema)
     const [showRoster, setShowRoster] = useState(schema.assignments.length === 0);
+    const status = useStatus();
 
-    const router = useRouter();
+    console.log("View Schema initialProps:", { initialProps })
+    console.log(workingSchema);
 
-    console.log("View Schema initialProps:", {initialProps})
 
     const handleDrop = async (payload) => {
         console.log({payload})
@@ -28,19 +29,19 @@ const SchemaView = ({ initialProps, params }) => {
         const newAssignments = [...workingSchema.assignments]
         console.log("before:", {...newAssignments})
         if (membership.assignmentId) {
-            const assIndex = newAssignments.findIndex(ass => {
-                return `${ass.membership.id}-${ass.schemaId}-${ass.divisionId}` === membership.assignmentId;
+            const assignmentIndex = newAssignments.findIndex(assignment => {
+                return `${assignment.membershipId}-${assignment.schemaId}-${assignment.divisionId}` === membership.assignmentId;
             })
-            if (assIndex < 0) return null;
+            if (assignmentIndex < 0) return null;
 
             if (division.id === "remove") {
-                newAssignments.splice(assIndex, 1);
+                newAssignments.splice(assignmentIndex, 1);
             } else {
-                newAssignments[assIndex] = { ...newAssignments[assIndex], assignmentId: `${membership.id}-${workingSchema.id}-${division.id}`, divisionId: division.id, division: division }
+                newAssignments[assignmentIndex] = { ...newAssignments[assignmentIndex], assignmentId: `${membership.id}-${workingSchema.id}-${division.id}`, divisionId: division.id, division: division }
             }
             
         } else {
-            newAssignments.unshift({ assignmentId: `${membership.id}-${workingSchema.id}-${division.id}`, schemaId: workingSchema.id, membership: membership, memberId: membership.memberId, capacity: division.capacity, divisionId: division.id, division: division });
+            newAssignments.unshift({ assignmentId: `${membership.id}-${workingSchema.id}-${division.id}`, schemaId: workingSchema.id, membershipId: membership.id, membership: membership, memberId: membership.memberId, capacity: division.capacity, divisionId: division.id, division: division });
         }
         console.log("after:", {...newAssignments})
 
@@ -48,6 +49,7 @@ const SchemaView = ({ initialProps, params }) => {
         newSchema.assignments = newAssignments
         setWorkingSchema(newSchema)
 
+        status.saving()
         if (division.id === "remove") {
 
             return await fetch('/api/ensembles/deleteSchemaAssignment', {
@@ -61,6 +63,7 @@ const SchemaView = ({ initialProps, params }) => {
             })
                 .then(response => response.json())
                 .then(record => {
+                    status.saved()
                     console.log(record)
                     return record;
                 })
@@ -75,6 +78,7 @@ const SchemaView = ({ initialProps, params }) => {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     membershipId: membership.id,
+                    memberId: membership.memberId,
                     schemaId: workingSchema.id,
                     capacity: division.capacity,
                     oldDivisionId: membership.divisionId,
@@ -83,6 +87,7 @@ const SchemaView = ({ initialProps, params }) => {
             })
                 .then(response => response.json())
                 .then(record => {
+                    status.saved()
                     console.log(record)
                     return record;
                 })
@@ -114,8 +119,9 @@ const SchemaView = ({ initialProps, params }) => {
         },
     }
 
-    const isAssignedToEnsemble = (mem) => {
-        return workingSchema.assignments?.find(assignment => assignment.membership.memberId === mem.memberId)
+    const isAssignedToSchema = (membership) => {
+        if (workingSchema.assignments.length === 0) return false;
+        return workingSchema.assignments?.find(assignment => assignment.membershipId === membership.id)
     }
 
     const memberRosterBox = 
@@ -127,7 +133,7 @@ const SchemaView = ({ initialProps, params }) => {
                     <FilterContainer
                         id="roster"
                         filterTag="member"
-                        display="flex"
+                        columns={{count: 1, width:"1fr"}}
                         search={{ label: "member", searchProp: "name" }}
                         filters={[
                             { name: "assigned", filterProp: "assigned", buttons: [{ Unassigned: (prop) => !prop }, { Assigned: (prop) => prop } ] }
@@ -135,17 +141,17 @@ const SchemaView = ({ initialProps, params }) => {
                     >
                         <article>
                             {
-                                membership.map((mem, m) => {
+                                roster.map((membership, m) => {
                                     return (
                                         <MemberCard
                                             key={m}
                                             tag="member"
-                                            membership={mem}
+                                            membership={membership}
                                             format="drag"
                                             cardType="CARD-OUT"
                                             dropAction={handleDrop}
-                                            name={mem.member.aka}
-                                            assigned={isAssignedToEnsemble(mem)}
+                                            name={membership.member.aka}
+                                            assigned={isAssignedToSchema(membership)}
                                         />
                                     )
                                 })
@@ -167,7 +173,7 @@ const SchemaView = ({ initialProps, params }) => {
                     id={`schema-filter`}
                     filterTag="member"
                     search={{ label: "Search Assignees", searchProp: "name" }}
-                    display="flex"
+                    columns={{count:1, width: "1fr"}}
                 >
                     <TabControl>
                         {
@@ -187,19 +193,19 @@ const SchemaView = ({ initialProps, params }) => {
                                                         }
                                                         
                                                         {
-                                                            workingSchema.assignments?.map((ass, m) => {
-                                                                if (ass.division.parentId != div.id) return null;
+                                                            workingSchema.assignments?.map((assignment, m) => {
+                                                                if (assignment.division.parentId != div.id) return null;
                                                                 return (
                                                                     <MemberCard
                                                                         key={m}
                                                                         tag="member"
-                                                                        membership={{ ...ass.membership, assignmentId: `${ass.membership.id}-${workingSchema.id}-${ass.division.id}`, capacity: cap, divisionId: ass.divisionId }}
-                                                                        subtitle={ass.division?.name}
+                                                                        membership={{ ...assignment.membership, assignmentId: `${assignment.membershipId}-${workingSchema.id}-${assignment.division.id}`, capacity: cap, divisionId: assignment.divisionId }}
+                                                                        subtitle={assignment.division?.name}
                                                                         presentation="grid"
                                                                         format="drag"
                                                                         cardType="CARD-IN"
                                                                         dropAction={handleDrop}
-                                                                        name={ass.membership.member.aka}
+                                                                        name={assignment.membership.member.aka}
                                                                     />
                                                                 )
                                                             })

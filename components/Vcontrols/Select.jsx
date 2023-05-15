@@ -36,7 +36,8 @@ const Select = (props) => {
     const { dispatch } = useContext(GlobalContext);
 
     const changeValues = (newValues) => {
-        if (extraAction) extraAction(multiselect ? selectValue : selectValue[0]);
+        console.log(newValues)
+        if (extraAction) extraAction(multiselect ? newValues : newValues[0]);
 
         setControlValue(newValues)
     }
@@ -60,18 +61,6 @@ const Select = (props) => {
         // console.log("change handler", input)
         changeValues({ ...controlOptions, [input]: { ...controlOptions[input], selected: !controlOptions[input].selected } });
     }
-
-    // const filterOptions = (ops) => {
-    //     if (!filtersArray.length) return Object.values(ops);
-    //     const filteredOptions = Object.values(ops).filter(option => {
-    //         const excludeOption = filtersArray.every(filter => {
-    //             return !filter.filterFor.includes(option[filter.filterBy]);
-    //         })
-    //         if (excludeOption) return false;
-    //         return true
-    //     })
-    //     return filteredOptions;
-    // }
 
     const handleChildren = () => {
         return React.Children.map(children, child => {

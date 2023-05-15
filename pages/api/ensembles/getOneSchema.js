@@ -4,20 +4,16 @@ import { formatDBObject } from '../../../utils';
 export const fetchOneSchema = async (id) => {
     const fetchedSchema = await prisma.schema.findUnique({
         where: {
-            id: id
+            id: id,
         },
         include: {
+            ensemble: true,
             assignments: {
-                where: {
-                    membership: {
-                        is: {
-                            status: "Active"
-                        }
-                    }
-                },
                 include: {
                     membership: {
-                        include: { member: true }
+                        include: {
+                            member: true
+                        }
                     },
                     division: true
                 }

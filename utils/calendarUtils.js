@@ -24,7 +24,7 @@ export const getTime = (input) => {
 
 export const getDashedValue = (input) => {
     // console.log({input})
-    return `${input.getFullYear()}-${doubleDigit(input.getMonth()+1)}-${doubleDigit(input.getDate())}T${doubleDigit(input.getHours())}:${doubleDigit(input.getMinutes())}:${doubleDigit(input.getSeconds())}}`
+    return `${input.getFullYear()}-${doubleDigit(input.getMonth()+1)}-${doubleDigit(input.getDate())}T${doubleDigit(input.getHours())}:${doubleDigit(input.getMinutes())}:${doubleDigit(input.getSeconds())}`
 }
 
 export const get24Time = (input) => {

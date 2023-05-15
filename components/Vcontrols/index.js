@@ -7,3 +7,4 @@ export { default as CheckBox } from './CheckBox';
 export { default as File } from './File';
 export { default as Radio } from './Radio';
 export { default as Form } from './Form';
+export { default as Button } from './Button';

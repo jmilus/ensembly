@@ -51,6 +51,7 @@ body {
 
   --shadow1: 0px 2px 5px -1px hsl(0, 0%, 70%);
   --dd-shadow: 0px 10px 10px 0px hsla(0, 0%, 30%, 0.5);
+  --option-height: 36px;
 }
 
 * {
@@ -118,15 +119,6 @@ input, textarea {
 textarea {
   min-height: 100px;
   resize: none;
-}
-
-select {
-  appearance: none;
-  padding-right: 40px !important;
-}
-
-select:-internal-list-box {
-  white-space: wrap;
 }
 
 input::placeholder,
@@ -524,6 +516,7 @@ legend {
 
 fieldset.card-set {
   overflow-y: scroll;
+  flex: 1;
 }
 
 fieldset.buttons {
@@ -630,8 +623,12 @@ fieldset.buttons > button:last-of-type {
 
 .filter-container-content {
   flex:1;
+  display: grid;
+  gap: 3px;
+  --grid-columns: 1;
+  --min-width: 1fr;
+  grid-template-columns: repeat(var(--grid-columns), minmax(var(--min-width), 1fr));
   overflow-y: scroll;
-  grid-template-columns: repeat(auto-fill, 20%);
 }
 
 
@@ -685,6 +682,7 @@ fieldset.buttons > button:last-of-type {
   flex-direction: column;
   border: 1px solid var(--gray4);
   width: auto;
+  min-width: 200px;
   padding: 5px;
   margin:5px;
   background-color: white;
@@ -796,7 +794,6 @@ fieldset.buttons > button:last-of-type {
   padding: 20px;
 }
 .accordion .tab-button.active {
-  background: var(--color-c3);
   border-color: white;
   color: var(--text1);
   padding: 20px;
@@ -922,14 +919,23 @@ fieldset.buttons > button:last-of-type {
   justify-content: space-between;
   border: 1px solid red;
   border-radius: 7px;
-  padding: 3px 5px;
+  padding: 5px 10px;
   margin: 1.5px 3px;
   font-size: 0.75em;
   cursor: pointer;
+  --node-color: var(--color-p);
+  border-color: var(--node-color);
+  color: var(--node-color);
+  transition: all 0.2s ease;
 }
 .event-node.model {
   font-size: 1em;
-  padding: 10px 5px;
+  padding: 10px;
+}
+.event-node:hover {
+  box-shadow: 20px 0 0 -10px inset var(--node-color), -20px 0 0 -10px inset var(--node-color);
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .sub-nav {

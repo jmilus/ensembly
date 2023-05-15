@@ -11,10 +11,6 @@ const Text = (props) => {
 
     if (debug) console.log(name, { props }, { controlValue });
 
-    useEffect(() => {
-        if (extraAction) extraAction(controlValue);
-    }, [controlValue])
-
     let textType;
     switch (format) {
         case "phone":
@@ -46,6 +42,7 @@ const Text = (props) => {
                 workingValue = input;
                 break;
         }
+        if (extraAction) extraAction(workingValue);
         setControlValue(workingValue);
     }
 

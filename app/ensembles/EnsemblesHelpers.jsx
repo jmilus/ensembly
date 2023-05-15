@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { useRouter, usePathname } from "next/navigation";
 
 import { GlobalContext } from "../../components/ContextFrame";
-import {Form, Text, File} from '../../components/Vcontrols';
+import {Form, Text, File, Select} from '../../components/Vcontrols';
 import TabControl, { Tab } from '../../components/TabControl';
 
 import memberImportFromExcel from '../../lib/memberImportFromExcel';
@@ -156,7 +156,7 @@ const EnsembleNav = ({ ensemble, schema }) => {
                 </Tab>
                 <Tab id="Schemas" onLoad={() => router.push(`ensembles/${ensemble.id}/viewschema/x`)}>
                     <article style={{ padding: "10px" }}>
-                        <Select id="schema-select" field="schema" label="Schema" value={schema.id} options={ensemble.schema} extraAction={(selectedSchema) => loadSchema(selectedSchema[0].id)} />
+                        <Select id="schema-select" field="schema" label="Schema" value={schema.id} options={ensemble.schema} extraAction={(selectedSchema) => loadSchema(selectedSchema)} />
                         <fieldset className="buttons">
                             <button className="icon-and-label" onClick={() => newSchemaModal(ensemble)}><i>add_box</i>New Schema</button>
                             <button className="icon-and-label" onClick={() => copySchemaModal(ensemble)}><i>library_add</i>Copy Schema</button>

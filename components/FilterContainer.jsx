@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 
 import { Text } from './Vcontrols/';
 
-export function FilterButtons({id, buttons, filterValues = [], filterAction}) {
+export function FilterButtons(props) {
+    const { id, buttons, filterValues = [], filterAction } = props;
 
     return (
         <div className="filter-buttons-set">
@@ -32,9 +33,12 @@ export function FilterButtons({id, buttons, filterValues = [], filterAction}) {
     )
 }
 
-const FilterContainer = ({id, filterTag, search, filters = [], display="grid", children}) => {
+const FilterContainer = (props) => {
+    const { id, filterTag, search, filters = [], columns, Vstyle, debug, children } = props;
     const [filterParams, setFilterParams] = useState({})
     const [searchString, setSearchString] = useState("")
+
+    if (debug) console.log(props)
 
     const clearAll = () => {
         setFilterParams({})
@@ -80,7 +84,7 @@ const FilterContainer = ({id, filterTag, search, filters = [], display="grid", c
         })
         
         //filter search
-        if (includeChild && search) {
+        if (includeChild && search && searchString.length > 0) {
             includeChild = child.props[search?.searchProp].toLowerCase().includes(searchString.toLowerCase());
         }
 
@@ -121,15 +125,15 @@ const FilterContainer = ({id, filterTag, search, filters = [], display="grid", c
         </div>
 
     return (
-        <div className="filter-container">
+        <div className="filter-container" style={Vstyle}>
             <div className="filters">
                 {search &&
-                    <Text id={`${id}-searchbox`} label="Search Members" value={searchString} clear extraAction={(v) => setSearchString(v)} Vstyle={{ flex: 1, maxWidth: "300px" }} />
+                    <Text id={`${id}-searchbox`} label={search.label} value={searchString} clear extraAction={(v) => setSearchString(v)} Vstyle={{ flex: 1, maxWidth: "300px" }} />
                 }
                 {filterButtons}
                 {filters.length > 0 ? clearButton : null}
             </div>
-            <div className="filter-container-content" style={{display: display}}>
+            <div className="filter-container-content" style={{["--grid-columns"]: columns.count, ["--min-width"]: columns.width}}>
                 { filteredChildren }
             </div>
         </div>

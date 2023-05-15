@@ -13,7 +13,7 @@ export const EventNode = ({ event, showDate, inheritedStyle }) => {
 
     return (
         <Link href={`/calendar/event/${event.id}`}>
-            <div className="event-node" style={{...inheritedStyle, borderColor: eventTypeColor, color: eventTypeColor}}>
+            <div className="event-node" style={{...inheritedStyle, ["--node-color"]: eventTypeColor}}>
                 <span>{event.model.name}</span>
                 <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(event.startDate)}</span>
             </div>
