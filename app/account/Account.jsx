@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase-client';
 
-import V from '../../components/Vcontrols/VerdantControl';
+import { Form, Text } from '../../components/Vcontrols/';
 
 import basePageStyles from '../../styles/basePage.module.css';
 
@@ -39,18 +39,18 @@ const Account = (user) => {
                     <article>
                         <fieldset>
                             <legend>Credentials</legend>
-                            <V.Text id="login-email" label="Email" value={user.email} readonly />
-                            <V.Form id="manage-password" altSubmit={changePassword}>
+                            <Text id="login-email" label="Email" value={user.email} readonly />
+                            <Form id="manage-password" altSubmit={changePassword}>
                                 <section>
-                                    <V.Text id="new-password" name="new-password" label="New Password" format="password" isRequired>
-                                        <V.Text id="confirm-password" name="confirm-password" label="Confirm Password" format="password" isRequired/>
-                                    </V.Text>
+                                    <Text id="new-password" name="new-password" label="New Password" format="password" isRequired>
+                                        <Text id="confirm-password" name="confirm-password" label="Confirm Password" format="password" isRequired/>
+                                    </Text>
                                 </section>
                                 <section>
                                     <button type="submit">Submit</button>
                                     <div className={`form-message ${message.class}`}>{message.text}</div>
                                 </section>
-                            </V.Form>
+                            </Form>
                         </fieldset>
 
                     </article>
