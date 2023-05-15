@@ -19,17 +19,7 @@ const CheckBox = (props) => {
         if (extraAction) extraAction(e.target.checked);
         setControlValue(e.target.checked);
     }
-
-    const checked = [
-        <i>check_box</i>,
-        <div className="check-button checked" ><div></div></div>
-    ]
-
-    const unchecked = [
-        <i></i>,
-        <div className="check-button"><div></div></div>
-    ]
-
+    
     let checkButton;
     switch (shape) {
         case "button":
