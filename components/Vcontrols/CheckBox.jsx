@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import './Vstyling.css';
 
 const CheckBox = (props) => {
-    const { id, name, label, value=false, extraAction, shape=0, Vstyle, children, recordId, readonly, debug } = props;
+    const { id, name, label, value=false, extraAction, shape, Vstyle, children, recordId, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value);
 
     if (debug) console.log(name, { props }, { controlValue });
@@ -26,14 +26,24 @@ const CheckBox = (props) => {
     ]
 
     const unchecked = [
-        <i>check_box_outline_blank</i>,
+        <i></i>,
         <div className="check-button"><div></div></div>
     ]
+
+    let checkButton;
+    switch (shape) {
+        case "button":
+            checkButton = <div className={`check-button ${controlValue ? "checked" : ""}`}><div></div></div>
+            break;
+        default:
+            checkButton = <i>{controlValue ? "check_box" : "check_box_outline_blank"}</i>
+            break;
+    }
 
     return (
         <div className={`input-control-base checkbox${controlValue ? " checked" : ""}${readonly ? " readonly" : ""}`} style={Vstyle} >
             <label htmlFor={id} className="label">
-                {controlValue ? checked[shape] : unchecked[shape] }
+                {checkButton}
                 <input
                     id={id}
                     type="checkbox"

@@ -183,7 +183,7 @@ export function SchemaGrid({ model, schemasInModel, initialAssignments, AllSchem
                                         const isChecked = schemaAssignments[event.id] ? schemaAssignments[event.id][schema.id] : false;
                                         return (
                                             <div key={s} className="grid-column">
-                                                <CheckBox id={`${e}-${s}`} shape={1} value={isChecked} extraAction={(action) => handleChangeSchemaAssignment(action, event.id, schema.id)} />
+                                                <CheckBox id={`${e}-${s}`} shape="button" value={isChecked} extraAction={(action) => handleChangeSchemaAssignment(action, event.id, schema.id)} />
                                             </div>
                                         )
                                     })
