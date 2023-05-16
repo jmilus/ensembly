@@ -1,14 +1,13 @@
-import basePageStyles from '../../../../../styles/basePage.module.css';
 
 export default function LoadingSchema() {
     return (
-        <div className={basePageStyles.formSection}>
-            <div className={basePageStyles.pageHeader}>
+        <>
+            <div className="page-header">
                 <h1>Loading Schema...</h1>
             </div>
-            <div className={basePageStyles.pageDetails}>
+            <div className="page-details">
 
             </div>
-        </div>
+        </>
     )
 }

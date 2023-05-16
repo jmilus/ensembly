@@ -98,7 +98,6 @@ h1 {
 section {
   display: flex;
   flex-wrap: wrap;
-  overflow: hidden;
 }
 
 article {
@@ -700,6 +699,7 @@ fieldset.buttons > button:last-of-type {
 }
 
 .card-caption {
+  flex: 1;
   margin-left: 10px;
 }
 

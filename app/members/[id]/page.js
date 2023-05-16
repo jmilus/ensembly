@@ -91,10 +91,11 @@ const MemberPage = async (context) => {
                                 title="Add Membership"
                             >
                                 <Form id="add-membership-form" APIURL="/members/updateMembership" additionalIds={{ memberId: member.id }} >
-                                    <Select id="ensembleName" name="ensembleId" label="Ensemble" options={ensembleList} />
+                                    <section className="modal-fields">
+                                        <Select id="ensembleName" name="ensembleId" label="Ensemble" options={ensembleList} />
+                                    </section>
                                     <section className="modal-buttons">
-                                        <button name="submmit">Submit</button>
-                                        <button name="cancel">Cancel</button>
+                                        <button name="submit">Submit</button>
                                     </section>
                                 </Form>
                             </Modal2>

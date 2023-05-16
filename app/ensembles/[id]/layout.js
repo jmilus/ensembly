@@ -4,13 +4,9 @@ import { createClient } from '../../../utils/supabase-server';
 import { loadUserPermissions } from '../../../pages/api/general/getUserPermissions';
 
 import { fetchOneEnsemble } from '../../../pages/api/ensembles/getOneEnsemble';
-import { fetchManyDivisions } from '../../../pages/api/ensembles/getManyDivisions';
 import { fetchOneSchema } from '../../../pages/api/ensembles/getOneSchema';
 
 import EnsembleNav from '../EnsemblesHelpers';
-
-import basePageStyles from '../../../styles/basePage.module.css';
-
 
 const EnsemblePage = async (context) => {
     console.log({ context });
@@ -27,14 +23,12 @@ const EnsemblePage = async (context) => {
         const schema = await fetchOneSchema(ensemble.schema[0].id)
 
         return (
-            <div className={basePageStyles.pageBase}>
-                <div className={basePageStyles.actionSection}>
+            <div className="page-base">
+                <div className="action-section">
                     <EnsembleNav ensemble={ensemble} schema={schema} />
                 </div>
-                <div className={basePageStyles.formSection}>
-                    <div className={basePageStyles.pageDetails}>
-                        {context.children}
-                    </div>
+                <div className="form-section">
+                    {context.children}
                 </div>
             </div>
 

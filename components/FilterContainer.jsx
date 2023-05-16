@@ -34,7 +34,7 @@ export function FilterButtons(props) {
 }
 
 const FilterContainer = (props) => {
-    const { id, filterTag, search, filters = [], columns, Vstyle, debug, children } = props;
+    const { id, title, filterTag, search, filters = [], columns, Vstyle, debug, children } = props;
     const [filterParams, setFilterParams] = useState({})
     const [searchString, setSearchString] = useState("")
 
@@ -85,6 +85,7 @@ const FilterContainer = (props) => {
         
         //filter search
         if (includeChild && search && searchString.length > 0) {
+            console.log(child.props, searchString)
             includeChild = child.props[search?.searchProp].toLowerCase().includes(searchString.toLowerCase());
         }
 
@@ -127,6 +128,7 @@ const FilterContainer = (props) => {
     return (
         <div className="filter-container" style={Vstyle}>
             <div className="filters">
+                {title && <h1 style={{padding: "16px 20px 0 0"}}>{title}</h1>}
                 {search &&
                     <Text id={`${id}-searchbox`} label={search.label} value={searchString} clear extraAction={(v) => setSearchString(v)} Vstyle={{ flex: 1, maxWidth: "300px" }} />
                 }

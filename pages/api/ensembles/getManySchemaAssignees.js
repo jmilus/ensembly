@@ -16,7 +16,12 @@ export const fetchManySchemaAssignments = async (schemas) => {
             },
             division: true
         },
-        distinct: ['memberId']
+        distinct: ['memberId'],
+        orderBy: {
+            membership: {
+                member: { lastName: 'asc' }
+            }
+        }
     })
 
     return assignments;

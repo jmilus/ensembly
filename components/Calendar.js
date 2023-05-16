@@ -47,20 +47,21 @@ const CalDay = ({ day, events = [], inMonth }) => {
     )
 }
 
-const Calendar = ({ firstDay, events, viewDays = 34 }) => {
+const Calendar = ({ firstDay, events, viewDays = 35 }) => {
     let d = new Date(firstDay);
 
     const thisMonth = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 13).getMonth();
 
     const displayDays = {};
     
-    for (var x = 0; x <= viewDays; x++) {
-        const day = new Date(d);
-        displayDays[day.toLocaleDateString()] = {value: day, events: []}
+    for (var x = 0;
+        x < viewDays;
+        x++) {
+        displayDays[CALENDAR.getDashedValue(d, true)] = {value: new Date(d), events: []}
         d.setDate(d.getDate() + 1);
     }
 
-    // console.log({ displayDays });
+    console.log({ displayDays });
 
     events.forEach(event => {
         const dayCount = CALENDAR.compareDates(event.startDate, event.endDate);
@@ -68,7 +69,7 @@ const Calendar = ({ firstDay, events, viewDays = 34 }) => {
         let cursorDay = new Date(event.startDate);
 
         for (var d = 0; d <= dayCount; d++) {
-            displayDays[cursorDay.toLocaleDateString()]?.events.push(event)
+            displayDays[CALENDAR.getDashedValue(cursorDay, true)]?.events.push(event)
             cursorDay.setDate(cursorDay.getDate() + 1);
         }
     })

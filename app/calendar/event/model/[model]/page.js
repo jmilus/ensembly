@@ -112,7 +112,6 @@ const EventModelPage = async (context) => {
                 </section>
                 <section className="modal-buttons">
                     <button name="submit">Create Event</button>
-                    <button name="cancel">Cancel</button>
                 </section>
             </Form>
         </Modal2>
@@ -136,7 +135,6 @@ const EventModelPage = async (context) => {
                 </section>
                 <section className="modal-buttons">
                     <button name="submit">Create Event</button>
-                    <button name="cancel">Cancel</button>
                 </section>
             </Form>
         </Modal2>
@@ -172,7 +170,7 @@ const EventModelPage = async (context) => {
                 filterTag="assignee"
                 columns={{ c: 3, w: "200px" }}
                 search={{ label: "Search", searchProp: "name" }}
-                Vstyle={{width: "750px"}}
+                Vstyle={{width: "750px", minHeight: "500px", margin: "0 20px 20px"}}
             >
                 {
                     assignments.map((assignment, m) => {

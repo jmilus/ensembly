@@ -78,10 +78,6 @@
     overflow: hidden;
 }
 
-.modal-body > *:not(.modal-buttons) {
-    margin: 0 20px;
-}
-
 .loading {
     width: 100%;
     height: 100%;
@@ -99,9 +95,9 @@
     padding: 10px;
 }
 
-/* .modal-fields {
+.modal-fields {
     margin: 0 20px;
-} */
+}
 
 .modal-buttons {
     margin-top: 20px;

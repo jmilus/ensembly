@@ -28,6 +28,12 @@
 .action-section button {
     color: var(--text1);
     --edge-color: var(--color-c1);
+    font-size: 1.1em;
+    padding: 20px;
+}
+
+.action-section fieldset.buttons {
+    background: transparent;
 }
 
 

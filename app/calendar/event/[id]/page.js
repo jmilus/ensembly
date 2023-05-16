@@ -41,7 +41,7 @@ const EventPage = async (context) => {
                 filterTag="assignee"
                 columns={{ c: 3, w: "200px" }}
                 search={{ label: "Search", searchProp: "name" }}
-                Vstyle={{width: "750px"}}
+                Vstyle={{width: "750px", minHeight: "500px", margin: "0 20px 20px"}}
             >
                 {
                     assignments.map((assignment, m) => {
@@ -72,30 +72,32 @@ const EventPage = async (context) => {
                 search={{ label: "Search", searchProp: "name" }}
                 Vstyle={{width: "750px"}}
             >
-                <div className="attendance-row slider">
-                    <div className="attendance-name"></div>
-                    {
-                        attendanceStatusObjects.map((status, s) => {
-                            return <div key={s} className="attendance-header radio-option">{status.name}</div>
-                        })
+                <div className="attendance-container">
+                    <div className="attendance-row slider">
+                        <div className="attendance-name"></div>
+                        {
+                            attendanceStatusObjects.map((status, s) => {
+                                return <div key={s} className="attendance-header radio-option">{status.name}</div>
+                            })
 
-                    }
+                        }
+                    </div>
+                    <article className="scroll">
+                        {
+                            assignments.map((assignment, m) => {
+                                const { member } = assignment.membership;
+                                return (
+                                    <Form key={m} id={`${member.id}-attendance-form`} APIURL="/events/updateAttendance" additionalIds={{memberId: member.id, eventId: event.id}} auto>
+                                        <div className="attendance-row" tag="attendee" name={member.aka}>
+                                            <div className="attendance-name">{member.aka}</div>
+                                            <Radio id={member.id} name="status" value={eventAttendance[member.id] || "Uncounted"} type="slider" options={attendanceStatusObjects} debug/>
+                                        </div>
+                                    </Form>
+                                )
+                            })
+                        }
+                    </article>
                 </div>
-                <article className="scroll">
-                    {
-                        assignments.map((assignment, m) => {
-                            const { member } = assignment.membership;
-                            return (
-                                <Form key={m} id={`${member.id}-attendance-form`} APIURL="/events/updateAttendance" additionalIds={{memberId: member.id, eventId: event.id}} auto>
-                                    <div className="attendance-row" tag="attendee" name={member.aka}>
-                                        <div className="attendance-name">{member.aka}</div>
-                                        <Radio id={member.id} name="status" value={eventAttendance[member.id] || "Uncounted"} type="slider" options={attendanceStatusObjects} debug/>
-                                    </div>
-                                </Form>
-                            )
-                        })
-                    }
-                </article>
             </FilterContainer>
         </Modal2>
 

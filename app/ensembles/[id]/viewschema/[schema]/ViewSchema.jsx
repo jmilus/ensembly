@@ -165,66 +165,63 @@ const SchemaView = ({ initialProps, params }) => {
         </div >
     
     return (
-        <>
-            <div>{workingSchema.name}</div>
-            <section style={{flex:1, padding: "0 0 0 20px"}}>
-
-                <FilterContainer
-                    id={`schema-filter`}
-                    filterTag="member"
-                    search={{ label: "Search Assignees", searchProp: "name" }}
-                    columns={{count:1, width: "1fr"}}
-                >
-                    <TabControl>
-                        {
-                            ["Performer", "Crew", "Staff"].map((cap, t) => {
-                                return (
-                                    <Tab key={t} id={cap}>
-                                        {
-                                            divisions.map((div, d) => {
-                                                if (div.capacity != cap) return null;
-                                                return (
-                                                    <fieldset key={d} className="card-set" style={{background: "var(--gray1)"}} >
-                                                        <legend>{div.name}</legend>
-                                                        {
-                                                            div.childDivisions.map((sd, c) => {
-                                                                return <DropContainer key={`d${c}`} caption={sd.name} value={sd} acceptTypes={["CARD-IN", "CARD-OUT"]} dropStyles={sectionDropStyle} />
-                                                            })
-                                                        }
-                                                        
-                                                        {
-                                                            workingSchema.assignments?.map((assignment, m) => {
-                                                                if (assignment.division.parentId != div.id) return null;
-                                                                return (
-                                                                    <MemberCard
-                                                                        key={m}
-                                                                        tag="member"
-                                                                        membership={{ ...assignment.membership, assignmentId: `${assignment.membershipId}-${workingSchema.id}-${assignment.division.id}`, capacity: cap, divisionId: assignment.divisionId }}
-                                                                        subtitle={assignment.division?.name}
-                                                                        presentation="grid"
-                                                                        format="drag"
-                                                                        cardType="CARD-IN"
-                                                                        dropAction={handleDrop}
-                                                                        name={assignment.membership.member.aka}
-                                                                    />
-                                                                )
-                                                            })
-                                                        }
-                                                        
-                                                    </fieldset>
-                                                )
-                                            })
-                                        }
-                                    </Tab>
-                                )
-                            })
-                        }
-                        
-                    </TabControl>
-                </FilterContainer>
-                {memberRosterBox}
-            </section>
-        </>
+        <section style={{flex:1, padding: "0 0 0 20px"}}>
+            <FilterContainer
+                id={`schema-filter`}
+                title={schema.name}
+                filterTag="member"
+                search={{ label: "Search Assignees", searchProp: "name" }}
+                columns={{count:1, width: "1fr"}}
+            >
+                <TabControl>
+                    {
+                        ["Performer", "Crew", "Staff"].map((cap, t) => {
+                            return (
+                                <Tab key={t} id={cap}>
+                                    {
+                                        divisions.map((div, d) => {
+                                            if (div.capacity != cap) return null;
+                                            return (
+                                                <fieldset key={d} className="card-set" style={{background: "var(--gray1)"}} >
+                                                    <legend>{div.name}</legend>
+                                                    {
+                                                        div.childDivisions.map((sd, c) => {
+                                                            return <DropContainer key={`d${c}`} caption={sd.name} value={sd} acceptTypes={["CARD-IN", "CARD-OUT"]} dropStyles={sectionDropStyle} />
+                                                        })
+                                                    }
+                                                    
+                                                    {
+                                                        workingSchema.assignments?.map((assignment, m) => {
+                                                            if (assignment.division.parentId != div.id) return null;
+                                                            return (
+                                                                <MemberCard
+                                                                    key={m}
+                                                                    tag="member"
+                                                                    membership={{ ...assignment.membership, assignmentId: `${assignment.membershipId}-${workingSchema.id}-${assignment.division.id}`, capacity: cap, divisionId: assignment.divisionId }}
+                                                                    subtitle={assignment.division?.name}
+                                                                    presentation="grid"
+                                                                    format="drag"
+                                                                    cardType="CARD-IN"
+                                                                    dropAction={handleDrop}
+                                                                    name={assignment.membership.member.aka}
+                                                                />
+                                                            )
+                                                        })
+                                                    }
+                                                    
+                                                </fieldset>
+                                            )
+                                        })
+                                    }
+                                </Tab>
+                            )
+                        })
+                    }
+                    
+                </TabControl>
+            </FilterContainer>
+            {memberRosterBox}
+        </section>
     )
 }
 

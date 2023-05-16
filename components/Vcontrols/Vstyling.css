@@ -456,19 +456,19 @@ i.dot.selected {
     height: 2em;
     border-radius: 3px;
     background: var(--gray2);
-    box-shadow: 0 0 0 1px inset var(--gray5);
+    box-shadow: 0 0 0 1px inset var(--gray4);
     overflow: hidden;
 }
 
 .check-button > div {
     height: 0%;
     width: 100%;
-    background: var(--color-moss);
+    background: var(--color-c2);
     transition: all 75ms ease;
 }
 
 .check-button.checked > div {
     height: 100%;
     width: 100%;
-    box-shadow: 0 0 3px inset var(--color-cactus);
+    box-shadow: 0 0 3px inset var(--color-c3);
 }

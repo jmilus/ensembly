@@ -25,7 +25,7 @@ const MembersPage = async () => {
         return (
             <div className="page-base">
                 <div className="action-section">
-                    <article >
+                    <article style={{padding: "0 20px"}}>
                         <h1>Members</h1>
                         <Modal2
                             modalButton={<button><i>person_add</i><span>New Member</span></button>}
@@ -38,7 +38,6 @@ const MembersPage = async () => {
                                 </section>
                                 <section className="modal-buttons">
                                     <button name="submit">Create Member</button>
-                                    <button name="cancel">Cancel</button>
                                 </section>
                             </Form>
                         </Modal2>
@@ -52,7 +51,6 @@ const MembersPage = async () => {
                                 </section>
                                 <section className="modal-buttons">
                                     <button name="submit">Upload</button>
-                                    <button name="cancel">Cancel</button>
                                 </section>
                             </Form>
                         </Modal2>

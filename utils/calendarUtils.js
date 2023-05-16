@@ -22,9 +22,11 @@ export const getTime = (input) => {
     return timeString.slice(0, firstColon + 3) + " " + timeString.slice(-2);
 }
 
-export const getDashedValue = (input) => {
-    // console.log({input})
-    return `${input.getFullYear()}-${doubleDigit(input.getMonth()+1)}-${doubleDigit(input.getDate())}T${doubleDigit(input.getHours())}:${doubleDigit(input.getMinutes())}:${doubleDigit(input.getSeconds())}`
+export const getDashedValue = (input, dateOnly) => {
+    // console.log({ input })
+    const dashedValue = `${input.getFullYear()}-${doubleDigit(input.getMonth() + 1)}-${doubleDigit(input.getDate())}T${doubleDigit(input.getHours())}:${doubleDigit(input.getMinutes())}:${doubleDigit(input.getSeconds())}`
+    if (dateOnly) return dashedValue.slice(0, 10);
+    return dashedValue;
 }
 
 export const get24Time = (input) => {

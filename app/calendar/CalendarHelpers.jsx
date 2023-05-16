@@ -171,27 +171,29 @@ export function SchemaGrid({ model, schemasInModel, initialAssignments, AllSchem
                         })
                     }
                 </section>
-                {
-                    model.events.map((event, e) => {
-                        return (
-                            <section key={e} className="event-row">
-                                <div className="grid-column">
-                                    <div className="event-header">{new Date(event.startDate).toDateString()}</div>
+                <article className="scroll">
+                    {
+                        model.events.map((event, e) => {
+                            return (
+                                <div key={e} className="event-row">
+                                    <div className="grid-column">
+                                        <div className="event-header">{new Date(event.startDate).toDateString()}</div>
+                                    </div>
+                                    {
+                                        Object.values(schemasInModel).map((schema, s) => {
+                                            const isChecked = schemaAssignments[event.id] ? schemaAssignments[event.id][schema.id] : false;
+                                            return (
+                                                <div key={s} className="grid-column">
+                                                    <CheckBox id={`${e}-${s}`} shape="button" value={isChecked} extraAction={(action) => handleChangeSchemaAssignment(action, event.id, schema.id)} />
+                                                </div>
+                                            )
+                                        })
+                                    }
                                 </div>
-                                {
-                                    Object.values(schemasInModel).map((schema, s) => {
-                                        const isChecked = schemaAssignments[event.id] ? schemaAssignments[event.id][schema.id] : false;
-                                        return (
-                                            <div key={s} className="grid-column">
-                                                <CheckBox id={`${e}-${s}`} shape="button" value={isChecked} extraAction={(action) => handleChangeSchemaAssignment(action, event.id, schema.id)} />
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </section>
-                        )
-                    })
-                }
+                            )
+                        })
+                    }
+                </article>
             </div>
             <section className="modal-buttons">
                 <button name="submit" onClick={() => submitAssignments()}>Save</button>

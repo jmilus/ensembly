@@ -1,8 +1,9 @@
 .schema-grid {
-    margin: 10px 20px 0;
     flex: 1;
-    overflow-y: scroll;
-
+    display: flex;
+    flex-direction: column;
+    margin: 10px 20px 0;
+    overflow: hidden;
 }
 
 .schema-grid > .event-row {
@@ -15,6 +16,7 @@
 .grid-column {
     flex: 1;
     min-width: 10em;
+    margin: auto;
 }
 
 .schema-header {
@@ -27,6 +29,11 @@
     padding: 0 8px;
 }
 
+.event-row {
+    display: flex;
+
+}
+
 .column-button {
     padding: 5px;
     margin: 3px;
@@ -37,6 +44,13 @@
 }
 .column-button:hover {
     background: var(--gray4);
+}
+
+.attendance-container {
+    display: flex;
+    flex-direction: column;;
+    margin-bottom: 20px;
+    overflow: hidden;
 }
 
 .attendance-row {
