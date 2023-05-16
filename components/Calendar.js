@@ -74,14 +74,19 @@ const Calendar = ({ firstDay, events, viewDays = 35 }) => {
         }
     })
 
+    const monitorDate = new Date()
+
     return (
-        <div className="grid-calendar">
-            {
-                Object.values(displayDays).map((day, i) => {
-                    return <CalDay key={i} day={day} events={day.events} inMonth={day.value.getMonth() === thisMonth} />
-                })
-            }
-        </div>
+        <>
+            <div>{CALENDAR.getDashedValue(monitorDate)}</div>
+            <div className="grid-calendar">
+                {
+                    Object.values(displayDays).map((day, i) => {
+                        return <CalDay key={i} day={day} events={day.events} inMonth={day.value.getMonth() === thisMonth} />
+                    })
+                }
+            </div>
+        </>
     )
 }
 
