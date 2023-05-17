@@ -72,7 +72,7 @@ const EventsPage = async (context) => {
                             <Link href={`/calendar/${changeFocus(7)}`}><button><span>Next Week</span><i>navigate_next</i></button></Link>
                             <Link href={`/calendar/${changeFocus(1, "month")}`}><button><span>Next Month</span><i>keyboard_double_arrow_right</i></button></Link>
                         </section>
-                        <Calendar firstDay={startDate} events={events} />
+                        <Calendar firstDay={focusDay} events={events} />
                     </article>
                 </div>
             </div>

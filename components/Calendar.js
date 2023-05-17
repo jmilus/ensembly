@@ -8,6 +8,15 @@ import { CAL } from '../utils/constants';
 const NOW = new Date(Date.now());
 const TODAY = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate());
 
+export const getCalendarView = (input, totalDays = 34) => {
+    const d = input ? new Date(input) : new Date();
+
+    const startDate = new Date(d.setDate(d.getDate() - d.getDay()));
+    const endDate = new Date(d.setDate(d.getDate() + totalDays));
+
+    return { startDate, endDate, totalDays };
+}
+
 export const EventNode = ({ event, showDate, inheritedStyle }) => {
     const typeColor = JSON.parse(event.model.eventType.color)
     const isPast = new Date(event.startDate) < TODAY;
@@ -50,17 +59,17 @@ const CalDay = ({ day, events = [], inMonth }) => {
 }
 
 const Calendar = ({ firstDay, events, viewDays = 35 }) => {
-    let d = new Date(firstDay);
+    let { startDate, endDate, totalDays } = getCalendarView(firstDay);
 
-    const thisMonth = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 13).getMonth();
+    const thisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 13).getMonth();
 
     const displayDays = {};
     
     for (var x = 0;
         x < viewDays;
         x++) {
-        displayDays[CALENDAR.getDashedValue(d, true)] = {value: new Date(d), events: []}
-        d.setDate(d.getDate() + 1);
+        displayDays[CALENDAR.getDashedValue(startDate, true)] = {value: new Date(startDate), events: []}
+        startDate.setDate(startDate.getDate() + 1);
     }
 
     console.log({ displayDays });
