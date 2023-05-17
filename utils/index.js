@@ -4,7 +4,7 @@ export const isEmpty = (obj) => {
 
 export const packageOptions = (obj) => {
     if (!obj) return {};
-    console.log(obj)
+    // console.log(obj)
     
     let newObj = {};
     if (Array.isArray(obj) && obj.length > 0) {
@@ -70,7 +70,7 @@ export const formatDBObject = obj => {
 				})
 			}
 			// ...if property is date/time, stringify/parse...
-			else if (typeof value === 'object' && typeof value.getMonth === 'function') {
+            else if (typeof value === 'object' && typeof value.getMonth === 'function') {
 				value = JSON.parse(JSON.stringify(value))
 			}
 			// ...and if a deep object, loop.

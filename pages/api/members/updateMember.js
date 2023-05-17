@@ -4,7 +4,7 @@ export const updateOneMember = async (data) => {
     const { id, firstName, middleName, lastName, aka, suffix, birthday, sex, height, weight, race, ethnicity, hair, eyes } = data;
 
     const payload = {
-        birthday: birthday ? new Date(birthday) : undefined,
+        birthday: birthday,
         sex: sex,
         height: height ? parseInt(height) : undefined,
         weight: weight ? parseInt(weight) : undefined,

@@ -139,25 +139,22 @@ const SchemaView = ({ initialProps, params }) => {
                             { name: "assigned", filterProp: "assigned", buttons: [{ Unassigned: (prop) => !prop }, { Assigned: (prop) => prop } ] }
                         ]}
                     >
-                        <article>
-                            {
-                                roster.map((membership, m) => {
-                                    return (
-                                        <MemberCard
-                                            key={m}
-                                            tag="member"
-                                            membership={membership}
-                                            format="drag"
-                                            cardType="CARD-OUT"
-                                            dropAction={handleDrop}
-                                            name={membership.member.aka}
-                                            assigned={isAssignedToSchema(membership)}
-                                        />
-                                    )
-                                })
-                            }
-
-                        </article>
+                        {
+                            roster.map((membership, m) => {
+                                return (
+                                    <MemberCard
+                                        key={m}
+                                        tag="member"
+                                        membership={membership}
+                                        format="drag"
+                                        cardType="CARD-OUT"
+                                        dropAction={handleDrop}
+                                        name={membership.member.aka}
+                                        assigned={isAssignedToSchema(membership)}
+                                    />
+                                )
+                            })
+                        }
                     </FilterContainer>
 
                 </article>
@@ -165,7 +162,7 @@ const SchemaView = ({ initialProps, params }) => {
         </div >
     
     return (
-        <section style={{flex:1, padding: "0 0 0 20px"}}>
+        <section style={{ flex: 1,  height: "100%"}}>
             <FilterContainer
                 id={`schema-filter`}
                 title={schema.name}
@@ -189,7 +186,6 @@ const SchemaView = ({ initialProps, params }) => {
                                                             return <DropContainer key={`d${c}`} caption={sd.name} value={sd} acceptTypes={["CARD-IN", "CARD-OUT"]} dropStyles={sectionDropStyle} />
                                                         })
                                                     }
-                                                    
                                                     {
                                                         workingSchema.assignments?.map((assignment, m) => {
                                                             if (assignment.division.parentId != div.id) return null;
@@ -208,7 +204,6 @@ const SchemaView = ({ initialProps, params }) => {
                                                             )
                                                         })
                                                     }
-                                                    
                                                 </fieldset>
                                             )
                                         })

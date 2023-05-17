@@ -6,7 +6,7 @@ import { fetchManyEnsembles } from '../../../pages/api/ensembles/getManyEnsemble
 import SecurityWrapper from '../../../components/SecurityWrapper';
 import ProfilePhoto from '../../../components/ProfilePhoto';
 import EnsembleCard from '../../../components/EnsembleCard';
-import { Form, Text, Number, Select, DateTime } from '../../../components/Vcontrols';
+import { Form, Text, Number, Select, DateOnly } from '../../../components/Vcontrols';
 import Modal2 from '../../../components/Modal2';
 
 import { Race, Sex, HairColor, EyeColor, EmailRank, AddressRank, PhoneRank } from '@prisma/client';
@@ -15,11 +15,13 @@ const MemberPage = async (context) => {
     const member = await fetchOneMember(context.params.id)
     const ensembleList = await fetchManyEnsembles();
 
+    // console.log({ member });
+
     return (
         <SecurityWrapper module="members" selfIdentifier={member.emails[0]?.email}>
             <section style={{flex: 1}}>
                 <article style={{padding: "5px"}}>
-                    <div id="member-photo" style={{flex:1}}>
+                    <div id="member-photo" style={{ flex: 1 }}>
                         <ProfilePhoto
                             name={member.lastName}
                             profilePic=""
@@ -36,12 +38,15 @@ const MemberPage = async (context) => {
                                     <Text id="lastName" name="lastName" label="Last Name" value={member.lastName} isRequired />
                                 </section>
                                 <section>
+                                    <Text id="aka" name="aka" label="A.K.A." value={member.aka}/>
+                                </section>
+                                <section>
                                     <Select id="sex" name="sex" label="Sex" value={member.memberBio?.sex} options={Sex} />
                                     <Select id="hair" name="hair" label="Hair Color" value={member.memberBio?.hair} options={HairColor} />
                                     <Select id="eyes" name="eyes" label="Eye Color" value={member.memberBio?.eyes} options={EyeColor} />
                                 </section>
                                 <section>
-                                    <DateTime id="birthday" name="birthday" label="Birthday" value={member.memberBio?.birthday} />
+                                    <DateOnly id="birthday" name="birthday" label="Birthday" value={member.memberBio?.birthday} debug />
                                     <Number id="height" name="height" label="Height" format="height" value={member.memberBio?.height} />
                                     <Number id="weight" name="weight" label="Weight" format="weight" value={member.memberBio?.weight} />
                                 </section>

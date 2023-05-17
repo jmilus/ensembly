@@ -59,6 +59,10 @@ body {
   outline-color: var(--color-p);
 }
 
+*::-webkit-scrollbar {
+  display: none;
+}
+
 i {
   font-family: 'Material Icons';
   font-style: normal;
@@ -516,6 +520,7 @@ legend {
 fieldset.card-set {
   overflow-y: scroll;
   flex: 1;
+  height:100%;
 }
 
 fieldset.buttons {
@@ -596,6 +601,7 @@ fieldset.buttons > button:last-of-type {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;
 }
 
 .filter-container > .filters {

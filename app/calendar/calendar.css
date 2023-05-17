@@ -1,3 +1,17 @@
+.weekday-headers-row {
+    display: flex;
+    background: var(--gray2);
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.weekday-header {
+    flex: 1;
+    text-align: center;
+    font-family: var(--brand-font);
+    padding: 10px;
+}
+
 .schema-grid {
     flex: 1;
     display: flex;

@@ -136,7 +136,7 @@ select:-internal-list-box {
 .input-clear-button {
     position: absolute;
     right: 0.35em;
-    bottom: 0.35em;
+    top: 1.15em;
     font-size: 1.75em;
     color: var(--gray3);
     cursor: pointer;
@@ -145,6 +145,10 @@ select:-internal-list-box {
 
 .input-clear-button.show {
     color: var(--gray5);
+}
+
+.clearable-control {
+    position: relative;
 }
 
 .clearable {

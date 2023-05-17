@@ -46,7 +46,7 @@ model Member {
 
 model MemberBio {
   id        String     @id @default(cuid())
-  birthday  DateTime?  @db.Date
+  birthday  String?    @db.VarChar(10)
   sex       Sex?       @default(unspecified)
   height    Int?       @db.SmallInt
   weight    Int?       @db.SmallInt

@@ -72,11 +72,9 @@ const Calendar = ({ firstDay, events, viewDays = 35 }) => {
         startDate.setDate(startDate.getDate() + 1);
     }
 
-    console.log({ displayDays });
-
     events.forEach(event => {
         const dayCount = CALENDAR.compareDates(event.startDate, event.endDate);
-        console.log(event.startDate, event.endDate, dayCount)
+        // console.log(event.startDate, event.endDate, dayCount)
         let cursorDay = new Date(event.startDate);
 
         for (var d = 0; d <= dayCount; d++) {
@@ -85,11 +83,15 @@ const Calendar = ({ firstDay, events, viewDays = 35 }) => {
         }
     })
 
-    const monitorDate = new Date()
-
     return (
         <>
-            <div>{CALENDAR.getDashedValue(monitorDate)}</div>
+            <ul className="weekday-headers-row">
+                {
+                    CAL.weekday.long.map((wd, d) => {
+                        return <li key={d} className="weekday-header">{wd}</li>
+                    })
+                }
+            </ul>
             <div className="grid-calendar">
                 {
                     Object.values(displayDays).map((day, i) => {

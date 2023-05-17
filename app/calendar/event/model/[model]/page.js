@@ -170,7 +170,7 @@ const EventModelPage = async (context) => {
                 filterTag="assignee"
                 columns={{ c: 3, w: "200px" }}
                 search={{ label: "Search", searchProp: "name" }}
-                Vstyle={{width: "750px", minHeight: "500px", margin: "0 20px 20px"}}
+                Vstyle={{width: "750px", margin: "0 20px 20px"}}
             >
                 {
                     assignments.map((assignment, m) => {

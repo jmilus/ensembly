@@ -28,36 +28,6 @@ export const fetchOneMember = async (id) => {
             }
         }
     })
-    
-    // console.log("API", {fetchedMember});
-
-    // const tempEnsembles = {};
-    // fetchedMember.memberships.forEach((m, i) => {
-    //     console.log(m)
-    //     const newObj = {
-    //         id: m.ensembleId,
-    //         name: m.ensemble.name,
-    //         type: m.ensemble.type,
-    //         capacities: []
-    //     }
-    //     const capacity = {
-    //         membershipId: m.id,
-    //         startDate: m.startDate,
-    //         endDate: m.endDate,
-    //         status: m.status,
-    //         name: m.capacity,
-    //         title: m.title,
-    //         division: m.division,
-    //         subDivision: m.subDivision
-    //     }
-
-    //     if (!tempEnsembles[m.ensembleId]) {
-    //         tempEnsembles[m.ensembleId] = newObj;
-    //     } 
-    //     tempEnsembles[m.ensembleId].capacities.push(capacity)
-    // })
-    // fetchedMember.ensembles = tempEnsembles;
-
 
     return formatDBObject(fetchedMember);
 }

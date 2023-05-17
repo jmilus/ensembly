@@ -41,11 +41,11 @@ const EventPage = async (context) => {
                 filterTag="assignee"
                 columns={{ c: 3, w: "200px" }}
                 search={{ label: "Search", searchProp: "name" }}
-                Vstyle={{width: "750px", minHeight: "500px", margin: "0 20px 20px"}}
+                Vstyle={{width: "750px", margin: "0 20px 20px"}}
             >
                 {
                     assignments.map((assignment, m) => {
-                        // console.log(assignment.member )
+                        console.log(assignment, assignment.division)
                         const { membership } = assignment;
                         return (
                             <MemberCard
@@ -53,6 +53,7 @@ const EventPage = async (context) => {
                                 tag="assignee"
                                 membership={membership}
                                 name={membership.member.aka}
+                                subtitle={assignment.division.name}
                             />
                         )
                     })

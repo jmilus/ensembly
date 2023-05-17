@@ -23,7 +23,7 @@ export const getTime = (input) => {
 }
 
 export const getDashedValue = (input, dateOnly) => {
-    console.log({ input })
+    // console.log({ input })
     const dashedValue = `${input.getFullYear()}-${doubleDigit(input.getMonth() + 1)}-${doubleDigit(input.getDate())}T${doubleDigit(input.getHours())}:${doubleDigit(input.getMinutes())}:${doubleDigit(input.getSeconds())}`
     if (dateOnly) return dashedValue.slice(0, 10);
     return dashedValue;

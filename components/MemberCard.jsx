@@ -76,7 +76,7 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType = "no-dr
         case "minimal":
         default:
             return (
-                <div className="card-container" onClick={() => router.push(`/members/${member.id}`)}>
+                <div className="card-container" onClick={() => router.push(`/members/${member.id}`)} style={{cursor: "pointer"}}>
                     <div className="card-header">
                         <div className="hero-icon" style={{width: "50px", height: "50px"}}>{heroIcon}</div>
                         <div className="card-caption">

@@ -2,28 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 
-import CALENDAR from '../../utils/calendarUtils';
-
 import './Vstyling.css';
 
-const DateTime = (props) => {
-    const { id, name, label, value, extraAction, max, min, Vstyles=[null, null], hero, isRequired, includeTime, children, recordId, readonly, debug } = props;
-    const [controlValue, setControlValue] = useState(value ? new Date(value) : "");
+const DateOnly = (props) => {
+    const { id, name, label, value, extraAction, max, min, Vstyles=[null, null], hero, isRequired, children, readonly, debug } = props;
+    const [controlValue, setControlValue] = useState(value || "");
 
-    const displayValue = controlValue ? CALENDAR.getDashedValue(controlValue).slice(0, includeTime ? 16 : 10) : "";
-
-    if (debug) console.log(name, { props }, { controlValue }, { displayValue });
+    if (debug) console.log(name, { props }, { controlValue });
 
     useEffect(() => {
-        setControlValue(value ? new Date(value) : "");
+        setControlValue(value);
     }, [value])
 
     const handleControlValueChange = (input) => {
         console.log("new value:", input)
-        const arrDate = input.split("-");
-        const newDate = new Date(arrDate[0], parseInt(arrDate[1]) - 1, arrDate[2]);
-        if (extraAction) extraAction(newDate);
-        setControlValue(newDate);
+        if (extraAction) extraAction(input);
+        setControlValue(input);
     }
 
     const handleDateChildren = () => {
@@ -34,7 +28,7 @@ const DateTime = (props) => {
                 childValue = new Date(controlValue).getTime() < new Date(child.props.value).getTime() ? child.props.value : controlValue;
             }
             
-            return React.cloneElement(child, { value: childValue, min: displayValue, readonly: readonly }, child.props.children)
+            return React.cloneElement(child, { value: childValue, min: controlValue, readonly: readonly }, child.props.children)
         })
     }
     
@@ -42,12 +36,12 @@ const DateTime = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}`} style={Vstyles[0]}>
+            <div id={`date-${id}`} className={`input-control-base date-only-box${label ? "" : " unlabeled"}`} style={Vstyles[0]}>
                 <label htmlFor={name} className="label" style={{top: "3px", left: "3px"}}>{`${label} Date`}</label>
                 <input
                     id={id}
-                    value={displayValue}
-                    type={props.includeTime ? "datetime-local" : "date"}
+                    value={controlValue}
+                    type={"date"}
                     className=""
                     onChange={(e) => handleControlValueChange(e.target.value)}
                     max={max}
@@ -64,4 +58,4 @@ const DateTime = (props) => {
 
 }
 
-export default DateTime;
+export default DateOnly;
