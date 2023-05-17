@@ -25,9 +25,9 @@ export const createNewEvent = async (data) => {
                             connect: { id: parseInt(typeId) }
                         },
                         recEndCount: 1,
-                        parentModel: {
+                        parentModel: parentModelId ? { 
                             connect: { id: parentModelId }
-                        }
+                        } : undefined
                     }
                 }
             }

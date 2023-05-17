@@ -22,8 +22,6 @@ const EventsPage = async (context) => {
     console.log({urlDate})
     const focusDay = new Date(urlDate[0], parseInt(urlDate[1]) - 1, urlDate[2]);
     console.log({ focusDay })
-    const { startDate, endDate } = CALENDAR.getCalendarView(focusDay);
-    console.log("CalendarView will start with:", { startDate })
 
     const startMonthLastDay = CALENDAR.getLastOfMonth(focusDay);
     const startMonthRemaining = CALENDAR.compareDates(focusDay, startMonthLastDay);

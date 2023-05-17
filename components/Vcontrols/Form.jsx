@@ -131,11 +131,11 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
             if (APIResponse[0]?.err) {
                 console.error(err);
             } else {
+                status.saved();
                 if (followUp) followUp(APIResponse);
                 if (followPath) {
                     router.push(followPath(APIResponse))
                 } else {
-                    status.saved();
                     router.refresh();
 
                 }

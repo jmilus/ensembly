@@ -12,25 +12,6 @@ import useStatus from '../../hooks/useStatus';
 
 export function CalendarNav({ensembles, eventTypes}) {
 
-    const newEventModal = 
-        <Form id="new-event-modal-form" APIURL="/events/createEvent" followPath={(r) => `/calendar/event/model/${r["eventModelId"]}`} debug>
-            <section className="modal-fields">
-                <Text id="newEventName" name="modelName" label="Event Name" value="" limit="64" isRequired/>
-            </section>
-            <section className="modal-fields">
-                <Select id="newEventType" name="typeId" label="Event Type" value="" options={eventTypes} isRequired />
-            </section>
-            <section className="modal-fields">
-                <DateTime id="newEventStart" name="startDate" label="Event Start" value="" includeTime isRequired>
-                    <DateTime id="newEventEnd" name="endDate" label="Event End" value="" includeTime isRequired/>
-                </DateTime>
-            </section>
-            <section className="modal-buttons">
-                <button name="submit">Create Event</button>
-                <button >Cancel</button>
-            </section>
-        </Form>
-
     return (
         <article style={{padding: "10px"}}>
             <h1>Calendar</h1>
@@ -38,7 +19,23 @@ export function CalendarNav({ensembles, eventTypes}) {
                 modalButton={<button className="fat"><i>event</i><span>New Event</span></button>}
                 title="Create New Event"
             >
-                {newEventModal}
+                <Form id="new-event-modal-form" APIURL="/events/createEvent" followPath={(r) => `/calendar/event/model/${r["eventModelId"]}`} debug>
+                    <section className="modal-fields">
+                        <Text id="newEventName" name="modelName" label="Event Name" value="" limit="64" isRequired/>
+                    </section>
+                    <section className="modal-fields">
+                        <Select id="newEventType" name="typeId" label="Event Type" value="" options={eventTypes} isRequired />
+                    </section>
+                    <section className="modal-fields">
+                        <DateTime id="newEventStart" name="startDate" label="Event Start" value="" includeTime isRequired>
+                            <DateTime id="newEventEnd" name="endDate" label="Event End" value="" includeTime isRequired/>
+                        </DateTime>
+                    </section>
+                    <section className="modal-buttons">
+                        <button name="submit">Create Event</button>
+                        <button >Cancel</button>
+                    </section>
+                </Form>
             </Modal2>
         </article>
     )
