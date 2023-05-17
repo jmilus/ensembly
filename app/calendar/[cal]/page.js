@@ -25,16 +25,16 @@ const EventsPage = async (context) => {
     const { startDate, endDate } = CALENDAR.getCalendarView(focusDay);
     console.log("CalendarView will start with:", { startDate })
 
-    const startMonthLastDay = CALENDAR.getLastOfMonth(startDate);
-    const startMonthRemaining = CALENDAR.compareDates(startDate, startMonthLastDay);
+    const startMonthLastDay = CALENDAR.getLastOfMonth(focusDay);
+    const startMonthRemaining = CALENDAR.compareDates(focusDay, startMonthLastDay);
 
-    const startMonth = startMonthRemaining > 6 ? CAL.month.long[startDate.getMonth()] : ""
-    const nextMonth = startMonthRemaining < 22 ? CAL.month.long[startDate.getMonth() + 1] : ""
+    const startMonth = startMonthRemaining > 6 ? CAL.month.long[focusDay.getMonth()] : ""
+    const nextMonth = startMonthRemaining < 22 ? CAL.month.long[focusDay.getMonth() + 1] : ""
 
     const monthName = startMonth + (startMonth && nextMonth ? " to " : "") + nextMonth;
 
     const changeFocus = (change, mode) => {
-        let newFocusDay = new Date(startDate);
+        let newFocusDay = new Date(focusDay);
         console.log({ newFocusDay })
         let changeDays = change;
         switch (mode) {
