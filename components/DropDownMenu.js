@@ -7,36 +7,45 @@ import { GlobalContext } from './ContextFrame';
 const DropDownMenu = () => {
     const { dispatch, parameters: { dropdown } } = useContext(GlobalContext);
     if (!dropdown) return null
-    const { dim, options = [], value = "", setSelectControlValue } = dropdown;
+    const { dim, options = {}, value = [], setSelectControlValue } = dropdown;
 
-    // console.log({ dropdown })
+    // console.log({ dropdown }, { dim }, { value })
 
     const hideDropDown = () => {
         dispatch({ route: "dropdown", payload: null })
     }
     
-    const selectOption = (option) => {
+    const selectOption = (option, e) => {
+        e.preventDefault()
         setSelectControlValue(option);
         hideDropDown();
     }
 
-    if (options.length > 0) {
+    const optionCount = Object.keys(options).length
+
+    const windowHeight = window.innerHeight
+    const ddBottom = (dim.y + dim.h + (Math.min(optionCount, 5.5) * 36));
+    const ddTop = windowHeight > ddBottom ?
+        dim.y + dim.h :
+        dim.y - (Math.min(optionCount - value.length, 5.5) * 36);
+
+    if (optionCount > 0) {
         return (
             <div id="dropdown-area" onKeyDown={(e) => console.log(e.target.value)}>
-                <div className="option-set" style={{left: dim.x, top: dim.y + dim.h, minWidth: dim.w}}>
+                <div className="option-set" style={{left: dim.x, top: ddTop, minWidth: dim.w}}>
                     {
-                        options.map((option, o) => {
+                        Object.keys(options).map(key => {
+                            const option = options[key];
                             if (value.includes(option.value)) return null;
 
-                            let optionColor, myColor;
+                            let myColor;
                             if (option.color) {
-                                optionColor = JSON.parse(option.color);
-                                myColor = `${optionColor.type}(${optionColor.values[0]},${optionColor.values[1]}%, ${optionColor.values[2]}%)`;
+                                myColor = option.color
                             }
                             return (
-                                <div key={o} className="select-option" onClick={() => selectOption(option)}>
+                                <div key={key} className="select-option" onClick={(e) => selectOption(key, e)}>
                                     {myColor && <div className="color-dot" style={{ backgroundColor: myColor }}></div>}
-                                    {option.name}
+                                    {option.caption}
                                 </div>
                             )
                         })

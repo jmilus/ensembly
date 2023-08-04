@@ -17,16 +17,15 @@ export const getCalendarView = (input, totalDays = 34) => {
     return { startDate, endDate, totalDays };
 }
 
-export const EventNode = ({ event, showDate, inheritedStyle }) => {
-    const typeColor = JSON.parse(event.model.eventType.color)
-    const isPast = new Date(event.startDate) < TODAY;
-    const eventTypeColor = isPast ? "lightgrey" : `${typeColor.type}(${typeColor.values[0]},${typeColor.values[1]}%, ${typeColor.values[2]}%)`;
-
+export const EventNode = ({ event, color, caption, showDate, inheritedStyle }) => {
+    const isPast = new Date(event.eventStartDate) < TODAY;
+    const eventTypeColor = isPast ? "lightgrey" : color;
+    
     return (
         <Link href={`/calendar/event/${event.id}`}>
             <div className="event-node" style={{...inheritedStyle, ["--node-color"]: eventTypeColor}}>
-                <span>{event.model.name}</span>
-                <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(event.startDate)}</span>
+                <span>{caption}</span>
+                <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(event.eventStartDate)}</span>
             </div>
         </Link>
     )
@@ -36,7 +35,7 @@ const CalDay = ({ day, events = [], inMonth }) => {
     const isToday = day.value.toLocaleDateString() === TODAY.toLocaleDateString();
     const isPast = day.value < TODAY;
 
-    const dayURL = CALENDAR.getDashedValue(CALENDAR.localizeDate(day.value))
+    const dayURL = CALENDAR.getDashedValue(CALENDAR.localizeDate(day.value), true)
     return (
         <object className={`cal-day ${inMonth ? "current-month" : ""} ${isToday ? "today" : ""} ${isPast ? "past" : ""}`}>
             <div className="cal-day-header">
@@ -50,7 +49,7 @@ const CalDay = ({ day, events = [], inMonth }) => {
             <div className="cal-events">
                 {
                     events.map((ev, i) => {
-                        return <EventNode key={i}  event={ev} />
+                        return <EventNode key={i} color={ev.model.type.color} caption={ev.name || ev.model.name} event={ev} />
                     })
                 }
             </div>
@@ -59,6 +58,7 @@ const CalDay = ({ day, events = [], inMonth }) => {
 }
 
 const Calendar = ({ firstDay, events, viewDays = 35 }) => {
+    console.log(events)
     let { startDate, endDate, totalDays } = getCalendarView(firstDay);
 
     const thisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 13).getMonth();
@@ -73,9 +73,9 @@ const Calendar = ({ firstDay, events, viewDays = 35 }) => {
     }
 
     events.forEach(event => {
-        const dayCount = CALENDAR.compareDates(event.startDate, event.endDate);
-        // console.log(event.startDate, event.endDate, dayCount)
-        let cursorDay = new Date(event.startDate);
+        const dayCount = CALENDAR.compareDates(event.eventStartDate, event.eventEndDate);
+        // console.log(event.eventStartDate, event.eventEndDate, dayCount)
+        let cursorDay = new Date(event.eventStartDate);
 
         for (var d = 0; d <= dayCount; d++) {
             displayDays[CALENDAR.getDashedValue(cursorDay, true)]?.events.push(event)
@@ -85,13 +85,13 @@ const Calendar = ({ firstDay, events, viewDays = 35 }) => {
 
     return (
         <>
-            <ul className="weekday-headers-row">
+            <div className="weekday-headers-row">
                 {
                     CAL.weekday.long.map((wd, d) => {
-                        return <li key={d} className="weekday-header">{wd}</li>
+                        return <div key={d} className="weekday-header">{wd}</div>
                     })
                 }
-            </ul>
+            </div>
             <div className="grid-calendar">
                 {
                     Object.values(displayDays).map((day, i) => {

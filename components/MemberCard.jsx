@@ -5,7 +5,7 @@ import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
 const MemberCard = ({ membership, subtitle = "", presentation, cardType = "no-drag", format, dropAction }) => {
-    const { member, status } = membership;
+    const { Member, status } = membership;
     const doSomething = (junk) => {
         dropAction(junk)
     }
@@ -15,9 +15,9 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType = "no-dr
         end(item, monitor) {
             const dropResult = monitor.getDropResult()
             console.log(dropResult);
-            if (item && dropResult) {
+            if (item && dropResult && dropAction) {
                 const { value } = dropResult;
-                doSomething({ membership: item, division: value });
+                doSomething({ source: item, target: value });
             }
         },
         collect: monitor => ({
@@ -26,15 +26,15 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType = "no-dr
     }), [dropAction])
 
     const router = useRouter();
-    const { aka } = member;
+    const { aka } = Member;
 
-    const initials = getInitials([member.firstName, member.middleName, member.lastName].join(" ")).substring(0,3);
+    const initials = getInitials([Member.firstName, Member.middleName, Member.lastName].join(" ")).substring(0,3);
     const heroIcon = <div>{initials}</div>
 
     switch (format) {
         case "detail":
             return (
-                <div className={`card-container ${status}`} onClick={() => router.push(`/members/${member.id}`)}>
+                <div className={`card-container detail ${status && status}`} onClick={() => router.push(`/members/${Member.id}`)}>
                     <div className="card-header">
                         <div className="hero-icon" style={{width: "50px", height: "50px"}}>{heroIcon}</div>
                         <div className="card-caption">
@@ -47,36 +47,22 @@ const MemberCard = ({ membership, subtitle = "", presentation, cardType = "no-dr
                 </div>
             );
         case "drag":
-            
             return (
-                <div ref={drag} className={`card-container ${status}`} style={isDragging ? { opacity: 0 } : {}}>
+                <div ref={drag} className={`card-container drag ${status && status}`} style={isDragging ? { opacity: 0 } : {}}>
                     <div className="card-header" >
                         <div className="hero-icon" style={{ minWidth: "50px", minHeight: "50px" }}>{heroIcon}</div>
                         <div className="card-caption">
                             <div className="card-name">{aka}</div>
                             <div className="card-subtitle">{subtitle}</div>
                         </div>
-                        <i className="link-text" onClick={() => router.push(`/members/${member.id}`)} style={{marginLeft: "auto", color: "var(--gray4)"}}>account_box</i>
-                    </div>
-                </div>
-            )
-        case "wait":
-            return (
-                <div ref={drag} className={`card-container ${status}`}>
-                    <div className="card-header" >
-                        <div className="hero-icon cold" style={{ width: "50px", height: "50px" }}>{heroIcon}</div>
-                        <div className="card-caption">
-                            <div className="card-name cold">{aka}</div>
-                            <div className="card-subtitle">{subtitle}</div>
-                        </div>
-                        <i className="link-text" onClick={() => router.push(`/members/${member.id}`)} style={{marginLeft: "auto", color: "var(--gray4)"}}>account_box</i>
+                        <i className="link-text" onClick={() => router.push(`/members/${Member.id}`)} style={{marginLeft: "auto", color: "var(--gray4)"}}>account_box</i>
                     </div>
                 </div>
             )
         case "minimal":
         default:
             return (
-                <div className="card-container" onClick={() => router.push(`/members/${member.id}`)} style={{cursor: "pointer"}}>
+                <div className={`card-container min ${status && status}`} onClick={() => router.push(`/members/${Member.id}`)} style={{cursor: "pointer"}}>
                     <div className="card-header">
                         <div className="hero-icon" style={{width: "50px", height: "50px"}}>{heroIcon}</div>
                         <div className="card-caption">

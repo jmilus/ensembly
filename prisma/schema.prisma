@@ -20,6 +20,7 @@ model EnsembleType {
 model Ensemble {
   id          String               @id @default(cuid())
   name        String               @db.VarChar(64) @unique
+  logoUrl     String?              @db.VarChar(256)
   roster      EnsembleMembership[]
   type        EnsembleType         @relation(fields: [typeId], references: [id])
   typeId      Int
@@ -34,6 +35,7 @@ model Member {
   lastName     String               @db.VarChar(64)
   suffix        String?              @db.VarChar(8)
   aka          String?              @db.VarChar(204)
+  avatarUrl    String?              @db.VarChar(256)
   uniqueName   String               @db.VarChar(204) @unique
   memberBio    MemberBio?
   photos       PhotoSet?
@@ -235,6 +237,22 @@ model Email {
   memberId String    @unique
 }
 
+model Broadcast {
+  id          String                @id @default(cuid())
+  subject     String                @db.VarChar(56) @default("Empty Subject")
+  body        Json                  @db.JsonB
+  recipients  MessageRecipient[]
+  status      BroadcastStatus     
+}
+
+model MessageRecipient {
+  broadcast     Broadcast   @relation(fields: [broadcastId], references: [id])
+  broadcastId   String
+  emailAddress  String      @db.VarChar(96)
+
+  @@unique([broadcastId, emailAddress])
+}
+
 model Profile {
   userEmail      String      @unique @db.VarChar(96)
   permissions    Permissions @relation(fields: [permissionsId], references: [id])
@@ -334,4 +352,9 @@ enum AttendanceStatus {
   Excused
   Absent
   Uncounted
+}
+
+enum BroadcastStatus {
+  DRAFT
+  SENT
 }

@@ -1,200 +1,135 @@
 'use client'
 
-import Link from 'next/link';
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 
-import {Form, Text, Select, DateTime, CheckBox} from '../../components/Vcontrols';
-import Modal2 from '../../components/Modal2';
-import { GlobalContext } from '../../components/ContextFrame';
+import {CheckBox} from '../../components/Vcontrols';
 
-import './calendar.css'
 import useStatus from '../../hooks/useStatus';
+import ModalWrapper from '../../components/ModalWrapper';
+import { useRouter, usePathname } from 'next/navigation';
 
-export function CalendarNav({ensembles, eventTypes}) {
-
-    return (
-        <article style={{padding: "10px"}}>
-            <h1>Calendar</h1>
-            <Modal2
-                modalButton={<button className="fat"><i>event</i><span>New Event</span></button>}
-                title="Create New Event"
-            >
-                <Form id="new-event-modal-form" APIURL="/events/createEvent" followPath={(r) => `/calendar/event/model/${r["eventModelId"]}`} debug>
-                    <section className="modal-fields">
-                        <Text id="newEventName" name="modelName" label="Event Name" value="" limit="64" isRequired/>
-                    </section>
-                    <section className="modal-fields">
-                        <Select id="newEventType" name="typeId" label="Event Type" value="" options={eventTypes} isRequired />
-                    </section>
-                    <section className="modal-fields">
-                        <DateTime id="newEventStart" name="startDate" label="Event Start" value="" includeTime isRequired>
-                            <DateTime id="newEventEnd" name="endDate" label="Event End" value="" includeTime isRequired/>
-                        </DateTime>
-                    </section>
-                    <section className="modal-buttons">
-                        <button name="submit">Create Event</button>
-                        <button >Cancel</button>
-                    </section>
-                </Form>
-            </Modal2>
-        </article>
-    )
-}
-
-const revertToModel = async (event) => {
-    console.log("reverting...");
-    const revertStart = new Date(event.anchorDate);
-    const eventDuration = new Date(event.model.modEndDate).valueOf() - new Date(event.model.modStartDate).valueOf();
-    revertStart.setHours(new Date(event.model.modStartDate).getHours(), new Date(event.model.modStartDate).getMinutes());
-    const revertEnd = new Date(new Date(revertStart).valueOf() + eventDuration);
-    
-    const revertedEvent = await fetch("/api/events/updateEvent", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            id: event.id,
-            startDate: revertStart,
-            endDate: revertEnd,
-            exception: false
+const getInitialEventLineups = (model) => {
+    let lineupsInEvents = {}
+    model.events.forEach(event => {
+        lineupsInEvents[event.id] = {}
+        event.lineups.forEach(lu => {
+            lineupsInEvents[event.id][lu.id] = true;
         })
     })
-            .then(response => response.json())
-            .then(record => {
-                console.log({ record });
-                return record;
-            })
-            .catch((err, message) => {
-                console.error('Could not revert event...', message);
-                return err;
-            })
-
-    if (!revertedEvent.err) setEvent(revertedEvent);
-
+    return lineupsInEvents;
 }
 
-export function EventNav({event}) {
 
-    return (
-        <article style={{ padding: "10px" }}>
-            <Link href="/calendar"><i>arrow_back</i>Calendar</Link>
-            <h1>Event Details</h1>
-            <Link href={`/calendar/event/model/${event.model.id}`}>
-                <button className="fat icon-and-label"><i>dynamic_feed</i>Event Model</button>
-            </Link>
-            {event.exception &&
-                <button className="icon-and-label" onClick={() => revertToModel(event)}><i>undo</i>Revert to Model</button>
-            }
-        </article>
-    )
+export function LineupsGrid({ model, allLineups }) {
+    const router = useRouter();
+    const path = usePathname();
 
-}
+    let modelLineups = {}
+    model.events.forEach(event => {
+        event.lineups.forEach(lineup => {
+            modelLineups[lineup.id] = {...lineup}
+        })
+    })
 
-export function ModelNav({model}) {
-
-    return (
-        <article style={{ padding: "10px" }}>
-            <Link href="/calendar"><i>arrow_back</i>Calendar</Link>
-            <h1>Event Model</h1>
-            
-        </article>
-    )
-
-}
-
-export function SchemaGrid({ model, schemasInModel, initialAssignments, AllSchemas }) {
-    const [schemaAssignments, setSchemaAssignments] = useState(initialAssignments);
+    const [eventLineups, setEventLineups] = useState(getInitialEventLineups(model));
     const status = useStatus();
 
-    const { dispatch } = useContext(GlobalContext)
+    console.log({eventLineups})
 
-    console.log(model, schemasInModel)
+    const handleChangeLineupAssignment = (action, event, lineup) => {
+        let tempEventLineups = { ...eventLineups };
 
-    const handleChangeSchemaAssignment = (action, eventId, schemaId) => {
-        let tempAssignments = { ...schemaAssignments };
-
-        tempAssignments[eventId][schemaId] = action;
+        tempEventLineups[event][lineup] = action;
         
-        setSchemaAssignments(tempAssignments)
+        setEventLineups(tempEventLineups)
     }
 
-    const setAll = (schemaId) => {
-        let tempAssignments = { ...schemaAssignments };
+    const setAll = (lineup) => {
+        let tempEventLineups = { ...eventLineups };
 
-        const allChecked = Object.keys(tempAssignments).every(eventId => {
-            return tempAssignments[eventId][schemaId];
+        const allChecked = Object.keys(tempEventLineups).every(event => {
+            return tempEventLineups[event][lineup];
         })
 
-        Object.keys(tempAssignments).forEach(key => {
-            tempAssignments[key][schemaId] = !allChecked;
+        Object.keys(tempEventLineups).forEach(key => {
+            tempEventLineups[key][lineup] = !allChecked;
         })
 
-        setSchemaAssignments(tempAssignments);
+        setEventLineups(tempEventLineups);
     }
 
-    const submitAssignments = async () => {
-        dispatch({
-            route: "modal",
-            payload: null
+    const submitEventLineups = async () => {
+        let events = [];
+        let lineupsSet = [];
+        Object.keys(eventLineups).forEach(event => {
+            events.push(event);
+            const lineups = Object.keys(eventLineups[event]).filter(lu => eventLineups[event][lu] === true)
+            lineupsSet.push(lineups)
         })
         status.saving();
-        const apiReturn = await fetch('/api/events/updateManySchemas', {
+
+        return fetch('/api/calendar/event', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(schemaAssignments)
+            body: JSON.stringify(eventLineups)
         })
             .then(response => response.json())
-            .then(res => res)
+            .then(res => {
+                status.saved()
+                return res
+            })
             .catch((err, message) => {
+                status.error()
                 console.error("update failed", message);
                 return err;
             })
         
-        console.log(apiReturn);
-        status.saved();
     }
 
     return (
-        <>
-            <div className="schema-grid">
-                <section>
-                    <div className="schema-header grid-column"></div>
-                    {
-                        Object.values(schemasInModel).map((ms, i) => {
-                            return (
-                                <div key={i} className="schema-header grid-column">
-                                    <div className="column-button" onClick={() => setAll(ms.id)}>{ms.name}</div>
-                                </div>
-                            )
-                        })
-                    }
-                </section>
-                <article className="scroll">
-                    {
-                        model.events.map((event, e) => {
-                            return (
-                                <div key={e} className="event-row">
-                                    <div className="grid-column">
-                                        <div className="event-header">{new Date(event.startDate).toDateString()}</div>
+        <ModalWrapper title="Events & Lineups">
+            <div className="lineup-grid">
+                    <div className="event-row grid-header">
+                        <div className="event-header lineup-column"></div>
+                        {
+                            Object.values(modelLineups).map((ms, i) => {
+                                return (
+                                    <div key={i} className="lineup-header lineup-column" >
+                                        <button className="column-button" onClick={() => setAll(ms.id)}>{ms.name}</button>
                                     </div>
-                                    {
-                                        Object.values(schemasInModel).map((schema, s) => {
-                                            const isChecked = schemaAssignments[event.id] ? schemaAssignments[event.id][schema.id] : false;
-                                            return (
-                                                <div key={s} className="grid-column">
-                                                    <CheckBox id={`${e}-${s}`} shape="button" value={isChecked} extraAction={(action) => handleChangeSchemaAssignment(action, event.id, schema.id)} />
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                </div>
-                            )
-                        })
-                    }
-                </article>
+                                )
+                            })
+                        }
+                    </div>
+                    <article>
+                        {
+                            model.events.map((event, e) => {
+                                return (
+                                    <div key={e} className="event-row">
+                                        <div className="event-header lineup-column">
+                                            <span>{event.name || model.name}</span><br/>
+                                            <span style={{color: "var(--color-cactus)"}}>{new Date(event.eventStartDate).toDateString()}</span>
+                                        </div>
+                                        {
+                                            Object.values(modelLineups).map((lineup, l) => {
+                                                const isChecked = eventLineups[event.id] ? eventLineups[event.id][lineup.id] : false;
+                                                return (
+                                                    <div key={l} className="lineup-column" >
+                                                        <CheckBox id={`${e}-${l}`} shape="button" value={isChecked} extraAction={(action) => handleChangeLineupAssignment(action, event.id, lineup.id)} />
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                )
+                            })
+                        }
+                    </article>
             </div>
             <section className="modal-buttons">
-                <button name="submit" onClick={() => submitAssignments()}>Save</button>
+                <button onClick={() => router.replace(path.slice(0, path.indexOf("/$")))}>Cancel</button>
+                <button name="submit" onClick={submitEventLineups}>Save</button>
             </section>
-        </>
+        </ModalWrapper>
     )
 }

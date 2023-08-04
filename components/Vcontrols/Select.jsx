@@ -9,57 +9,29 @@ import { packageOptions } from '../../utils';
 import './Vstyling.css';
 
 const Select = (props) => {
-    const { id, name, label, value, options, filtersArray = [], extraAction, Vstyle, hero, isRequired, tiny, multiselect, children, readonly, debug } = props;
-    // const [controlOptions, setControlOptions] = useState(packageOptions(options, value))
-    const [controlValue, setControlValue] = useState(multiselect ? value : [value]);
-    const [touched, setTouched] = useState(false);
+    const { id, name, label, value, options, filtersArray = [], extraAction, style, hero, isRequired, specialSize="", children, readonly, debug } = props;
+    const [controlValue, setControlValue] = useState(value || "");
+
+    useEffect(() => {
+        setControlValue(value)
+    }, [value])
 
     let controlOptions = packageOptions(options, value)
-    
-    const generateDisplayValue = () => {
-        const selectedValues = []
-        Object.values(controlOptions).forEach(option => {
-            if (option.selected) selectedValues.push(option.value);
-        })
-        if (multiselect) {
-            return selectedValues;
-        } else {
-            return selectedValues.join();
-        }
-    }
 
-    let displayValue = generateDisplayValue();
-
-    if (debug) console.log(name, "select control state", { props }, { displayValue }, { controlOptions }, {filtersArray});
-
+    if (debug) console.log(name, "select control state", { props }, { controlValue }, { controlOptions }, {filtersArray});
 
     const { dispatch } = useContext(GlobalContext);
 
-    const changeValues = (newValues) => {
-        console.log(newValues)
-        if (extraAction) extraAction(multiselect ? newValues : newValues[0]);
-
-        setControlValue(newValues)
-    }
-
     const handleDropDownSelection = (input) => {
-        console.log(input);
-        Object.values(controlOptions).forEach(option => option.selected = false);
-
-        controlOptions = { ...controlOptions, [input.value]: input }
-        
-        // dispatch({ route: "dropdown", payload: null })
+        console.log(name, "selected", input);
 
         const selectControl = document.getElementById(id)
         const inputEvent = new Event('change', { bubbles: true });
         selectControl.dispatchEvent(inputEvent);
 
-        changeValues([input.value]);
-    }
+        if (extraAction) extraAction(input);
 
-    const handleMultiSelection = (input) => {
-        // console.log("change handler", input)
-        changeValues({ ...controlOptions, [input]: { ...controlOptions[input], selected: !controlOptions[input].selected } });
+        setControlValue(input)
     }
 
     const handleChildren = () => {
@@ -73,20 +45,19 @@ const Select = (props) => {
             //
             const filterObj = {
                 filterBy: child.props.filterKey,
-                filterFor: multiselect ? controlValue : controlValue[0]
+                filterFor: controlValue
             }
             
             const childFiltersArray = [...filtersArray, filterObj];
             //
-            const newChildOptions = Object.values(child.props.options).filter(option => {
+            const newChildOptions = {}
+            Object.keys(child.props.options).forEach(key => {
+                const option = child.props.options[key]
                 const exclude = childFiltersArray.every(filter => {
-                    return !filter.filterFor.includes(option[filter.filterBy]);
+                    return filter.filterFor != option[filter.filterBy];
                 })
-                if (exclude) return false;
-                return true;
+                if (!exclude) newChildOptions[key] = option;
             })
-
-            console.log({newChildOptions})
 
             return React.cloneElement(child, { options: newChildOptions, filtersArray: childFiltersArray }, child.props.children)
         })
@@ -95,54 +66,56 @@ const Select = (props) => {
     const clonedChildren = handleChildren();
     
     const handleBlur = (e) => {
-        if (!touched) setTouched(true);
         // console.log(e.relatedTarget);
+
         if(e.relatedTarget) dispatch({route: "dropdown", payload: null})
     }
 
-    const showDropDown = () => {
-        if (readonly || multiselect) return null;
-        const parentControl = document.getElementById(`select-${id}`)
+    const showDropDown = (e) => {
+        e.preventDefault();
+        if (readonly) return null;
+        const parentControl = document.getElementById(id)
+        console.log({ parentControl })
+        const { x, y } = parentControl.getBoundingClientRect()
+        console.log(parentControl.getBoundingClientRect())
         dispatch({
             route: "dropdown",
             payload: {
-                dim: { x: parentControl.offsetLeft, y: parentControl.offsetTop, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
-                options: Object.values(controlOptions),
-                value: controlValue,
+                dim: { x: x, y: y, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
+                options: controlOptions,
+                value: [controlValue],
                 setSelectControlValue: handleDropDownSelection,
-                multiselect
             }
         })
     }
 
-    const hideOption = (option) => {
-        if (!multiselect) return true;
-        const result = controlOptions.find(fo => fo.id === option.id);
+    // const hideOption = (option) => {
+    //     if (!multiselect) return true;
+    //     const result = controlOptions.find(fo => fo.id === option.id);
 
-        return result ? false : true;
-    }
+    //     return result ? false : true;
+    // }
 
     return (
         <>
-            <div id={`select-${id}`} className={`input-control-base select-box${tiny ? " tiny" : ""}${label ? "" : " unlabeled"}${touched ? " touched" : ""}${multiselect ? " multi" : ""}`} style={Vstyle}>
-                <label htmlFor={id} className="label" style={{ top: "3px", left: "3px" }}>{label}</label>
+            <div id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}`} style={style}>
+                <label htmlFor={id} className={`label ${controlValue ? "" : "hide"}`}>{label}</label>
                 <select
                     id={id}
                     name={name}
-                    value={multiselect ? controlValue : controlValue[0]}
-                    onChange={multiselect ? (e) => handleMultiSelection(e.target.value) : () => null}
+                    value={controlOptions[controlValue]?.value || ""}
+                    onChange={() => null}
                     onFocus={showDropDown}
                     onBlur={handleBlur}
                     autoComplete="do-not-autofill"
-                    multiple={multiselect}
                     required={isRequired}
                     readOnly={readonly}
                 >
-                    {!value && <option key="xx" value="" hidden></option>}
+                    {!value && <option key="xx" value="" hidden>{label}</option>}
                     {
                         Object.values(controlOptions).map((option, o) => {
-                            const hideMe = hideOption(option);
-                            return <option key={o} id={option.id} value={option.value} hidden={hideMe} >{option.name}</option>
+                            // const hideMe = hideOption(option);
+                            return <option key={o} id={option.id} value={option.value} hidden={true} >{option.caption}</option>
                         })
                     }
                 </select>

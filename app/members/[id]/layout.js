@@ -1,39 +1,23 @@
 import 'server-only';
 
-import { createClient } from '../../../utils/supabase-server';
-import { loadUserPermissions } from '../../../pages/api/general/getUserPermissions';
-import { fetchOneMember } from '../../../pages/api/members/getOneMember';
+import { getOneMember } from '../../api/members/[id]/route';
 
 import { MemberProfileNav } from '../MembersHelpers';
 
 const MemberLayout = async (context) => {
+    const member = await getOneMember(context.params.id)
 
-    const supabase = createClient();
-    const {
-        data: { session },
-    } = await supabase.auth.getSession()
-    
-    const authorization = await loadUserPermissions(session.user.email)
-    const { permissions: { security } } = authorization;
-    
-    if (security.modules.members) {
-        const member = await fetchOneMember(context.params.id)
-
-        return (
-            <div className="page-base">
-                <div className="action-section">
-                    <MemberProfileNav member={member} />
-                </div>
-                <div className="form-section">
-                    <div className="page-details">
-                        {context.children}
-                    </div>
-                </div>
+    return (
+        <div className="page-base">
+            <div className="action-section">
+                <MemberProfileNav member={member} />
             </div>
-        )
-    } else {
-        throw new Error("You do not have permissions to access this module.");
-    }
+            <div className="form-section">
+                {context.children}
+                {context.modal}
+            </div>
+        </div>
+    )
 }
 
 export default MemberLayout;

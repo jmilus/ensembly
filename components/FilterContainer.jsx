@@ -34,7 +34,7 @@ export function FilterButtons(props) {
 }
 
 const FilterContainer = (props) => {
-    const { id, title, filterTag, search, filters = [], columns, Vstyle, debug, children } = props;
+    const { id, title, filterTag, search, filters = [], columns, rows="min-content", Vstyle, debug, children } = props;
     const [filterParams, setFilterParams] = useState({})
     const [searchString, setSearchString] = useState("")
 
@@ -85,7 +85,7 @@ const FilterContainer = (props) => {
         
         //filter search
         if (includeChild && search && searchString.length > 0) {
-            console.log(child.props, searchString)
+            // console.log(child.props, searchString)
             includeChild = child.props[search?.searchProp].toLowerCase().includes(searchString.toLowerCase());
         }
 
@@ -135,7 +135,7 @@ const FilterContainer = (props) => {
                 {filterButtons}
                 {filters.length > 0 ? clearButton : null}
             </div>
-            <div className="filter-container-content" style={{["--grid-columns"]: columns.count, ["--min-width"]: columns.width}}>
+            <div className="filter-container-content" style={{["--grid-columns"]: columns.count, ["--min-width"]: columns.width, gridTemplateRows: rows}}>
                 { filteredChildren }
             </div>
         </div>

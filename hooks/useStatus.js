@@ -17,21 +17,29 @@ function useStatus() {
         })
     }
 
+    const unsaved = (saveFunction) => {
+        console.log("data is unsaved")
+        dispatch({
+            route: "status",
+            payload: { case: "unsaved", action: saveFunction }
+        })
+    }
+
     const saving = () => {
         console.log("now saving...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         dispatch({
             route: "status",
-            payload: "saving"
+            payload: { case: "saving" }
         })
     }
 
     const loading = () => {
-        cosnsole.log("loading data...")
+        console.log("loading data...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         dispatch({
             route: "status",
-            payload: "loading"
+            payload: { case: "loading" }
         })
     }
 
@@ -40,13 +48,24 @@ function useStatus() {
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         dispatch({
             route: "status",
-            payload: "saved"
+            payload: { case: "saved" }
         })
         router.refresh()
-        transitionTimer.current = setTimeout(() => vanish(), 2000)
+        transitionTimer.current = setTimeout(() => vanish(), 4000)
+    }
+
+    const error = (title, message) => {
+        console.log("Error!")
+        if (transitionTimer.current) clearTimeout(transitionTimer.current)
+        dispatch({
+            route: "status",
+            payload: { case: "error", error: {title, message} }
+        })
+        // router.refresh()
+        transitionTimer.current = setTimeout(() => vanish(), 10000)
     }
     
-    return {saving, loading, saved};
+    return {unsaved, saving, loading, saved, error};
 }
 
 export default useStatus;

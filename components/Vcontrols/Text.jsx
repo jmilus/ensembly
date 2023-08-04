@@ -5,11 +5,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Vstyling.css';
 
 const Text = (props) => {
-    const { id, name, label, value, extraAction, format, initialValue="", limit, Vstyle, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
-    const [controlValue, setControlValue] = useState(value || initialValue);
-    const [touched, setTouched] = useState(false);
+    const { id, name, label, value="", placeholder, extraAction, format, limit, style, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
+    const [controlValue, setControlValue] = useState(value === null ? "" : value)
 
     if (debug) console.log(name, { props }, { controlValue });
+
+    useEffect(() => {
+        setControlValue(value === null ? "" : value);
+    }, [value])
 
     let textType;
     switch (format) {
@@ -52,19 +55,16 @@ const Text = (props) => {
         })
     }
 
-    const handleBlur = () => {
-        if(!touched) setTouched(true);
-    }
-
     const clonedChildren = handleChildren();
 
-    const clearbutton = <i id={`${id}-clear-button`} className={`input-clear-button${controlValue ? " show" : ""}`} onClick={() => handleControlValueChange("")}>close</i>
+    const clearbutton = clear && <i id={`${id}-clear-button`} className={`input-clear-button${controlValue ? " show" : ""}`} onClick={() => handleControlValueChange("")}>close</i>
 
     const inputControl = limit > 100
         ? <textarea
             id={id}
             name={name}
             value={controlValue}
+            placeholder={placeholder || label}
             type="text"
             className="text-input"
             onChange={(e) => handleControlValueChange(e.target.value)}
@@ -77,11 +77,10 @@ const Text = (props) => {
             id={id}
             name={name}
             value={controlValue}
-            placeholder={label}
+            placeholder={placeholder || label}
             type={textType}
             className={`text-input${clear ? " clearable" : ""}`}
             onChange={(e) => handleControlValueChange(e.target.value)}
-            onBlur={handleBlur}
             required={isRequired}
             autoComplete="do-not-autofill"
             maxLength={limit}
@@ -90,10 +89,10 @@ const Text = (props) => {
         />
     return (
         <>
-            <div id={`text-${id}`} className={`input-control-base text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}`} style={Vstyle}>
+            <div id={`text-${id}`} className={`input-control-base text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}`} style={style}>
                 <label htmlFor={id} className={`label ${controlValue === "" ? "hide" : ""}`}>{label}</label>
                 {inputControl}
-                {clear && clearbutton}
+                {controlValue != "" && clearbutton}
             </div>
             {clonedChildren}
         </>

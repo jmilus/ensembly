@@ -1,7 +1,16 @@
-import HomePage from './home-page.jsx';
+import 'server-only';
 
-const Page = () => {
-    return <HomePage />
+const Dashboard = () => {
+    return (
+        <div className="page-base">
+            <div className="action-section">
+                <h1>Dashboard</h1>
+            </div>
+            <div className="form-section">
+                <div className="page-details"></div>
+            </div>
+        </div>
+    )
 }
 
-export default Page;
+export default Dashboard;

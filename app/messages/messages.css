@@ -1,0 +1,7 @@
+.broadcast-container {
+    height: 2em;
+    padding: 5px;
+    border: 1px solid var(--color-c2);
+    border-radius:5px;
+    cursor: pointer;
+}

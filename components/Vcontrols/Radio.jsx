@@ -7,18 +7,17 @@ import { packageOptions } from '../../utils';
 import './Vstyling.css';
 
 const Radio = (props) => {
-    const { id, name, label, value, options, type="default", extraAction, Vstyle, isRequired = false, children, readonly, debug } = props;
+    const { id, name, label, value, options, type="default", extraAction, style, isRequired = false, children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value);
-    const [sliderPosition, setSliderPosition] = useState(options.findIndex(op => op.name === value) || 0);
 
+    const sliderPosition = options.findIndex(op => op.id === controlValue)
     const packagedOptions = packageOptions(options, value);
     const optionsCount = Object.keys(packagedOptions).length;
 
-    if (debug) console.log(name, { props }, { controlValue });
+    if (debug) console.log(name, { props }, { controlValue }, { packagedOptions });
 
     const handleControlValueChange = (v, o) => {
         if (extraAction) extraAction(v);
-        if(type === "slider") setSliderPosition(o)
         setControlValue(v.value);
     }
 
@@ -32,7 +31,7 @@ const Radio = (props) => {
 
     return (
         <>
-            <div id={`radio-${id}`} className={`radio-buttons-set ${type}`} onChange={(e) => console.log(e)} style={{...Vstyle, flex: optionsCount}}>
+            <div id={`radio-${id}`} className={`radio-buttons-set ${type}`} style={{...style, flex: optionsCount}}>
                 {
                     Object.values(packagedOptions).map((option, o) => {
                         return (
@@ -48,15 +47,15 @@ const Radio = (props) => {
                                 />
                                 <label htmlFor={`${name}-${id}-${o}`} className={`label${controlValue === option.value ? " active" : ""}`}>
                                     <div className={`radio-button ${type}`}></div>
-                                    {type === "default" && option.name}
+                                    {type === "default" && option.caption}
                                 </label>
                             </div>
                         )
                     })
                 }
                 {type === "slider" && 
-                    <div className={`radio-slider ${controlValue}`} style={{ width: `${100 / optionsCount}%`, left: `${(100 / optionsCount) * sliderPosition}%` }} >
-                        {controlValue}
+                    <div className={`radio-slider ${packagedOptions[controlValue].caption}`} style={{ width: `${100 / optionsCount}%`, left: `${(100 / optionsCount) * sliderPosition}%` }} >
+                        {packagedOptions[controlValue].caption}
                     </div>
                 }
 

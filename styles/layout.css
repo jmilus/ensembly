@@ -1,4 +1,5 @@
 .page-base {
+    position: relative;
     display: flex;
     flex: 1;
 }
@@ -8,7 +9,7 @@
     display: flex;
     flex-direction: column;
     background-image: linear-gradient(var(--gray1), var(--gray2));
-    padding: 0 10px;
+    --edge-color: var(--color-c2);
 }
 
 .action-section {
@@ -23,19 +24,8 @@
     background-image: linear-gradient(0deg, var(--color-c3), var(--color-c2), var(--color-c1));
     background-position: 260px 0;
     background-repeat: no-repeat;
-}
-
-.action-section button {
-    color: var(--text1);
     --edge-color: var(--color-c1);
-    font-size: 1.1em;
-    padding: 20px;
 }
-
-.action-section fieldset.buttons {
-    background: transparent;
-}
-
 
 .page-header {
     padding: 10px 0;
@@ -48,4 +38,5 @@
     flex: 1;
     color: var(--text2);
     overflow-y: scroll;
+    padding-top: 10px;
 }

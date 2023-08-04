@@ -7,7 +7,7 @@ import CALENDAR from '../../utils/calendarUtils';
 import './Vstyling.css';
 
 const DateTime = (props) => {
-    const { id, name, label, value, extraAction, max, min, Vstyles=[null, null], hero, isRequired, includeTime, children, recordId, readonly, debug } = props;
+    const { id, name, label, value, extraAction, max, min, style, hero, isRequired, includeTime, children, recordId, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value ? new Date(value) : "");
 
     const displayValue = controlValue ? CALENDAR.getDashedValue(controlValue).slice(0, includeTime ? 16 : 10) : "";
@@ -20,8 +20,9 @@ const DateTime = (props) => {
 
     const handleControlValueChange = (input) => {
         console.log("new value:", input)
-        const arrDate = input.split("-");
-        const newDate = new Date(arrDate[0], parseInt(arrDate[1]) - 1, arrDate[2]);
+        const arrDate = input.slice(0, 10).split("-");
+        const arrTime = input.slice(11).split(":")
+        const newDate = new Date(arrDate[0], parseInt(arrDate[1]) - 1, arrDate[2], arrTime[0], arrTime[1]);
         if (extraAction) extraAction(newDate);
         setControlValue(newDate);
     }
@@ -42,8 +43,8 @@ const DateTime = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}`} style={Vstyles[0]}>
-                <label htmlFor={name} className="label" style={{top: "3px", left: "3px"}}>{`${label} Date`}</label>
+            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}`} style={style}>
+                <label htmlFor={name} className="label">{`${label} Date`}</label>
                 <input
                     id={id}
                     value={displayValue}

@@ -9,16 +9,21 @@ import './Vstyling.css';
 
 
 const Collection = (props) => {
-    const { id, name, label, value, options, extraAction, Vstyle, hero, isRequired, children, readonly, debug } = props;
-    const [controlValues, setControlValues] = useState([])
+    const { id, name, label, value = [], options, extraAction, style, hero, isRequired, children, readonly, debug } = props;
+    const [controlValues, setControlValues] = useState({})
+    const [searchStr, setSearchStr] = useState("")
 
     useEffect(() => {
-        setControlValues(Object.values(packageOptions(Array.isArray(value) ? value : [value])))
+        setControlValues(packageOptions(value))
     }, [value])
+
+    useEffect(() => {
+        setSearchStr("")
+    }, [controlValues])
 
     let controlOptions = packageOptions(options, value)
 
-    if (debug) console.log({controlValues})
+    if (debug) console.log({ options }, { controlValues }, { value }, {controlOptions})
 
     const { dispatch } = useContext(GlobalContext);
 
@@ -32,52 +37,52 @@ const Collection = (props) => {
 
     const handleDropDownSelection = (input) => {
         dispatch({ route: "dropdown", payload: null })
-        let controlValuesCopy = [...controlValues];
-        controlValuesCopy.push(input)
+        let controlValuesCopy = { ...controlValues };
+        controlValuesCopy[input] = controlOptions[input]
         console.log({controlValuesCopy})
         handleValueUpdate(controlValuesCopy)
     }
 
-    const removeSelection = (value) => {
-        console.log(value)
-        const valuesCopy = controlValues.filter(cv => {
-            console.log(cv.id, value)
-            return cv.id != value
-        })
+    const removeSelection = (optionKey) => {
+        const controlValuesCopy = { ...controlValues }
+        delete controlValuesCopy[optionKey]
         
-        handleValueUpdate(valuesCopy);
+        handleValueUpdate(controlValuesCopy);
     }
 
-    const showDropDown = (str) => {
+    const showDropDown = (e) => {
+        e.stopPropagation();
+        const str = e.target.value
+        setSearchStr(str);
         if (readonly) return null;
         const parentControl = document.getElementById(`collection-${id}`)
-        const valuesToShow = str ? Object.values(controlOptions).filter(val => val.name.toLowerCase().includes(str.toLowerCase())) : Object.values(controlOptions)
-        console.log({valuesToShow})
+        const valuesToShow = { ...controlOptions }
+        if (str != "") {
+            Object.keys(controlOptions).forEach(val => {
+                if (!controlOptions[val].caption.toLowerCase().includes(str.toLowerCase()))
+                    delete valuesToShow[val]
+            })
+        }
+        
         dispatch({
             route: "dropdown",
             payload: {
                 dim: { x: parentControl.offsetLeft, y: parentControl.offsetTop, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
                 options: valuesToShow,
-                value: controlValues.map(cv => cv.id),
+                value: Object.values(controlValues).map(cv => cv.id),
                 setSelectControlValue: handleDropDownSelection
             }
         })
+        return false;
     }
 
     const ItemNode = ({data}) => {
         // console.log({data})
-        let nodecolor;
-        switch (data.nodeColor) {
-            case "dim":
-                nodecolor = "var(--gray5)"
-                break;
-            default:
-                break;
-        }
+
         return (
-            <div className="node-wrapper" style={{["--node-color"]: nodecolor}}>
+            <div className={`node-wrapper ${data.extraClass ? data.extraClass : ""}`} style={data.extraStyle}>
                 {data.icon && data.icon}
-                <span>{data.name}</span>
+                <span>{data.caption}</span>
                 <i onClick={() => removeSelection(data.value)}>cancel</i>
             </div>
         )
@@ -85,12 +90,12 @@ const Collection = (props) => {
 
     return (
         <>
-            <div id={`collection-${id}`} className="input-control-base collection-box" style={Vstyle}>
-                {label && <label htmlFor={id} className="label">{label}</label>}
+            <div id={`collection-${id}`} className="input-control-base collection-box" style={style}>
+                {label && <label htmlFor={id} className={`label ${Object.keys(controlValues).length > 0 ? "" : "hide"}`}>{label}</label>}
                 <select
                     id={id}
                     name={name}
-                    value={controlValues.map(cv => cv.value)}
+                    value={Object.keys(controlValues)}
                     onChange={() => null}
                     multiple={true}
                     required={isRequired}
@@ -109,7 +114,7 @@ const Collection = (props) => {
                             return <ItemNode key={i} data={option} />
                         })
                     }
-                    <input type="text" className="collection-adder" onClick={() => showDropDown()} onChange={(e) => showDropDown(e.target.value)} />
+                    <input type="text" className="collection-adder" value={searchStr} onClick={(e) => showDropDown(e)} onChange={(e) => showDropDown(e)} placeholder={Object.keys(controlValues).length > 0 ? "" : label} />
                 </div>
             </div>
         </>

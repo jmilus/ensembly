@@ -7,7 +7,7 @@ import { floor } from 'lodash';
 import './Vstyling.css';
 
 const Number = (props) => {
-    const { id, name, label, value, extraAction, initialValue, format, Vstyle, hero, isRequired, recordId, updateForm, readonly, debug } = props;
+    const { id, name, label, value, extraAction, initialValue, format, style, hero, isRequired, recordId, updateForm, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || initialValue || 0);
     const [touched, setTouched] = useState(false);
 
@@ -77,7 +77,7 @@ const Number = (props) => {
     }
     
     return (
-        <div className={`input-control-base number-box${label ? "" : " unlabeled"}${touched ? " touched" : ""}`} style={Vstyle}>
+        <div className={`input-control-base number-box${label ? "" : " unlabeled"}${touched ? " touched" : ""}`} style={style}>
             <label htmlFor={id} className="label">{label}</label>
             <input
                 id={id}

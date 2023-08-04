@@ -10,28 +10,80 @@
     --blip-color: gray;
     display: flex;
     align-items: center;
+    justify-content: center;
     border-radius: 5px;
     background: var(--blip-color);
     color: var(--blip-text-color);
     padding: 0.75em 1em;
     font-size: 1.15em;
-    box-shadow: 1px 1px 5px var(--blip-text-color);
-    transition: all 0.1s ease;
+    box-shadow: 0px 3px 8px -1px hsla(0, 0%, 30%, 0.5);
+    transition: all 0.3s ease;
+    min-width: 200px;
 }
+
+.status-blip-body span {
+    flex: 1;
+}
+
+/* unsaved */
+.status-blip-body.unsaved {
+    --blip-text-color: hsl(0, 0%, 100%);
+    --blip-color: hsl(212, 100%, 60%);
+    cursor: pointer;
+    animation: unsaved-pulse 10s ease-in infinite;
+}
+.status-blip-body.unsaved:hover {
+    --blip-color: hsl(212, 100%, 65%);
+}
+.status-blip-body.unsaved:active {
+    --blip-color: white;
+    --blip-text-color: hsl(212, 100%, 60%);
+}
+
+/* saving */
 .status-blip-body.saving {
-    --blip-text-color: hsl(45, 50%, 40%);
+    --blip-text-color: hsl(45, 50%, 20%);
     --blip-color: hsl(45, 100%, 60%);
     cursor: progress;
 }
+
+/* loading */
 .status-blip-body.loading {
     --blip-text-color: var(--color-c3);
     --blip-color: var(--color-c1);
     cursor: progress;
 }
+
+/* saved */
 .status-blip-body.saved {
-    --blip-text-color: var(--color-cactus);
+    --blip-text-color: white;
     --blip-color: var(--color-moss);
     cursor: default;
-    color: white;
+    animation: fade-blip 0.5s 3s 1 forwards;
+}
 
+/* error */
+.status-blip-body.error {
+    --blip-text-color: white;
+    --blip-color: hsl(0, 90%, 50%);
+    cursor: pointer;
+    animation: fade-blip 0.5s 9s 1 forwards;
+}
+
+@keyframes unsaved-pulse {
+    100%, 3% {
+        background-color: var(--blip-color);
+    }
+    0% {
+        background-color: white;
+    }
+}
+
+@keyframes fade-blip {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }

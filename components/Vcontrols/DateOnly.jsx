@@ -5,13 +5,13 @@ import React, { useState, useEffect } from 'react';
 import './Vstyling.css';
 
 const DateOnly = (props) => {
-    const { id, name, label, value, extraAction, max, min, Vstyles=[null, null], hero, isRequired, children, readonly, debug } = props;
+    const { id, name, label, value, extraAction, max, min, style, hero, isRequired, children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || "");
 
     if (debug) console.log(name, { props }, { controlValue });
 
     useEffect(() => {
-        setControlValue(value);
+        setControlValue(value || "");
     }, [value])
 
     const handleControlValueChange = (input) => {
@@ -36,10 +36,11 @@ const DateOnly = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-only-box${label ? "" : " unlabeled"}`} style={Vstyles[0]}>
-                <label htmlFor={name} className="label" style={{top: "3px", left: "3px"}}>{`${label} Date`}</label>
+            <div id={`date-${id}`} className={`input-control-base date-only-box${label ? "" : " unlabeled"}`} style={style}>
+                <label htmlFor={name} className="label">{`${label} Date`}</label>
                 <input
                     id={id}
+                    name={name}
                     value={controlValue}
                     type={"date"}
                     className=""
@@ -50,7 +51,6 @@ const DateOnly = (props) => {
                     autoComplete="do-not-autofill"
                     readOnly={readonly}
                 />
-                <input name={name} value={controlValue} style={{ display: "none" }} onChange={() => null} />
             </div>
             { clonedDateChildren }
         </>

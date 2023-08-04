@@ -1,82 +1,126 @@
 'use client'
 
 import Link from 'next/link'
-import { useContext } from 'react';
 import { useRouter, usePathname } from "next/navigation";
 
-import { GlobalContext } from "../../components/ContextFrame";
+import { supabase } from '../../lib/supabase-client';
+
 import {Form, Text, File, Select} from '../../components/Vcontrols';
 import TabControl, { Tab } from '../../components/TabControl';
 
 import memberImportFromExcel from '../../lib/memberImportFromExcel';
-import Modal2 from '../../components/Modal2';
+import ModalButton from '../../components/ModalButton';
 
-const EnsembleNav = ({ ensemble, schema }) => {
+const EnsembleNav = ({ ensemble, lineup }) => {
     const router = useRouter();
-    
+    const path = usePathname()
 
-    const loadSchema = async (schemaId) => {
-        // console.log(schemaId)
-        router.push(`/ensembles/${ensemble.id}/viewschema/${schemaId}`);
+    console.log({ensemble})
+
+    const loadLineup = async (lineupId) => {
+        console.log({lineupId})
+        router.push(`/ensembles/${ensemble.id}/lineup/${lineupId}`);
     }
+
+    const upload = async (input) => {
+        const logoFile = input.files[0]
+        const { data, error } = await supabase.storage
+            .from('Logos')
+            .upload(`${ensemble.id}/logo${logoFile.name.slice(logoFile.name.lastIndexOf("."))}`, logoFile, {
+                upsert: true
+            })
+        console.log({ data }, { error })
+
+        if (data) {
+            const urlResult = await fetch('/api/ensembles/updateEnsemble', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: ensemble.id,
+                    logoUrl: data.path
+                })
+            })
+                .then(response => response.json())
+                .then(res => res)
+                .catch((err, message) => console.error("hhmmm...", err, message));
+            
+            console.log(urlResult);
+        }
+    }
+
+    const lineupId = path.includes("lineup/") ? path.slice(path.indexOf("lineup/") + 7) : null;
+    const startTab = lineupId ? 2 : path.includes("calendar") ? 1 : 0;
 
     return (
         <div className="sub-nav">
             <article style={{padding: "10px", flex: "0 0 10em"}}>
                 <Link href="/ensembles"><i>arrow_back</i>All Ensembles</Link>
-                <h1>{ensemble.name}</h1>
+                <h1>Ensemble Profile</h1>
             </article>
-            <TabControl type="accordion">
-                <Tab id="General" onLoad={() => router.push(`ensembles/${ensemble.id}/`)}>
-                    <article style={{padding: "10px"}}>
-                        <Modal2
-                            modalButton={<button><i>upload</i><span>Upload Members</span></button>}
-                            title="Upload Members From Excel File"
-                        >
-                                <Form id="upload-members-form" APIURL="/members/uploadMembers" additionalIds={{ensembleId: ensemble.id}} >
+            <TabControl type="accordion" startTab={startTab}>
+                <Tab id="General" onLoad={() => router.push(`/ensembles/${ensemble.id}/`)}>
+                    <article style={{ padding: "10px" }}>
+                        <fieldset className="buttons button-chain column">
+                            <ModalButton
+                                modalButton={<><i>upload</i><span>Upload Members</span></>}
+                                title="Upload Members From Excel File"
+                            >
+                                <Form id="upload-members-form" APIURL="/members/uploadMembers" auxData={{ensembleId: ensemble.id}} >
                                     <section className="modal-fields">
                                         <File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
                                     </section>
-                                    <section className="modal-buttons">
-                                        <button name="submit">Submit</button>
-                                    </section>
                                 </Form>
-                        </Modal2>
+                                <section className="modal-buttons">
+                                    <button name="submit" form="upload-members-form">Submit</button>
+                                </section>
+                            </ModalButton>
+                            <ModalButton
+                                modalButton={<><i>upload</i><span>Upload Logo</span></>}
+                                title="Upload Logo"
+                            >
+                                <Form id="upload-logo-form" altSubmit={(f) => upload(f)} debug>
+                                    <File id="logo-upload-control" name="logo" handling="upload" fileTypes={[".jpg", ".jpeg", ".gif", ".png"]} />
+                                </Form>
+                                <section className="modal-buttons">
+                                    <button name="submit" form="upload-logo-form">Upload</button>
+                                </section>
+                            </ModalButton>
+                        </fieldset>
                     </article>
                 </Tab>
-                <Tab id="Calendar" onLoad={() => router.push(`ensembles/${ensemble.id}/`)}>
+                <Tab id="Calendar" onLoad={() => router.push(`/ensembles/${ensemble.id}/`)}>
                     <div>Events!</div>
                 </Tab>
-                <Tab id="Schemas" onLoad={() => router.push(`ensembles/${ensemble.id}/viewschema/x`)}>
+                <Tab id="Lineups" onLoad={() => router.push(`/ensembles/${ensemble.id}/lineup/x`)}>
                     <article style={{ padding: "10px" }}>
-                        <Select id="schema-select" field="schema" label="Schema" value={schema.id} options={ensemble.schema} extraAction={(selectedSchema) => loadSchema(selectedSchema)} />
-                        <fieldset className="buttons">
-                            <Modal2
-                                modalButton={<button><i>add_box</i><span>New Schema</span></button>}
-                                title="Create New Schema"
+                        <Select id="lineup-select" name="lineup" label="Lineup" value={lineupId} options={ensemble.Lineup} extraAction={(selectedLineup) => loadLineup(selectedLineup)} />
+                        <fieldset className="buttons button-chain column">
+                            <ModalButton
+                                modalButton={<><i>add_box</i><span>New Lineup</span></>}
+                                title="Create New Lineup"
                             >
-                                <Form id="create-schema-form" APIURL="/ensembles/createSchema" additionalIds={{ ensembleId: ensemble.id }}>
+                                <Form id="create-lineup-form" APIURL={`/api/ensembles/${ensemble.id}/lineup`} METHOD="POST" auxData={{ ensemble: ensemble.id }} followPath={`/ensembles/${ensemble.id}/lineup/$slug$`}>
                                     <section className="modal-fields">
-                                        <Text id="schema-name" name="name" label="New Schema Name" />
-                                    </section>
-                                    <section className="modal-buttons">
-                                        <button name="submit">Submit</button>
+                                        <Text id="lineup-name" name="name" label="New Lineup Name" />
                                     </section>
                                 </Form>
-                            </Modal2>
-                            <Modal2
-                                modalButton={<button><i>library_add</i><span>Copy Schema</span></button>}
-                                title="Copy Schema"
+                                <section className="modal-buttons">
+                                    <button name="submit" form="create-lineup-form">Submit</button>
+                                </section>
+                            </ModalButton>
+                            <ModalButton
+                                modalButton={<><i>library_add</i><span>Copy Lineup</span></>}
+                                title="Copy Lineup"
                             >
-                                <Form id="copy-schema-form" APIURL="/ensembles/copySchema" additionalIds={{ ensembleId: ensemble.id, schemaId: schema.id }}>
+                                <Form id="copy-lineup-form" METHOD="POST" followPath={`/ensembles/${ensemble.id}/lineup/$slug$`}>
                                     <section className="modal-fields">
-                                        <Text id="schema-name" name="name" label="New Schema Name" />
-                                    </section>
-                                    <section className="modal-buttons">
-                                        <button name="submit">Copy</button>
+                                        <Text id="lineup-name" name="name" label="New Lineup Name" />
                                     </section>
                                 </Form>
-                            </Modal2>
+                                <section className="modal-buttons">
+                                    <button name="submit" form="copy-lineup-form">Copy</button>
+                                </section>
+                            </ModalButton>
                         </fieldset>
                     </article>
                 </Tab>

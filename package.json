@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },
@@ -13,29 +13,40 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
-    "@prisma/client": "^4.14.0",
-    "@supabase/auth-helpers-nextjs": "^0.5.9",
+    "@prisma/client": "^4.15.0",
+    "@supabase/auth-helpers-nextjs": "^0.7.2",
     "@supabase/auth-helpers-react": "^0.3.1",
     "@supabase/auth-ui-react": "^0.2.6",
     "@supabase/supabase-js": "^2.21.0",
     "classnames": "^2.3.1",
+    "draft-js": "^0.11.7",
+    "draftjs-to-html": "^0.9.1",
+    "encoding": "^0.1.13",
     "exceljs": "^4.3.0",
+    "html-to-draftjs": "^1.5.0",
+    "immutable": "^4.3.0",
     "lodash": "^4.17.21",
-    "next": "^13.4.2",
+    "next": "^13.4.7",
     "nextjs": "^0.0.3",
-    "node": "^17.7.2",
+    "node": ">=18.0.0",
+    "postmark": "^3.0.18",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
+    "react-draft-wysiwyg": "^1.15.0",
+    "semver": "^7.5.3",
     "server-only": "^0.0.1",
+    "slate": "^0.94.1",
+    "slate-history": "^0.93.0",
+    "slate-react": "^0.94.2",
     "swr": "^1.3.0",
     "use-immer": "~0.8.1"
   },
   "devDependencies": {
-    "eslint": "8.13.0",
-    "eslint-config-next": "^13.3.1",
-    "prisma": "^4.14.0"
+    "eslint": "^8.43.0",
+    "eslint-config-next": "^12.3.4",
+    "prisma": "^4.15.0"
   },
   "browser": {
     "fs": false,

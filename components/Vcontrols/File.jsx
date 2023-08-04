@@ -5,10 +5,10 @@ import { useState } from 'react';
 import './Vstyling.css';
 
 const File = (props) => {
-    const { id, field, label="Browse Files", limit, Vstyle, hero, isRequired, fileType, handling, readonly, debug } = props;
+    const { id, name, label="Browse Files", limit, style, hero, isRequired, fileTypes, handling, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(label);
 
-    if (debug) console.log(field, { props }, { controlValue });
+    if (debug) console.log(name, { props }, { controlValue });
 
     const handleControlValueChange = (input) => {
         let file = input.files[0];
@@ -16,8 +16,8 @@ const File = (props) => {
         if (input.files) {
             switch (handling) {
                 case "upload":
-                    const extlen = fileType.length;
-                    if (file.name.slice(-extlen) === fileType) {
+                    const fileExtension = file.name.slice(file.name.lastIndexOf("."))
+                    if (fileTypes.includes(fileExtension)) {
                         setControlValue(`Selected File: ${file.name}`);
                     } else {
                         setControlValue('Selected file is of wrong type');
@@ -34,13 +34,13 @@ const File = (props) => {
     }
 
     return (
-        <div className={`input-control-base file-box${hero ? " hero" : ""}${label ? "" : " unlabeled"} ${isRequired ? "flag" : ""}`} style={Vstyle}>
+        <div className={`input-control-base file-box${hero ? " hero" : ""}${label ? "" : " unlabeled"} ${isRequired ? "flag" : ""}`} style={style}>
             <label htmlFor={id} className="icon-and-label">
                 <i>description</i>
                 {controlValue}
                 <input
                     id={id}
-                    field={field}
+                    name={name}
                     type="file"
                     className="text-input"
                     onChange={({ target }) => handleControlValueChange(target)}

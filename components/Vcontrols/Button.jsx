@@ -1,24 +1,38 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import './Vstyling.css';
+import useStatus from '../../hooks/useStatus';
 
 const Button = (props) => {
-    const { name, label, APIURL, payload, output, debug } = props;
+    const { name, label, APIURL, METHOD, payload, output, buttonClass, style, debug } = props;
 
     if (debug) console.log({ props })
+    const path = usePathname()
+    const status = useStatus();
+
+    let fetchURL;
+    if (APIURL) {
+        fetchURL = APIURL.startsWith('/') ? APIURL : `/api${path}/${APIURL}`
+    } else {
+        fetchURL = `/api${path}`
+    }
 
     const executeAPI = async () => {
-        const APIButtonResponse = await fetch(`/api${APIURL}`, {
-            method: 'POST',
+        status.saving()
+        const APIButtonResponse = await fetch(fetchURL, {
+            method: METHOD || 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
             .then(response => response.json())
             .then(res => {
+                status.saved()
                 console.log("button response:", res)
                 return res
             })
             .catch((err, message) => {
+                status.error()
                 console.error("API button failed", message);
                 return err;
             })
@@ -27,7 +41,7 @@ const Button = (props) => {
     }
 
     return (
-        <button name={name} onClick={executeAPI}>{label}</button>
+        <button name={name} className={buttonClass} style={style} onClick={executeAPI}>{label}</button>
     )
 }
 

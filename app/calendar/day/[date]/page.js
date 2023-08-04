@@ -2,7 +2,7 @@ import 'server-only';
 
 import CalendarDay from './CalendarDay';
 
-import { fetchManyEvents } from '../../../../pages/api/events/getManyEvents';
+import { getManyEvents } from '../../../api/calendar/[cal]/route';
 
 const CalendarDayEvents = async (context) => {
     console.log("params date:", context.params.date)
@@ -17,7 +17,7 @@ const CalendarDayEvents = async (context) => {
         endDate: e.setHours(e.getHours() + offset)
     }
 
-    const events = await fetchManyEvents(oneDay);
+    const events = await getManyEvents(oneDay);
 
     return <CalendarDay {...{events, calendarDay: s}} />
 }

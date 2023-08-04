@@ -1,20 +1,19 @@
 'use client'
 
-import { useRouter } from 'next/navigation';
-import { useRef, useEffect, useContext } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useRef, useEffect } from 'react';
 import useStatus from '../../hooks/useStatus';
-
-import { GlobalContext } from '../ContextFrame';
 
 import './Vstyling.css';
 
-const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subActions, followUp, followPath, onChange, auto, timeout = 1000, debug }) => {
+const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, followUp, followPath, onChange, auto, timeout = 1000, debug }) => {
     const saveTimer = useRef();
     const readOnlyInputs = useRef([]);
-    const { dispatch } = useContext(GlobalContext);
     const status = useStatus()
 
     const router = useRouter()
+    const pathname = usePathname()
+    const path = pathname.slice(0, pathname.includes("/$") ? pathname.indexOf("/$") : pathname.length)
 
     useEffect(() => {
         const thisForm = document.getElementById(id);
@@ -26,15 +25,24 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
     }, [])
 
     const sendToJsonAPI = async (data) => {
-        const jsonData = JSON.stringify({...data, id: recordId, ...additionalIds})
-        return await fetch(`/api${APIURL}`, {
-            method: 'POST',
+        // console.log("form data:", data)
+        const jsonData = JSON.stringify({ ...data, ...auxData })
+        
+        let fetchURL;
+        if (APIURL) {
+            fetchURL = APIURL.startsWith('/') ? APIURL : `/api${path}/${APIURL}`
+        } else {
+            fetchURL = `/api${path}`
+        }
+        
+
+        return await fetch(fetchURL, {
+            method: METHOD || 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: jsonData
         })
             .then(response => response.json())
             .then(record => {
-                console.log({ record });
                 return record;
             })
             .catch((err, message) => {
@@ -64,52 +72,38 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         if (debug) console.log("form submit event", e);
+        
+        if (readOnlyInputs.current.includes(e.target.name)) return null;
+        
         status.saving()
 
-        if (readOnlyInputs.current.includes(e.target.name)) return null;
 
-        // if (e.nativeEvent.submitter && e.nativeEvent.submitter.name != "submit") {
-
-        //     switch (e.nativeEvent.submitter.name) {
-        //         case "cancel":
-        //         default:
-        //             dispatch({
-        //                 route: "modal",
-        //                 payload: {type: "hide"}
-        //             })
-        //             return null;
-        //     }
-        // }
-
-        if (e.nativeEvent.submitter) {
-            dispatch({
-                route: "modal",
-                payload: {type: "hide"}
-            })
-
-        }
+        if (e.nativeEvent.submitter?.parentElement.className.includes("modal")) router.back();
 
         const formElement = e.target.form ? e.target.form : e.target;
         const formData = new FormData(formElement);
 
-        const dataObject = { id: recordId, ...additionalIds }
+        const dataObject = { ...auxData }
         const iterator = [...formData.entries()]
+        console.log({ iterator })
 
         iterator.every(item => {
-            if (readOnlyInputs.current.includes(item[0])) return true;
+            console.log("form iterator:", item)
+            let [fieldName, fieldValue] = item;
+            if (readOnlyInputs.current.includes(fieldName)) return true;
 
-            const uniqueNameDash = item[0].indexOf("-");
-            const key = uniqueNameDash > 0 ? item[0].slice(0, uniqueNameDash) : item[0];
-            const val = item[1];
-            if (debug) console.log("input value:", { key }, { val });
-            if (dataObject[key]) {
-                if (Array.isArray(dataObject[key])) {
-                    dataObject[key].push(val);
+            const uniqueNameDash = fieldName.indexOf("-");
+            if(uniqueNameDash > 0) fieldName = fieldName.slice(0, uniqueNameDash)
+
+            if (debug) console.log("input name and value:", { fieldName }, { fieldValue });
+            if (dataObject[fieldName]) {
+                if (Array.isArray(dataObject[fieldName])) {
+                    dataObject[fieldName].push(fieldValue);
                 } else {
-                    dataObject[key] = [dataObject[key], val]
+                    dataObject[fieldName] = [dataObject[fieldName], fieldValue]
                 }
             } else {
-                dataObject[key] = val;
+                dataObject[fieldName] = fieldValue;
             }
             return true;
         })
@@ -123,31 +117,40 @@ const Form = ({ id, recordId, additionalIds, children, APIURL, altSubmit, subAct
 
         if (debug) console.log("processed form data:", dataObject);
 
-        if (APIURL) {
-            let APIResponse = await sendToJsonAPI(dataObject)
+        if (altSubmit) {
+            altSubmit(dataObject);
+            subActions?.forEach(action => {
+                action(dataObject);
+            })  
+            return;
+        }
 
-            console.log({ APIResponse });
+        const {res} = await sendToJsonAPI(dataObject)
+        console.log({ res });
+        if (!res) {
+            status.error("response failure");
+            return;
+        }
 
-            if (APIResponse[0]?.err) {
-                console.error(err);
-            } else {
-                status.saved();
-                if (followUp) followUp(APIResponse);
-                if (followPath) {
-                    router.push(followPath(APIResponse))
-                } else {
-                    router.refresh();
-
+        if (res.err || res[0]?.err) {
+            status.error()
+            console.error(err);
+        } else {
+            if (followUp) followUp(res);
+            if (followPath) {
+                let newPath = followPath;
+                if (followPath.includes("$slug$")) {
+                    newPath = followPath.startsWith("$slug$") ? `${path}/${followPath}` : followPath;
+                    newPath = newPath.replace("$slug$", res.id);
                 }
+                
+                if (followPath.includes("$closeModal$"))
+                    newPath = path.replace("/$closeModal$", "")
+                
+                router.push(newPath)
             }
-            
-        }  
-
-        if (altSubmit) altSubmit(dataObject);
-
-        subActions?.forEach(action => {
-            action(dataObject);
-        })        
+            status.saved();
+        }
         
     }
 

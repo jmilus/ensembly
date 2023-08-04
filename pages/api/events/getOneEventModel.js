@@ -1,36 +1,20 @@
-import prisma from '../../../lib/prisma';
+import { supabase } from '../../../lib/supabase-server';
 import { formatDBObject } from '../../../utils';
 
 export const fetchOneEventModel = async (id) => {
-    const fetchedInstance = await prisma.eventModel.findUnique({
-        where: {
-            id: id
-        },
-		include: {
-			eventType: true,
-            location: true,
-            parentModel: {
-                include: {
-                    eventType: true
-                }
-            },
-            childModels: {
-                include: {
-                    eventType: true
-                }
-            },
-            events: {
-                orderBy: { startDate: 'asc' },
-                include: {
-                    schemas: {
-                        include: {
-                            schema: true
-                        }
-                    }
-                }
-            }
-		}
-    })
+    const { data: fetchedInstance, error } = await supabase
+        .from('EventModel')
+        .select(`
+            *,
+            EventType (*),
+            Address (*),
+            parent (*),
+            EventModel (*),
+            Event (*, EventLineup (Lineup (*)))
+        `)
+        .eq('id', id)
+    
+    if (error) console.log("Fetch One Event Model error:", error);
 
     console.log({fetchedInstance})
 

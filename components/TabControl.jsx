@@ -2,29 +2,29 @@
 
 import React, { useState, useEffect } from 'react';
 
-export const Tab = ({ id, direction, hidePage, tabStyle, onLoad, children }) => {
-    useEffect(() => {
-        if(onLoad && !hidePage) onLoad(id)
-    }, [hidePage])
-
+export const Tab = ({ id, direction, hidePage, tabStyle, children }) => {
     const newTabStyle = hidePage ? { ...tabStyle, display: "none" } : { ...tabStyle }
-
     return (
         <div key={`page-${id}`} id={`page-${id}`} className={`tab-page ${direction ? direction : ""}`} style={newTabStyle}>{children}</div>
     )
 }
 
-const TabControl = ({ type="normal", onChange, children }) => {
-    const [activeTab, setActiveTab] = useState(0);
+const TabControl = ({ id, type="normal", onChange, startTab, Vstyle, children }) => {
+    const [activeTab, setActiveTab] = useState(startTab || 0);
 
     useEffect(() => {
         if (onChange) onChange(activeTab);
     }, [activeTab])
 
+    const tabClick = (tabIndex, tabLoad) => {
+        if(tabLoad) tabLoad();
+        setActiveTab(tabIndex);
+    }
+
     let tabs = [];
     let pages = [];
     React.Children.forEach(children, (child, c) => {
-        const newTab = <div key={`tab-${c}`} id={`tab-${child.props.id}`} className={`tab-button ${c === activeTab && "active"}`} onClick={() => setActiveTab(c)}>{child.props.id}</div>
+        const newTab = <div key={`${id}-tab-${c}`} id={`tab-${child.props.id}`} className={`tab-button ${c === activeTab && "active"}`} onClick={() => tabClick(c, child.props.onLoad)}>{child.props.id}</div>
         tabs.push(newTab)
         const newPage = React.cloneElement(child, { key: c, hidePage: c != activeTab }, child.props.children)
         pages.push(newPage)
@@ -33,12 +33,12 @@ const TabControl = ({ type="normal", onChange, children }) => {
     switch (type) {
         case "accordion":
             return (
-                <div className={`tab-wrapper ${type}`}>
+                <div className={`tab-wrapper ${type}`} style={Vstyle}>
                     <article>
                         {
                             pages.map((page, p) => {
                                 return (
-                                    <div key={p}>
+                                    <div key={p} className="accordion-tab">
                                         {tabs[p]}
                                         {page}
                                     </div>
@@ -50,10 +50,10 @@ const TabControl = ({ type="normal", onChange, children }) => {
             )
         default:
             return (
-                <div className={`tab-wrapper ${type}`} >
-                    <ul className="tab-row">
+                <div className={`tab-wrapper ${type}`} style={Vstyle}>
+                    <div className="tab-row">
                         { tabs }
-                    </ul>
+                    </div>
                     { pages }
                 </div>
             )

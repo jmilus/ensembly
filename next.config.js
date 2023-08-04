@@ -1,7 +1,7 @@
 module.exports = {
   reactStrictMode: true,
   experimental: {
-    appDir: true,
+    appDir: true
   },
   webpack5: true,
   webpack: config => {
@@ -10,6 +10,16 @@ module.exports = {
     };
 
     return config;
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: process.env.DATABASE_URL,
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 }
 

@@ -5,7 +5,7 @@ import { getErrorMessage } from '../utils/';
 
 import { GlobalContext } from './ContextFrame';
 
-import '../styles/modal.css';
+import './modal.css';
 
 const Modal = () => {
     const { dispatch, parameters } = useContext(GlobalContext);
@@ -13,9 +13,9 @@ const Modal = () => {
     const [modalIsFullscreen, setModalIsFullscreen] = useState(true)
     // console.log("rendering modal with:", modal, modalIsFullscreen);
 
-    useEffect(() => {
-        setModalIsFullscreen(true)
-    }, [modal])
+    // useEffect(() => {
+    //     setModalIsFullscreen(true)
+    // }, [modal])
 
     const hideModal = () => {
         if (modal.type === "load") {
@@ -25,64 +25,42 @@ const Modal = () => {
             dispatch({ route: "modal", payload: null })
         }
     }
-    
-    let modalBody = null;
 
-    if (modal) {
-        if (modal.type != "hide") {
-            const { content } = modal;
-            switch (modal.type) {
-                case "load":
-                    modalBody =
-                        <div className="loading">
-                            Loading...
-                        </div>
-                    break;
-                case "error":
-                    const errMessage = getErrorMessage(modal.errCode)
-                    modalBody =
-                        <>
-                            <div className="error">
-                                {errMessage}
-                            </div>
-                            <div className="modal-buttons">
-                                <button type="button" className="panel" onClick={hideModal}>OK</button>
-                            </div>
-                        </>
-                    break;
-                case "form":
-                    modalBody =
-                        < >
-                            <div className="modal-header">{content.title}</div>
-                            {content.body}
-                        </>
-                    break;
-                case "message":
-                    modalBody =
-                        <>
-                            <div className="modal-header">{content.title}</div>
-                            <div className="modal-alert-message">
-                                <i>help</i>
-                                <div className="modal-message">{content.body}</div>
-                            </div>
-                        </>
-                    break;
-                default:
-                    console.log("no modal type specified");
-                    break;
-            }
-            return (
-                <div className="modal-base">
-                    <div className={`modal-wrapper ${modalIsFullscreen ? "" : "min"}`} onClick={modalIsFullscreen ? null : () => setModalIsFullscreen(true)}>
-                        <div className="modal-border">
-                            <div className="modal-container">
-                                {modalBody}
-                            </div>
+    const ModalThing = ({type, children}) => {
+        return (
+            <div className="modal-base">
+                <div className={`modal-wrapper ${type}${modalIsFullscreen ? "" : " min"}`} onClick={modalIsFullscreen ? null : () => setModalIsFullscreen(true)}>
+                    <div className="modal-border">
+                        <div className="modal-container">
+                            {children}
                         </div>
                     </div>
-                    {modalIsFullscreen ? <div className="modal-backdrop" onClick={hideModal}></div> : null}
                 </div>
-            );
+                {modalIsFullscreen ? <div className="modal-backdrop" onClick={hideModal}></div> : null}
+            </div>
+        )
+    }
+
+    if (modal) {
+        const { type, content } = modal;
+        switch (type) {
+            case "error":
+                let { error } = content
+                console.log("error thingy:", {error})
+                return (
+                    <ModalThing type="error">
+                        <div className="modal-header">{content.title}</div>
+                        <div className="modal-body">{content.error?.stack}</div>
+                    </ModalThing>
+                )
+            case "hide":
+                return null
+            default:
+                return (
+                    <ModalThing>
+                        {content.body}
+                    </ModalThing>
+                )
         }
     }
     return null;

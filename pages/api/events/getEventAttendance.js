@@ -1,12 +1,10 @@
-import prisma from '../../../lib/prisma';
+import { supabase } from '../../../lib/supabase-server';
 
 export const fetchEventAttendance = async (eventId) => {
-
-    const attendanceArray = await prisma.attendance.findMany({
-        where: {
-            eventId: eventId
-        }
-    })
+    const { data: attendanceArray, error } = await supabase
+        .from('Attendance')
+        .select(`*`)
+        .eq('eventId', eventId)
 
     const attendanceObj = {}
     attendanceArray.forEach(att => {

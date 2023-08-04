@@ -1,8 +1,11 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { supabase } from '../lib/supabase-client';
+// import { supabase } from '../lib/supabase-client';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
 import { HOSTURL } from '../config'
 
 import Image from 'next/image';
@@ -13,11 +16,23 @@ import GoogleIcon from '../public/images/GoogleIcon.png'
 import DiscordIcon from '../public/images/DiscordIcon.png'
 import LinkedInIcon from '../public/images/LinkedInIcon.png'
 
-import '../styles/modal.css';
+import './modal.css';
 
 const LoginBox = () => {
     const blankMessage = {message: "", vibe: ""}
     const [formMessage, setFormMessage] = useState({ ...blankMessage })
+    const router = useRouter();
+    const supabase = createClientComponentClient();
+
+    useEffect(() => {
+        const getSession = async () => {
+            const { data: { session } , error } = await supabase.auth.getSession();
+            console.log("login session:", { session })
+            if (session) router.refresh();
+        }
+        
+        getSession();
+    },[])
 
     const signInHandler = async (data, route) => {
         let message
@@ -66,6 +81,7 @@ const LoginBox = () => {
             }
         })
         if (error) console.log(`problem signing in with ${provider}`, error);
+        router.refresh();
     }
 
     const signInWithPassword = async (credentials) => {
@@ -73,14 +89,15 @@ const LoginBox = () => {
         console.log("sign-in with password:", credentials)
         const { data, error } = await supabase.auth.signInWithPassword({
             email: credentials.email,
-            password: credentials.password
+            password: credentials.password,
         })
         if (error) {
             console.log("login error", { error })
             formResponseMessage = { message: error.message, vibe: "error" };
         } else {
-            console.log("logging in...");
+            console.log("logging in...", { data });
             formResponseMessage = "Logging in...";
+            router.refresh()
         }
         return formResponseMessage;
     }
@@ -94,20 +111,20 @@ const LoginBox = () => {
                             Login to Ensembly
                         </div>
                         <div className="modal-body">
-                            <TabControl tabsStyle={{padding: "15px"}} onChange={() => setFormMessage({...blankMessage})}>
+                            <TabControl onChange={() => setFormMessage({...blankMessage})} Vstyle={{margin: "0 20px 20px"}}>
                                 <Tab id="Social">
                                     <article>
                                         <button className="fat centered" onClick={() => signInWithSocial('google')}>
                                             <Image src={GoogleIcon} alt="google-logo" width={25} height={25} />
-                                            Sign in With Google
+                                            <span>Sign in With Google</span>
                                         </button>
                                         <button className="fat centered" onClick={() => signInWithSocial('discord')}>
                                             <Image src={DiscordIcon} alt="discord-logo" width={25} height={25} />
-                                            Sign in With Discord
+                                            <span>Sign in With Discord</span>
                                         </button>
                                         <button className="fat centered" onClick={() => signInWithSocial('linkedin')}>
                                             <Image src={LinkedInIcon} alt="discord-logo" width={25} height={25} />
-                                            Sign in With LinkedIn
+                                            <span>Sign in With LinkedIn</span>
                                         </button>
                                     </article>
 

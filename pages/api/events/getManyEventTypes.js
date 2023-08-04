@@ -1,7 +1,14 @@
-import prisma from '../../../lib/prisma';
+import 'server-only';
+
+import { supabase } from '../../../lib/supabase-server';
 
 export const fetchManyEventTypes = async () => {
-    const fetchedEventTypes = await prisma.eventType.findMany()
+    // const fetchedEventTypes = await prisma.eventType.findMany()
+    const { data: fetchedEventTypes, error } = await supabase
+        .from('EventType')
+        .select('*')
+    
+    if(error) console.log("Fetch Many Event Types error:", { error })
     
     return fetchedEventTypes;
 }

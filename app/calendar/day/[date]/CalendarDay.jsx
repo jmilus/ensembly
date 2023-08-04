@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import {Text} from '../../../../components/Vcontrols/';
 import { EventNode } from '../../../../components/Calendar';
 
-import basePageStyles from '../../../../styles/basePage.module.css';
-
 const DayProfile = (initialProps) => {
     console.log(initialProps);
     const { events, calendarDay } = initialProps;
@@ -16,15 +14,15 @@ const DayProfile = (initialProps) => {
     const day = new Date(calendarDay);
     
     return (
-        <div className={basePageStyles.pageBase}>
-            <div className={basePageStyles.actionSection}>
+        <div className="page-base">
+            <div className="action-section">
                 <button className="icon-and-label" onClick={() => router.push("/events")}><i>arrow_back</i>Back to Calendar</button>
             </div>
-            <div className={basePageStyles.formSection}>
-                <div className={basePageStyles.pageHeader}>
+            <div className="form-section">
+                <div className="page-header">
                     <Text id="name" field="name" value={day.toLocaleDateString()} hero isRequired limit="64" readonly/>
                 </div>
-                <div className={basePageStyles.pageDetails}>
+                <div className="page-details">
                     {
                         events.map((event, e) => {
                             return <EventNode key={e} event={event} inheritedStyle={{ fontSize: "1em" }} />
