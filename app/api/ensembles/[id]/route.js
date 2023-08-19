@@ -10,7 +10,7 @@ export const getOneEnsemble = async (id) => {
         .select(`
             *,
             EnsembleMembership ( id, Member (*)),
-            Lineup (id, name),
+            Lineup (id, name, is_primary),
             EnsembleType (*)
         `)
         .eq('id', id)

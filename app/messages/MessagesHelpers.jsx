@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import TabControl, { Tab } from "../../components/TabControl";
 import { Form, Collection, Text } from '../../components/Vcontrols';
 import ModalButton from '../../components/ModalButton';
+import Link from 'next/link';
 
 export const BroadcastBox = ({info}) => {
     const { id, subject, date, type } = info;
@@ -18,69 +18,58 @@ export const BroadcastBox = ({info}) => {
 }
 
 const MessagesNav = () => {
-    const [route, setRoute] = useState("")
     const router = useRouter();
+    const path = usePathname();
 
-    useEffect(() => {
-        router.push(`/messages/${route}`);
-    }, [route])
-
-    let routeName = "Messages";
-    switch (route) {
-        case "":
-            routeName = "Message Board";
-            break;
+    let startTab;
+    let pathSegments = path.split("/")
+    let messagesRoute = pathSegments[pathSegments.indexOf("messages") + 1];
+    console.log({messagesRoute})
+    switch (messagesRoute) {
         case "broadcasts":
-            routeName = "Broadcasts";
+            startTab = 1;
             break;
         case "surveys":
-            routeName = "Surveys";
-            break;
-        case "previewing":
-            routeName = "Previewing";
+            startTab = 2;
             break;
         default:
+            startTab = 0;
             break;
     }
     
     return (
         <div className="sub-nav">
             <article style={{ padding: "10px", flex: "0 0 10em" }}>
-                <h1>{routeName}</h1>
+                <h1>{messagesRoute || "Forum"}</h1>
             </article>
-            <TabControl type="accordion">
-                <Tab id="Message Board" onLoad={() => setRoute('')}>
+            <TabControl type="accordion" startTab={startTab}>
+                <Tab id="Message Board" onLoad={() => router.push('/messages')}>
                     <article style={{ padding: "10px" }}>
                         <ModalButton
-                            modalButton={<><i>mail</i><span>New Announcement</span></>}
-                            title="Compose Announcement"
+                            title="Create Annoouncement"
+                            modalButton={<><i>mail</i><span>Create</span></>}
+                            buttonClass="fat"
                         >
-                            <Form id="announcement-form" APIURL="" >
-                                <Collection id="addressees" name="addressees" label="To:" options={[]} />
-                                <Text id="body" name="body" limit={3000} />
-                            </Form>
+
                         </ModalButton>
                     </article>
                 </Tab>
-                <Tab id="Broadcasts" onLoad={() => setRoute('broadcasts')}>
+                <Tab id="Broadcasts" onLoad={() => router.push('/messages/broadcasts')}>
                     <article style={{ padding: "10px" }}>
-                    <ModalButton
-                        modalButton={<><i>mail</i><span>Create New Broadcast</span></>}
-                        title="New Broadcast"
-                    >
-                        <article className="modal-fields">
-                            <Text id="new-broadcast" name="subject" label="Subject" />
-                        </article>
-                        <section className="modal-buttons">
-                            <button name="submit">Create Draft</button>
-                        </section>
-                    </ModalButton>
+                        <ModalButton
+                            title="Create Broadcast"
+                            modalButton={<><i>mail</i><span>Create</span></>}
+                            buttonClass="fat"
+                        >
+
+                        </ModalButton>
+                    
                     </article>
                 </Tab>
-                <Tab id="Surveys" onLoad={() => setRoute('surveys')}>
+                <Tab id="Surveys" onLoad={() => router.push('/messages/surveys')}>
 
                 </Tab>
-                <Tab id="Preview" onLoad={() => setRoute('previewing')}></Tab>
+                {/* <Tab id="Preview" onLoad={() => router.push('/messages/previewing')}></Tab> */}
             </TabControl>
         </div>
     )

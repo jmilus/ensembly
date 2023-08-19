@@ -94,7 +94,7 @@ const MemberPage = async (context) => {
                             <fieldset className="button-stack">
                                 <legend>Membership</legend>
                                 <Link href={`/members/${member.id}/$add-membership`}><button className="fit"><i>add</i><span>Add Membership</span></button></Link>
-                                <div id="ensemble-membership-list">
+                                <div id="ensemble-membership-list" style={{marginTop:"10px"}}>
                                     {
                                         member.EnsembleMembership.map((membership, i) => {
                                             console.log({membership})

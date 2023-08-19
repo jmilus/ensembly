@@ -167,7 +167,6 @@ form {
 }
 
 button {
-  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -194,7 +193,7 @@ button:hover {
 }
 button:active {
   box-shadow: 0 0 0 30px inset var(--edge-color);
-  color: var(--text1);
+  color: var(--text-active);
   /* color: var(--color-p); */
 }
 
@@ -216,7 +215,20 @@ button.fat {
   padding: 20px;
 }
 
+button.angry {
+  --edge-color: red;
+  /* --text-active: darkred; */
+}
 
+button.happy {
+  --edge-color: var(--color-p);
+  /* --text-active: white; */
+}
+
+button.sleeping {
+  --edge-color: var(--gray3);
+  color: var(--gray3);
+}
 
 .action-section h1 {
   font-family: var(--brand-font);
@@ -311,11 +323,17 @@ button.fat {
 .button-chain.row > button:first-child,
 .button-chain.row > *:first-child > button {
   border-left: 1px solid var(--edge-color);
-  border-radius: 5px 0 0 5px;
+  border-top-left-radius: 5px;
+  /* border-top-right-radius: 0px; */
+  /* border-bottom-right-radius: 0px; */
+  border-bottom-left-radius: 5px;
 }
 .button-chain.row > button:last-child,
 .button-chain.row > *:last-child > button {
-  border-radius: 0 5px 5px 0;
+  /* border-top-left-radius: 0px; */
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  /* border-bottom-left-radius: 0px; */
 }
 
 .button-chain.row button{
@@ -324,15 +342,23 @@ button.fat {
 
 .button-chain.column > button:first-child,
 .button-chain.column> *:first-child > button {
-  border-top: 1px solid var(--edge-color);
-  border-radius: 5px 5px 0 0;
+  border-top-width: 1px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  /* border-bottom-right-radius: 0px; */
+  /* border-bottom-left-radius: 0px; */
 }
 .button-chain.column > button:last-child,
 .button-chain.column > *:last-child > button {
-  border-radius: 0 0 5px 5px;
+  border-bottom-width: 1px;
+  /* border-top-left-radius: 0px; */
+  /* border-top-right-radius: 0px; */
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
 .button-chain.column button {
-  border-top: none;
+  border-top-width: 0.5px;
+  border-bottom-width: 0.5px;
 }
 
 
@@ -519,7 +545,7 @@ button.fat {
   margin: 10px;
 }
 
-.drop-container > .drop-children {
+.lineup-manager .drop-container > .drop-children {
   position: absolute;
   width: 100%;
   top: 100px;
@@ -572,7 +598,7 @@ fieldset {
   border: 1px solid var(--gray3);
   border-radius: 5px;
   padding: 10px;
-  margin: 5px;
+  margin: 0;
   box-shadow: 0 0 20px -5px var(--gray3);
   background: var(--gray1);
   height: fit-content;
@@ -599,8 +625,8 @@ fieldset.buttons {
   flex: none;
   border: none;
   padding: 0;
-  margin: 10px;
   box-shadow: none;
+  background: transparent;
 }
 
 fieldset.buttons > legend {
@@ -685,7 +711,8 @@ fieldset.buttons > legend {
 .filter-container-content {
   flex:1;
   display: grid;
-  gap: 3px;
+  gap: 5px;
+  padding: 5px;
   --grid-columns: 1;
   --min-width: 1fr;
   grid-template-columns: repeat(var(--grid-columns), minmax(var(--min-width), 1fr));
@@ -746,7 +773,6 @@ fieldset.buttons > legend {
   width: auto;
   min-width: 200px;
   padding: 5px;
-  margin:5px;
   background-color: white;
   cursor: pointer;
 }
@@ -1056,10 +1082,7 @@ fieldset.buttons > legend {
 
 .rich-text-style-controls {
   display: flex;
-}
-
-.rich-text-style-controls + .rich-text-style-controls {
-  margin-left: 10px;
+  margin: 0 0 5px 5px;
 }
 
 .style-toggle-button {
@@ -1100,12 +1123,10 @@ fieldset.buttons > legend {
 
 .composer-container:focus-within .toolbar-wrapper,
 .toolbar-wrapper:active {
-  /* display: block; */
   visibility:visible;
 }
 
 .toolbar-wrapper {
-  /* display: none; */
   position: absolute;
   top: 0;
   left: 0;
@@ -1114,17 +1135,13 @@ fieldset.buttons > legend {
   background: var(--gray1);
   z-index: -10;
   border: 1px solid var(--gray3);
-  padding: 5px;
   visibility: hidden;
 }
-/* .toolbar-wrapper:not(:focus-within) {
-  display: none;
-} */
 
 .toolbar-wrapper > section {
   position: absolute;
-  bottom: 5px;
-  width: calc(100% - 15px);
+  align-items: end;
+  bottom: 0px;
 }
 
 .broadcast-drafter {
@@ -1142,15 +1159,23 @@ fieldset.buttons > legend {
 .module-menu {
   position: absolute;
   z-index: 10;
-  right: 0;
-  top: calc(50% - 0.5em);
-  display: none;
+  right: 5px;
+  top: calc(50% - 1.75em);
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 .module-wrapper:hover .module-menu {
-  display: block;
+  opacity: 1;
 }
 .module-wrapper:has(.composer-textbox:focus-within) .module-menu {
   display: none;
+}
+.module-wrapper:first-child .up,
+.module-wrapper:nth-last-child(2) .down {
+  --edge-color: hsl(0, 0%, 90%);
+  background: hsl(0, 0%, 95%);
+  color: hsl(0, 0%, 75%);
+  cursor: default;
 }
 
 .module-dropper-box {
@@ -1158,7 +1183,7 @@ fieldset.buttons > legend {
   justify-content: center;
   align-items: center;
   margin: 0;
-  height: 0;
+  height: 0px;
   border: none;
   color: var(--gray5);
   background: var(--gray1);
@@ -1167,7 +1192,7 @@ fieldset.buttons > legend {
   transition: all 0.1s ease
 }
 
-.hovered > .module-dropper-box {
+.is-over > .drop-children > .module-dropper-box {
   margin: 5px;
   height: 60px;
   border: 1px dashed var(--gray3);
@@ -1219,4 +1244,31 @@ fieldset.buttons > legend {
   padding: 5px;
   height: auto;
   --edge-color: var(--gray3);
+}
+
+
+
+.verify-base {
+  position: relative;
+}
+
+.verify-base > * {
+  transition: all 0.2s ease;
+}
+
+.verify-base > .top-button {
+
+}
+
+.bottom-button {
+  position: absolute;
+  width: 0;
+  height: 100%;
+  top: 0;
+  right: 100%;
+  overflow: hidden;
+}
+
+.reveal > .bottom-button {
+  width: min-content;
 }

@@ -1,9 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-
-import { nester } from '../../../../../utils/index'
 
 import MemberCard from '../../../../../components/MemberCard';
 import DropContainer from '../../../../../components/DropContainer';
@@ -14,7 +11,8 @@ import useStatus from '../../../../../hooks/useStatus';
 
 const LineupManager = ({ initialProps }) => {
     // console.log({ initialProps })
-    const { ensemble, divisions, lineup } = initialProps;
+    const { ensemble, lineup } = initialProps;
+    const { divisions } = lineup;
 
     const lineupObject = {}
     lineup.LineupAssignment.forEach(la => {
@@ -29,7 +27,6 @@ const LineupManager = ({ initialProps }) => {
 
     const roster = ensemble.EnsembleMembership;
     const status = useStatus();
-    const router = useRouter();
 
     // console.log("View Lineup initialProps:", { initialProps })
     console.log(assignments);
@@ -174,7 +171,7 @@ const LineupManager = ({ initialProps }) => {
                 filterTag="member"
                 search={{ label: "Search Assignees", searchProp: "name" }}
                 columns={{ count: 1, width: "1fr" }}
-                rows="unset"
+                rows="auto"
             >
                 <TabControl>
                     {

@@ -2,6 +2,8 @@ import 'server-only'
 
 import SecurityWrapper from '../../components/SecurityWrapper';
 
+import '../../styles/calendar.css';
+
 const CalendarLayout = (context) => {
     return (
         <SecurityWrapper currentModule="calendar">

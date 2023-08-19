@@ -12,7 +12,7 @@ section>form {
     transition: all 0.2s ease-out;
     margin: 0 0 1px 5px;
     position: absolute;
-    top: -13px;
+    top: 2px;
 }
 
 .label.hide {
@@ -22,22 +22,15 @@ section>form {
 .input-control-base {
     display: flex;
     flex-direction: column;
-    margin: 15px 5px 5px;
+    margin: 0;
+    padding-top: 15px;
     position: relative;
 }
 .input-control-base.checkbox {
     margin: 5px;
 }
 
-section:has(.input-control-base:not(.checkbox)) {
-    margin: 15px 5px 5px;
-}
-
-section > .input-control-base {
-    margin: unset;
-}
-
-section > .input-control-base + .input-control-base {
+section.spaced > * + * {
     margin-left: 10px;
 }
 
@@ -379,9 +372,11 @@ i.dot.selected {
 }
 
 .button-tray {
-    flex: 1;
     display: flex;
     padding: 5px;
+}
+.button-tray > * {
+    flex: 0;
 }
 .button-tray > * + * {
     margin-left: 5px;
@@ -450,6 +445,8 @@ i.dot.selected {
 }
 .radio-buttons-set.slider .label{
     height: 100%;
+    width: 100%;
+    position: static;
 }
 
 .radio-option {

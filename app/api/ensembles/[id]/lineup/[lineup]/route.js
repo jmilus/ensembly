@@ -1,7 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { formatDBObject } from '../../../../../../utils'
+import { formatDBObject, nester } from '../../../../../../utils'
 
 export const getOneLineup = async (id) => {
     const supabase = createServerComponentClient({ cookies });
@@ -25,6 +25,20 @@ export const getOneLineup = async (id) => {
         console.error("get lineup error:", error);
         return new Error(error);
     }
+
+    console.log("lineup:", lineup[0])
+
+    let lineup_divs = [];
+    if (lineup[0].lineup_divisions != null) {
+        const { data: lineup_divisions, error: divisionsError } = await supabase
+            .from("Division")
+            .select('*')
+            .in('id', lineup[0].lineup_divisions)
+    
+        if (divisionsError) console.log("error fetching lineup_divisions");
+        lineup_divs = [...lineup_divisions];
+    }
+    lineup[0].divisions = nester(lineup_divs)
 
     // console.log("getOneLineup:", lineup);
     return formatDBObject(lineup[0]);

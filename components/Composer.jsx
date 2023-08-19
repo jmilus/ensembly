@@ -260,7 +260,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
     const onKeyDown = (e) => {
         // console.log(e)
         const { selection } = editor;
-        const currentNode = Editor.node(editor, selection.anchor.path);
+        const currentNode = Editor.node(editor, selection?.anchor.path);
         if (!currentNode) return;
 
         console.log({ currentNode })
@@ -379,11 +379,11 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
                         // onChange={onChange}
                     />
                     <div className="toolbar-wrapper">
-                        <section className="center">
-                            <div className="rich-text-style-controls">
-                                <Select id={`text-style-${id}`} value={styleState.type} options={TEXT_STYLES} extraAction={(v) => Commands.setTextStyle(v.value)} specialSize="compact" />
+                        <section>
+                            <div className="">
+                                <Select id={`text-style-${id}`} value={styleState.type} options={TEXT_STYLES} extraAction={(v) => Commands.setTextStyle(v)} specialSize="compact" />
                             </div>
-                            <div className="rich-text-style-controls">
+                            <div className="">
                                 <Select id={`text-size-${id}`} value={styleState.size === undefined ? 14 : styleState.size} options={TEXT_SIZES} extraAction={(v) => Commands.setTextSize(v)} specialSize="compact" />
                             </div>
                             <div className="rich-text-style-controls button-chain row">

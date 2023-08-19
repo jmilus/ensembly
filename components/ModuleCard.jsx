@@ -11,7 +11,7 @@ const ModuleCard = ({ module, cardType="MODULE", dropAction }) => {
             const dropResult = monitor.getDropResult()
             console.log(dropResult);
 
-            if(dropResult) dropAction({ module: item, index: dropResult.value?.index });
+            if(dropResult && dropAction) dropAction({ module: item, index: dropResult.value?.index });
         },
         collect: monitor => ({
             isDragging: !!monitor.isDragging(),

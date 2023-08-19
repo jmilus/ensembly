@@ -6,6 +6,8 @@ import Link from 'next/link';
 
 import FilterContainer from '../../components/FilterContainer';
 import MemberCard from '../../components/MemberCard';
+import ModalButton from '../../components/ModalButton';
+import { Form, Text } from '../../components/Vcontrols';
 
 const MembersPage = async () => {
 
@@ -16,23 +18,37 @@ const MembersPage = async () => {
             <div className="action-section">
                 <article style={{padding: "0 20px"}}>
                     <h1>Members</h1>
-                        <article className="button-chain column" style={{ padding: "10px" }}>
-                            <Link href={'/members/$new-member'}><button className="fat"><i>person_add</i><span>New Member</span></button></Link>
-                            <Link href={'/members/$upload-members'}><button className="fat"><i>upload</i><span>Upload Members</span></button></Link>
-                        </article> 
-                    {/* <ModalButton
-                        modalButton={<><i>upload</i><span>Upload Members</span></>}
-                        title="Upload Members from Excel File"
-                    >
-                        <Form id="upload-members-modal-form" APIURL="/members/uploadMembers" debug>
-                            <section className="modal-fields">
-                                <File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
+                    <article className="button-chain column">
+                        <ModalButton
+                            modalButton={<><i>person_add</i><span>New Member</span></>}
+                            title="New Member"
+                            buttonClass="fat"
+                        >
+                            <Form id="new-member-modal-form" METHOD="POST" followPath="$slug$" >
+                                <section className="modal-fields">
+                                    <Text id="newMemberFirstName" name="firstName" label="First Name" value="" isRequired />
+                                    <Text id="newMemberLastName" name="lastName" label="Last Name" value="" isRequired />
+                                </section>
+                            </Form>
+                            <section className="modal-buttons">
+                                <button name="submit" form="new-member-modal-form">Create Member</button>
                             </section>
-                        </Form>
-                        <section className="modal-buttons">
-                            <button name="submit" form="upload-members-modal-form">Upload</button>
-                        </section>
-                    </ModalButton> */}
+                        </ModalButton>
+                        <ModalButton
+                            modalButton={<><i>upload</i><span>Upload Members</span></>}
+                            title="Upload"
+                            buttonClass="fat"
+                        >
+                            <Form id="upload-member-modal-form" METHOD="POST" >
+                                <section className="modal-fields">
+                                    {/* <File id="newMemberFirstName" name="file" label="Select File" value="" isRequired /> */}
+                                </section>
+                            </Form>
+                            <section className="modal-buttons">
+                                <button name="submit" form="upload-member-modal-form">Upload Members</button>
+                            </section>
+                        </ModalButton>
+                    </article> 
                 </article>
             </div>
             <div className="form-section">

@@ -2,10 +2,10 @@ import 'server-only'
 
 import SecurityWrapper from '../../components/SecurityWrapper';
 
-const EnsemblesLayout = (context) => {
+const EnsemblesLayout = (props) => {
     return (
         <SecurityWrapper currentModule="ensembles">
-            {context.children}
+            {props.children}
         </SecurityWrapper>
     )
 }

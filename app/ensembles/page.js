@@ -17,26 +17,30 @@ const EnsemblesPage = async () => {
     return (
         <div className="page-base">
             <div className="action-section">
-                <article style={{ padding: "20px" }}>
-                    <ModalButton
-                        modalButton={<><i>add_circle</i><span>New Ensemble</span></>}
-                        title="Create New Ensemble"
-                    >
-                        <Form id="create-new-ensemble-form" METHOD="POST" followPath="$slug$" >
-                            <section className="modal-fields">
-                                <Text id="newEnsembleName" name="name" label="Ensemble Name" />
-                                <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ ensembleTypes } />
+                <article style={{ padding: "10px" }}>
+                    <h1>Ensembles</h1>
+                    <article className="button-chain column">
+                        <ModalButton
+                            modalButton={<><i>add_circle</i><span>New Ensemble</span></>}
+                            title="Create New Ensemble"
+                            buttonClass="fat"
+                        >
+                            <Form id="create-new-ensemble-form" METHOD="POST" followPath="$slug$" >
+                                <section className="modal-fields">
+                                    <Text id="newEnsembleName" name="name" label="Ensemble Name" />
+                                    <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ ensembleTypes } />
+                                </section>
+                            </Form>
+                            <section className="modal-buttons">
+                                <button name="submit" form="create-new-ensemble-form">Create Ensemble</button>
                             </section>
-                        </Form>
-                        <section className="modal-buttons">
-                            <button name="submit" form="create-new-ensemble-form">Create Ensemble</button>
-                        </section>
-                    </ModalButton>
+                        </ModalButton>
+                    </article>
                 </article>
             </div>
             <div className="form-section">
                 <div className="page-header">
-                    <h1>Ensembles</h1>
+                    {/* <h1>Ensembles</h1> */}
                 </div>
                 <div className="page-details">
                     <FilterContainer

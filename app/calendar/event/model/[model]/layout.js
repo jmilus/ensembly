@@ -14,7 +14,6 @@ export default async function ModelLayout(props) {
             </div>
             <div className="form-section">
                 {props.children}
-                {props.modal}
             </div>
         </div>
     )

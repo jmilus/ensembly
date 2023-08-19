@@ -1,17 +1,18 @@
 import 'server-only';
 
-import {fetchOneBroadcast} from '../../../../pages/api/messages/getOneBroadcast';
+import { getOneBroadcast } from '../../../api/messages/broadcasts/[id]/route';
+import { getManyEmails } from '../../../api/emails/route';
 
 import Broadcast from '../../../../components/Broadcast'
 
 const BroadcastDetailsPage = async (context) => {
-    const [broadcast] = await fetchOneBroadcast(context.params.id)
+    const [broadcast] = await getOneBroadcast(context.params.id)
+    const groups = await getManyEmails("ensemble", '13117da3-4062-4c18-bb01-0c4945e7c105')
 
-    // const broadcastBody = JSON.parse(broadcast.body)
     console.log("broadcast:", broadcast)
 
     return (
-        <Broadcast broadcastId={broadcast.id} subject={broadcast.subject} body={broadcast.body} status={broadcast.status} /> 
+        <Broadcast broadcastId={broadcast.id} subject={broadcast.subject} body={broadcast.body} status={broadcast.status} groups={groups} /> 
     )
 }
 

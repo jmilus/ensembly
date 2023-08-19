@@ -135,7 +135,7 @@ const FilterContainer = (props) => {
                 {filterButtons}
                 {filters.length > 0 ? clearButton : null}
             </div>
-            <div className="filter-container-content" style={{["--grid-columns"]: columns.count, ["--min-width"]: columns.width, gridTemplateRows: rows}}>
+            <div className="filter-container-content" style={{ ["--grid-columns"]: columns.count, ["--min-width"]: columns.width, gridAutoRows: rows, gridTemnplateRows: "none"}}>
                 { filteredChildren }
             </div>
         </div>

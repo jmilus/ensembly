@@ -4,7 +4,7 @@ const MessagesPage = async () => {
 
     return (
         <div className="page-details">
-            something stinks
+            forum goes here
         </div>
     )
 }

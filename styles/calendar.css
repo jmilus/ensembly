@@ -120,5 +120,9 @@
 }
 
 .calendar-control > a > button {
+    flex: 1;
+}
+
+.calendar-control > a > button {
     height: 34px;
 }

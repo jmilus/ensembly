@@ -71,7 +71,7 @@ export const updateOneEventModel = async (data) => {
 }
 
 export const createEvent = async (data) => {
-    const { model, eventStartDate, eventEndDate, eventName, type } = data;
+    const { model, eventStartDate, eventEndDate, eventName, type, exception=false } = data;
     const supabase = createServerComponentClient({ cookies });
 
     const { data: newEvent, error } = await supabase.from('Event').insert({
@@ -80,6 +80,7 @@ export const createEvent = async (data) => {
         eventEndDate: new Date(eventEndDate),
         name: eventName || null,
         type: type,
+        exception,
         model: model
     })
 

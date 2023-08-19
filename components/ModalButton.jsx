@@ -1,47 +1,29 @@
 'use client';
 
-import React, { useContext } from 'react';
-import { GlobalContext } from './ContextFrame';
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
-const ModalButton = ({ modalButton, title, children, buttonStyle, modalStyle }) => {
-    const { dispatch } = useContext(GlobalContext);
+import ModalWrapper from '../components/ModalWrapper';
 
-    // console.log("Modal:", { children })
+const ModalButton = ({ modalButton, title, children, buttonClass, buttonStyle, dismiss }) => {
+    const [show, setShow] = useState(false);
 
-    let modalBody = [];
-    let modalButtons = [];
-    React.Children.forEach(children, child => {
-        if (child.props.className === "modal-buttons") {
-            modalButtons.push(child);
-        } else {
-            modalBody.push(child);
-        }
-    })
-
-    const modalContent =
-        <>
-            <div className="modal-header">{title}</div>
-            <div className="modal-body" style={modalStyle}>{modalBody}</div>
-            <div className="modal-footer">{modalButtons}</div>
-        </>
-
-
-    const showModal = () => {
-        dispatch({
-            route: "modal",
-            payload: {
-                type: "form",
-                content: {
-                    body: modalContent
-                }
-            }
-        })
-    }
+    console.log({ children })
 
     return (
-        <button onClick={showModal} style={buttonStyle}>
-            {modalButton}
-        </button>
+        <>
+            <button onClick={() => setShow(true)} className={buttonClass} style={buttonStyle}>
+                {modalButton}
+            </button>
+            {show && 
+                createPortal(
+                    <ModalWrapper title={title} closeModal={() => setShow(false)} dismiss={dismiss}>
+                            {children}
+                    </ModalWrapper>
+                    , document.getElementById("app-body")
+                )
+            }
+        </>
     )
 }
 

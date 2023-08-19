@@ -10,6 +10,7 @@
     flex-direction: column;
     background-image: linear-gradient(var(--gray1), var(--gray2));
     --edge-color: var(--color-c2);
+    --text-active: white;
 }
 
 .action-section {
@@ -25,6 +26,7 @@
     background-position: 260px 0;
     background-repeat: no-repeat;
     --edge-color: var(--color-c1);
+    --text-active: var(--text2);
 }
 
 .page-header {

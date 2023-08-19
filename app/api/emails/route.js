@@ -18,8 +18,28 @@ export const getOneEmail = async ({member, type}) => {
     return email;
 }
 
+export const getManyEmails = async ({ group, groupId }) => {
+    const supabase = createServerComponentClient({ cookies });
+
+    switch (group) {
+        case "ensemble":
+            
+
+            
+                // .eq('Member.EnsembleMembership.Ensemble.id', groupId)
+            break;
+        default:
+            break;
+    }
+
+    // const { data: emails, error } = await query;
+
+    return null;
+}
+
 export async function GET(request) {
     const req = await request.json()
-    const res = await getOneEmail(req)
+    const group = req.group || false;
+    const res = group ? await getManyEmails(req) : await getOneEmail(req);
     return NextResponse.json({ res })
 }

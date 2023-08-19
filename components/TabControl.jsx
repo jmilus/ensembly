@@ -9,7 +9,7 @@ export const Tab = ({ id, direction, hidePage, tabStyle, children }) => {
     )
 }
 
-const TabControl = ({ id, type="normal", onChange, startTab, Vstyle, children }) => {
+const TabControl = ({ id, type="normal", onChange, startTab, style, children }) => {
     const [activeTab, setActiveTab] = useState(startTab || 0);
 
     useEffect(() => {
@@ -33,7 +33,7 @@ const TabControl = ({ id, type="normal", onChange, startTab, Vstyle, children })
     switch (type) {
         case "accordion":
             return (
-                <div className={`tab-wrapper ${type}`} style={Vstyle}>
+                <div className={`tab-wrapper ${type}`} style={style}>
                     <article>
                         {
                             pages.map((page, p) => {
@@ -50,7 +50,7 @@ const TabControl = ({ id, type="normal", onChange, startTab, Vstyle, children })
             )
         default:
             return (
-                <div className={`tab-wrapper ${type}`} style={Vstyle}>
+                <div className={`tab-wrapper ${type}`} style={style}>
                     <div className="tab-row">
                         { tabs }
                     </div>

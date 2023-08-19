@@ -11,15 +11,17 @@ import LineupManager from './Lineup';
 const LineupPage = async ({ params }) => {
 
     const ensemble = await getOneEnsemble(params.id)
-    const divisions = await getManyDivisions(ensemble.id)
+    // const divisions = await getManyDivisions(ensemble.id)
+
 
     if (params.lineup === "x") {
-        redirect(`${ensemble.Lineup[0].id}`)
+        const primeLineup = ensemble.Lineup.find(lu => lu.is_primary === true)
+        redirect(`${primeLineup.id}`)
     }
     // const lineupId = params.lineup === "x" ? ensemble.Lineup[0].id : params.lineup;
     const lineup = await getOneLineup(params.lineup);
 
-    return <LineupManager initialProps={{ensemble, divisions, lineup}} />
+    return <LineupManager initialProps={{ensemble, lineup}} />
 }
 
 export default LineupPage;

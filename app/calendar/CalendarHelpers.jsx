@@ -5,7 +5,7 @@ import { useState } from 'react';
 import {CheckBox} from '../../components/Vcontrols';
 
 import useStatus from '../../hooks/useStatus';
-import ModalWrapper from '../../components/ModalWrapper';
+import ModalButton from '../../components/ModalButton';
 import { useRouter, usePathname } from 'next/navigation';
 
 const getInitialEventLineups = (model) => {
@@ -20,7 +20,7 @@ const getInitialEventLineups = (model) => {
 }
 
 
-export function LineupsGrid({ model, allLineups }) {
+export function LineupsGrid({ model, allLineups, closeModal }) {
     const router = useRouter();
     const path = usePathname();
 
@@ -87,49 +87,52 @@ export function LineupsGrid({ model, allLineups }) {
     }
 
     return (
-        <ModalWrapper title="Events & Lineups">
+        <ModalButton
+            title="Manage Lineups"
+            modalButton={<><i>view_list</i><span>Manage Lineups</span></>}
+            buttonClass="fit"
+        >
             <div className="lineup-grid">
-                    <div className="event-row grid-header">
-                        <div className="event-header lineup-column"></div>
-                        {
-                            Object.values(modelLineups).map((ms, i) => {
-                                return (
-                                    <div key={i} className="lineup-header lineup-column" >
-                                        <button className="column-button" onClick={() => setAll(ms.id)}>{ms.name}</button>
+                <div className="event-row grid-header">
+                    <div className="event-header lineup-column"></div>
+                    {
+                        Object.values(modelLineups).map((ms, i) => {
+                            return (
+                                <div key={i} className="lineup-header lineup-column" >
+                                    <button className="column-button" onClick={() => setAll(ms.id)}>{ms.name}</button>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+                <article>
+                    {
+                        model.events.map((event, e) => {
+                            return (
+                                <div key={e} className="event-row">
+                                    <div className="event-header lineup-column">
+                                        <span>{event.name || model.name}</span><br />
+                                        <span style={{ color: "var(--color-cactus)" }}>{new Date(event.eventStartDate).toDateString()}</span>
                                     </div>
-                                )
-                            })
-                        }
-                    </div>
-                    <article>
-                        {
-                            model.events.map((event, e) => {
-                                return (
-                                    <div key={e} className="event-row">
-                                        <div className="event-header lineup-column">
-                                            <span>{event.name || model.name}</span><br/>
-                                            <span style={{color: "var(--color-cactus)"}}>{new Date(event.eventStartDate).toDateString()}</span>
-                                        </div>
-                                        {
-                                            Object.values(modelLineups).map((lineup, l) => {
-                                                const isChecked = eventLineups[event.id] ? eventLineups[event.id][lineup.id] : false;
-                                                return (
-                                                    <div key={l} className="lineup-column" >
-                                                        <CheckBox id={`${e}-${l}`} shape="button" value={isChecked} extraAction={(action) => handleChangeLineupAssignment(action, event.id, lineup.id)} />
-                                                    </div>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                )
-                            })
-                        }
-                    </article>
+                                    {
+                                        Object.values(modelLineups).map((lineup, l) => {
+                                            const isChecked = eventLineups[event.id] ? eventLineups[event.id][lineup.id] : false;
+                                            return (
+                                                <div key={l} className="lineup-column" >
+                                                    <CheckBox id={`${e}-${l}`} shape="button" value={isChecked} extraAction={(action) => handleChangeLineupAssignment(action, event.id, lineup.id)} />
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </div>
+                            )
+                        })
+                    }
+                </article>
             </div>
             <section className="modal-buttons">
-                <button onClick={() => router.replace(path.slice(0, path.indexOf("/$")))}>Cancel</button>
                 <button name="submit" onClick={submitEventLineups}>Save</button>
             </section>
-        </ModalWrapper>
+        </ModalButton>
     )
 }

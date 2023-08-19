@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
 
-const DropContainer = ({ caption, value, acceptTypes, dropAction, dropStyles, children }) => {
+const DropContainer = ({ caption, value, acceptTypes, dropAction, dropStyles, childrenStyle, children }) => {
     // console.log(caption, value, children)
 
     const [{ isOver, canDrop }, drop] = useDrop(() => ({
@@ -27,7 +27,7 @@ const DropContainer = ({ caption, value, acceptTypes, dropAction, dropStyles, ch
     return (
         <div className={`drop-container${canDrop ? " can-drop" : ""}${isOver ? " is-over" : ""}`} ref={drop} style={containerStyle}>
             {caption && <div className="dc-name">{caption}</div>}
-            <div className="drop-children">
+            <div className="drop-children" style={childrenStyle}>
                 {children}
             </div>
         </div>

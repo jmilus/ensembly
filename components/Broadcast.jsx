@@ -1,54 +1,49 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useDrag, useDrop } from 'react-dnd';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import useStatus from '../hooks/useStatus';
 
 import Composer from './Composer';
 import DropContainer from './DropContainer';
 import ModuleCard from './ModuleCard';
+import Verify from './VerifyButton';
+import ContactCollection from './ContactCollection';
 import { Text } from './Vcontrols';
+import TabControl, { Tab } from './TabControl';
 
-const Broadcast = ({ broadcastId, subject, body, status }) => {
+const Broadcast = ({ broadcastId, subject, body, status, groups }) => {
     const [broadcastContent, setBroadcastContent] = useState(body);
     const [broadcastSubject, setBroadcastSubject] = useState(subject);
     const saveStatus = useStatus();
+    const router = useRouter();
 
-    console.log({ broadcastContent }, { status });
-
-    const deleteModule = (key, e) => {
-        e.preventDefault()
-        console.log({ key })
-        let toDeleteIndex = broadcastContent.findIndex(mod => {
-            console.log({mod})
-            return mod.key === key;
-        })
-        console.log({ toDeleteIndex })
-        if (toDeleteIndex < 0) return;
-        let newContent = [...broadcastContent]
-        newContent.splice(toDeleteIndex, 1);
-        console.log("updated new content:", newContent)
-        setBroadcastContent(newContent);
-    }
+    // console.log({ broadcastContent }, { status });
 
     const dropModule = (input) => {
         console.log({ input })
-        const { index, module } = input;
+        const index = input.target.index;
+        const module = input.source;
         if (index === null) return;
         let newContent = [...broadcastContent]
-        if (module.key) {
-            let toDeleteIndex = broadcastContent.findIndex(mod => {
-                return mod.key === module.key;
-            })
-            if (toDeleteIndex < 0) return;
-            newContent.splice(toDeleteIndex, 1);
-            newContent.splice(index, 0, module)
-        } else {
-            newContent.splice(index, 0, { type: "standard_paragraph", key: Math.random() })
-        }
-        console.log({newContent})
+        console.log({ broadcastContent }, index)
+        newContent.splice(index, 0, { type: module.type, key: Math.random() })
+        console.log(newContent.map(c => console.log(c)))
         setBroadcastContent(newContent)
+    }
+
+    const reorderModules = (index, change) => {
+        if (index + change < 0 || index + change >= broadcastContent.length) return;
+        let newContent = [...broadcastContent];
+        newContent.splice(index + change, 0, newContent.splice(index, 1)[0])
+        setBroadcastContent(newContent);
+    }
+
+    const deleteModule = (index) => {
+        let newContent = [...broadcastContent]
+        newContent.splice(index, 1);
+        setBroadcastContent(newContent);
     }
 
     const handleContentUpdate = (index, content) => {
@@ -61,23 +56,25 @@ const Broadcast = ({ broadcastId, subject, body, status }) => {
     const saveDraft = async () => {
         console.log({
             broadcastId,
-            broadcastContent,
-            status
+            broadcastSubject,
+            broadcastContent
         })
         saveStatus.saving();
-        const savedResult = await fetch('/api/messages/updateBroadcast', {
+        const savedResult = await fetch('/api/messages/broadcasts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id: broadcastId,
                 subject: broadcastSubject,
-                body: broadcastContent,
-                status: status
+                body: broadcastContent
             })
         })
             .then(res => res.json())
             .then(response => {
                 // console.log({ response })
+                if (broadcastId === 'new') {
+                    router.push(`/messages/broadcasts/${response.id}`)
+                }
                 saveStatus.saved();
                 return response;
             })
@@ -91,53 +88,7 @@ const Broadcast = ({ broadcastId, subject, body, status }) => {
     }
 
     
-    const renderModule = (module, index) => {
-        const dropRef = useRef(null);
-        const dragRef = useRef(null);
-        const { key } = module;
-
-        const [{ isOver }, drop] = useDrop({
-            accept: "MODULE",
-            drop: () => ({module, index}),
-            collect: monitor => ({
-                isOver: !!monitor.isOver()
-            })
-        })
-
-        const [{ isDragging }, drag, dragPreview] = useDrag({
-            type: "MODULE",
-            item: module,
-            end(item, monitor) {
-                const dropResult = monitor.getDropResult()
-                console.log(dropResult);
-
-                if (dropResult) dropModule({ module: item, index: dropResult?.index });
-            },
-            collect: monitor => ({
-                isDragging: !!monitor.isDragging(),
-            })
-        })
-
-        dragPreview(drop(dropRef))
-        drag(dragRef)
-
-        // console.log({ dragRef }, { dropRef })
-
-        // const dragButton = forwardRef((props, ref) => (
-        //     <i ref={ref} {...props}>expand</i>
-        // ))
-
-        // const moduleOptions = [
-        //     <i ref={dragRef}>expand</i>,
-        //     <i onMouseDown={(e) => deleteModule(module.key, e)}>delete</i>
-        // ]
-        
-        const zIndex = broadcastContent.length - index;
-        const dropStyles = {
-            baseStyle: { zIndex: zIndex, height: "fit-content" },
-            hoverStyle: { transition: "all 0.1s ease" },
-            canDropStyle: { }
-        }
+    const renderModule = (module, index, count) => {
 
         let element = <></>;
         switch (module.type) {
@@ -159,13 +110,27 @@ const Broadcast = ({ broadcastId, subject, body, status }) => {
         }
         // 
         return (
-            <div ref={dropRef} key={`${index}-${module.key}`} className={`module-wrapper ${isOver ? "hovered" : ""}`} style={{ zIndex: zIndex }}>
-                <div ref={dragRef} className="module-menu"><i>expand</i>{index}</div>
-                <div className="module-dropper-box"><i>add_box</i></div>
-                <div className={`module-drag-wrapper ${isDragging ? "dragging" : ""}`}>
-                    {/* <div ref={dragRef} style={{height: "2em", width: "50px", background: "red"}}></div> */}
+            <div key={`${index}-${module.key}`} className={`module-wrapper`} style={{ zIndex: count - index }}>
+                <DropContainer
+                    key={count - index}
+                    caption=""
+                    value={{index: index}}
+                    acceptTypes={["MODULE"]}
+                    dropStyles={{ baseStyle: { border: 'none', flex: 1, zIndex: 0 } }}
+                    childrenStyle={{ marginTop: "auto" }}
+                    dropAction={dropModule}
+                >
+                    <div className="module-menu button-chain column">
+                        <button className="up" onClick={() => reorderModules(index, -1)}><i>arrow_upward</i></button>
+                        <Verify mode="slide-right">
+                            <button><i>delete</i></button>
+                            <button onClick={() => deleteModule(index)} style={{["--edge-color"]:"red", color: "red", fontSize: "0.8em", height: "15px", borderRadius: "3px 0 0 3px", borderRightWidth: "0", padding: "0 3px"}}>Confirm</button>
+                        </Verify>
+                        <button className="down" onClick={() => reorderModules(index, 1)}><i>arrow_downward</i></button>
+                    </div>
+                    <div className="module-dropper-box"><i>add_box</i></div>
                     {element}
-                </div>
+                </DropContainer>
             </div>
         )
     }
@@ -175,11 +140,11 @@ const Broadcast = ({ broadcastId, subject, body, status }) => {
             <section style={{ flex: 1, overflow: "hidden" }}>
                 <article>
                     <Text id="broadcast-subject" name="subject" label="Subject" value={broadcastSubject} extraAction={(v) => setBroadcastSubject(v)} Vstyle={{ padding: "0 0 13px 0" }} />
-                    <article className="broadcast-drafter" style={{ flex: 1 }}>
+                    <article className="broadcast-drafter" style={{ flex: 1, margin: "5px" }}>
                         {
                             broadcastContent.map((module, x) => {
-                                console.log("module", module.key, x);
-                                return renderModule(module, x)
+                                // console.log("module", module.key, x);
+                                return renderModule(module, x, broadcastContent.length)
                             })
                         }
                         <DropContainer
@@ -187,21 +152,33 @@ const Broadcast = ({ broadcastId, subject, body, status }) => {
                             caption=""
                             value={{index: broadcastContent.length}}
                             acceptTypes={["MODULE"]}
+                            dropAction={dropModule}
                             dropStyles={
                                 {
-                                    baseStyle: { border: 'none', flex: 1, minHeight: "100px", zIndex: 0 },
-                                    hoverStyle: { border: '1px solid var(--color-moss'}
+                                    baseStyle: { border: 'none', flex: 1, minHeight: "100px", zIndex: 0 }
                                 }
                             }
-                        />
+                        >
+                            <div className="module-dropper-box"><i>add_box</i></div>
+                        </DropContainer>
                     </article>
                 </article>
-                <article style={{flex: 0, minWidth: "300px", padding: "10px"}}>
-                    <ModuleCard module={{name: "Basic"}} dropAction={dropModule} />
-                </article>
+                {/* <article style={{flex: 0, minWidth: "300px", padding: "5px"}}>
+                    <ModuleCard module={{name: "Basic", type: "standard_paragraph"}} />
+                </article> */}
+                <TabControl style={{maxWidth:"300px"}}>
+                    <Tab id="Addressees">
+                        <ContactCollection groups={groups} />
+                    </Tab>
+                    <Tab id="Modules">
+                        <ModuleCard module={{name: "Basic", type: "standard_paragraph"}} />
+                    </Tab>
+                </TabControl>
             </section>
-            <section>
-                <button onClick={saveDraft}>Save Draft</button>
+            <section className="button-tray">
+                <button className="fit" onClick={saveDraft}><i>save</i><span>Save Draft</span></button>
+                <button className="fit angry" onClick={() => console.log("delete Broadcast")}><i>delete_forever</i><span>Delete Draft</span></button>
+                <button className="fit happy" style={{ marginLeft: "auto" }} onClick={() => console.log("send Broadcast")}><i>send</i><span>Send Broadcast</span></button>
             </section>
         </article>
     )

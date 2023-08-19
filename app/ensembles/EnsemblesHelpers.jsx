@@ -63,6 +63,7 @@ const EnsembleNav = ({ ensemble, lineup }) => {
                         <fieldset className="buttons button-chain column">
                             <ModalButton
                                 modalButton={<><i>upload</i><span>Upload Members</span></>}
+                                buttonClass="fat"
                                 title="Upload Members From Excel File"
                             >
                                 <Form id="upload-members-form" APIURL="/members/uploadMembers" auxData={{ensembleId: ensemble.id}} >
@@ -76,6 +77,7 @@ const EnsembleNav = ({ ensemble, lineup }) => {
                             </ModalButton>
                             <ModalButton
                                 modalButton={<><i>upload</i><span>Upload Logo</span></>}
+                                buttonClass="fat"
                                 title="Upload Logo"
                             >
                                 <Form id="upload-logo-form" altSubmit={(f) => upload(f)} debug>
@@ -94,9 +96,10 @@ const EnsembleNav = ({ ensemble, lineup }) => {
                 <Tab id="Lineups" onLoad={() => router.push(`/ensembles/${ensemble.id}/lineup/x`)}>
                     <article style={{ padding: "10px" }}>
                         <Select id="lineup-select" name="lineup" label="Lineup" value={lineupId} options={ensemble.Lineup} extraAction={(selectedLineup) => loadLineup(selectedLineup)} />
-                        <fieldset className="buttons button-chain column">
+                        <fieldset className="buttons button-chain column" style={{ marginTop: "10px" }}>
                             <ModalButton
                                 modalButton={<><i>add_box</i><span>New Lineup</span></>}
+                                buttonClass="fat"
                                 title="Create New Lineup"
                             >
                                 <Form id="create-lineup-form" APIURL={`/api/ensembles/${ensemble.id}/lineup`} METHOD="POST" auxData={{ ensemble: ensemble.id }} followPath={`/ensembles/${ensemble.id}/lineup/$slug$`}>
@@ -110,6 +113,7 @@ const EnsembleNav = ({ ensemble, lineup }) => {
                             </ModalButton>
                             <ModalButton
                                 modalButton={<><i>library_add</i><span>Copy Lineup</span></>}
+                                buttonClass="fat"
                                 title="Copy Lineup"
                             >
                                 <Form id="copy-lineup-form" METHOD="POST" followPath={`/ensembles/${ensemble.id}/lineup/$slug$`}>
@@ -125,8 +129,6 @@ const EnsembleNav = ({ ensemble, lineup }) => {
                     </article>
                 </Tab>
             </TabControl>
-            
-                
         </div>
     )
 }
