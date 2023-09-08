@@ -1,78 +1,72 @@
-import 'server-only';
+import 'server-only'
+
+import SubNav from '../../components/SubNav'
+import ModalButton from '../../components/ModalButton';
+import { Form, Text, Select } from '../../components/Vcontrols';
+import SecurityWrapper from '../../components/SecurityWrapper';
+import ItemCard from '../../components/ItemCard';
+import FilterContainer from '../../components/FilterContainer';
 
 import { getManyEnsembles } from '../api/ensembles/route';
 import { getAllEnsembleTypes } from '../api/ensembles/types/route';
 
-import EnsembleCard from '../../components/EnsembleCard';
-import { Form, Text, Select } from '../../components/Vcontrols';
-
-import ModalButton from '../../components/ModalButton';
-import FilterContainer from '../../components/FilterContainer';
-
-const EnsemblesPage = async () => {
-    const ensembleTypes = await getAllEnsembleTypes();
-
+const EnsemblesLayout = async (props) => {
     const ensembles = await getManyEnsembles()
+    const ensembleTypes = await getAllEnsembleTypes()
+    const buttons = [
+        <ModalButton
+            modalButton={<><i>add_circle</i><span>New Ensemble</span></>}
+            title="Create New Ensemble"
+            buttonClass="fit"
+        >
+            <Form id="create-new-ensemble-form" METHOD="POST" followPath="$slug$" >
+                <section className="modal-fields inputs">
+                    <Text id="newEnsembleName" name="name" label="Ensemble Name" />
+                    <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ ensembleTypes } />
+                </section>
+            </Form>
+            <section className="modal-buttons">
+                <button name="submit" form="create-new-ensemble-form">Create Ensemble</button>
+            </section>
+        </ModalButton>
+    ]
 
     return (
-        <div className="page-base">
-            <div className="action-section">
-                <article style={{ padding: "10px" }}>
-                    <h1>Ensembles</h1>
-                    <article className="button-chain column">
-                        <ModalButton
-                            modalButton={<><i>add_circle</i><span>New Ensemble</span></>}
-                            title="Create New Ensemble"
-                            buttonClass="fat"
+        <SecurityWrapper currentModule="ensembles">
+            <div className="page-base">
+                <div className="action-section">
+                    <SubNav root="ensembles" buttons={buttons} />
+                </div>
+                <div className="form-section">
+                    <div className="page-details">
+                        <FilterContainer
+                            id="ensembles-filter"
+                            filterTag="ensemble"
+                            columns={{ count: "auto-fill", width: "201px" }}
+                            search={{ label: "Search Ensembles", searchProp: "name" }}
+                            filters={[
+                                { name: "type", filterProp: "type", buttons: ensembleTypes.map(et => et.name)}
+                            ]}
                         >
-                            <Form id="create-new-ensemble-form" METHOD="POST" followPath="$slug$" >
-                                <section className="modal-fields">
-                                    <Text id="newEnsembleName" name="name" label="Ensemble Name" />
-                                    <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ ensembleTypes } />
-                                </section>
-                            </Form>
-                            <section className="modal-buttons">
-                                <button name="submit" form="create-new-ensemble-form">Create Ensemble</button>
-                            </section>
-                        </ModalButton>
-                    </article>
-                </article>
-            </div>
-            <div className="form-section">
-                <div className="page-header">
-                    {/* <h1>Ensembles</h1> */}
-                </div>
-                <div className="page-details">
-                    <FilterContainer
-                        id="ensembles-filter"
-                        filterTag="ensemble"
-                        columns={{ count: "auto-fill", width: "201px" }}
-                        search={{ label: "Search Ensembles", searchProp: "name" }}
-                        filters={[
-                            { name: "type", filterProp: "type", buttons: ensembleTypes.map(et => et.name)}
-                        ]}
-                    >
-                        {
-                            ensembles.map((ensemble, i) => {
-                                console.log({ensemble})
-                                return (
-                                    <EnsembleCard
-                                        key={i}
-                                        ensemble={ensemble}
-                                        presentation="grid"
-                                        format="minimal"
-                                        tag="ensemble"
-                                        name={ensemble.name}
-                                        type={ensemble.type.name}
-                                    />
-                                )
-                            })
-                        }
-                    </FilterContainer>
+                            {
+                                ensembles.map((ensemble, i) => {
+                                    console.log({ensemble})
+                                    return (
+                                        <ItemCard
+                                            key={i}
+                                            name={ensemble.name}
+                                            tag="ensemble"
+                                            cardLinkTo={`/ensembles/${ensemble.id}/general`}
+                                        />
+                                    )
+                                })
+                            }
+                        </FilterContainer>
+                    </div>
                 </div>
             </div>
-        </div>
+        </SecurityWrapper>
     )
 }
 
-export default EnsemblesPage;
+export default EnsemblesLayout;

@@ -1,16 +1,15 @@
 'use client'
 
-import styles from '../styles/ProfilePhoto.module.css'
 import Image from 'next/image';
 
-const ProfilePhoto = ({ name, profilePic, styling }) => {
+const ProfilePhoto = ({ id, name, profilePic, style }) => {
 
     const pic = profilePic ? <Image src={profilePic} alt="" /> : null;
     return (
-        <object id={`profile-photo-${name}`} className={styles.profilePhotoBase} style={styling}>
+        <div id={id} className="feature-photo" style={style}>
             {pic}
-            <div className={styles.photoBackdrop}><i>photo_camera</i></div>
-        </object>
+            <div className="photo-backdrop"><i>photo_camera</i></div>
+        </div>
     );
 }
 

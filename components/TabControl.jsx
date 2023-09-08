@@ -24,7 +24,7 @@ const TabControl = ({ id, type="normal", onChange, startTab, style, children }) 
     let tabs = [];
     let pages = [];
     React.Children.forEach(children, (child, c) => {
-        const newTab = <div key={`${id}-tab-${c}`} id={`tab-${child.props.id}`} className={`tab-button ${c === activeTab && "active"}`} onClick={() => tabClick(c, child.props.onLoad)}>{child.props.id}</div>
+        const newTab = <div key={`${id}-tab-${c}`} id={`tab-${child.props.id}`} className={`tab-button ${c === activeTab ? "active" : ""}`} onClick={() => tabClick(c, child.props.onLoad)}>{child.props.id}</div>
         tabs.push(newTab)
         const newPage = React.cloneElement(child, { key: c, hidePage: c != activeTab }, child.props.children)
         pages.push(newPage)
@@ -34,18 +34,16 @@ const TabControl = ({ id, type="normal", onChange, startTab, style, children }) 
         case "accordion":
             return (
                 <div className={`tab-wrapper ${type}`} style={style}>
-                    <article>
-                        {
-                            pages.map((page, p) => {
-                                return (
-                                    <div key={p} className="accordion-tab">
-                                        {tabs[p]}
-                                        {page}
-                                    </div>
-                                )
-                            })
-                        }
-                    </article>
+                    {
+                        pages.map((page, p) => {
+                            return (
+                                <div key={p} className={`accordion-tab${p === activeTab ? " active" : ""}`}>
+                                    {tabs[p]}
+                                    {page}
+                                </div>
+                            )
+                        })
+                    }
                 </div>
             )
         default:

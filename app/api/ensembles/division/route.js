@@ -19,7 +19,7 @@ export const getManyDivisions = async (ensembleId, nested=true) => {
     }
     console.log("fetched all divisions:", divisions)
 
-    if (nested) return nester(divisions)
+    if (nested) return nester(divisions, "parent_division")
     return divisions;
 }
 

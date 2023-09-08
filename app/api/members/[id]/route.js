@@ -6,7 +6,7 @@ export const getOneMember = async (memberId) => {
     console.log({memberId})
     const supabase = createServerComponentClient({ cookies });
 
-    const { data: [member], error } = await supabase
+    const { data: member, error } = await supabase
         .from('Member')
         .select(`
             *,
@@ -15,7 +15,12 @@ export const getOneMember = async (memberId) => {
             Address ( * ),
             EnsembleMembership ( 
                 *,
-                ensemble ( *, type (*))
+                ensemble ( *, type (*)),
+                assignments:LineupAssignment(
+                    title,
+                    Lineup(is_primary, name),
+                    Division(name, capacity)
+                )
             )`
         )
         .eq('id', memberId)
@@ -26,7 +31,7 @@ export const getOneMember = async (memberId) => {
     }
 
     // console.log("getOneMember:", member);
-    return member;
+    return member[0];
 }
 
 export const updateOneMember = async (memberData) => {

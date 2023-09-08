@@ -34,10 +34,11 @@ export const EventNode = ({ event, color, caption, showDate, inheritedStyle }) =
 const CalDay = ({ day, events = [], inMonth }) => {
     const isToday = day.value.toLocaleDateString() === TODAY.toLocaleDateString();
     const isPast = day.value < TODAY;
+    const isWeekend = day.value.getDay() === 0 || day.value.getDay() === 6 ? true : false;
 
     const dayURL = CALENDAR.getDashedValue(CALENDAR.localizeDate(day.value), true)
     return (
-        <object className={`cal-day ${inMonth ? "current-month" : ""} ${isToday ? "today" : ""} ${isPast ? "past" : ""}`}>
+        <object className={`cal-day${inMonth ? " current-month" : ""}${isToday ? " today" : ""}${isPast ? " past" : ""}${isWeekend ? " weekend" : ""}`}>
             <div className="cal-day-header">
                 <span>{day.value.getDate() === 1 ? CAL.month.long[day.value.getMonth()] : ""}</span>
                 <Link href={`/calendar/day/${dayURL}`}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useRef, useContext } from 'react';
 
 import { GlobalContext } from "../components/ContextFrame";
@@ -9,19 +9,22 @@ function useStatus() {
     const { dispatch } = useContext(GlobalContext);
     const transitionTimer = useRef()
     const router = useRouter();
+    const path = usePathname()
 
     const vanish = () => {
+        transitionTimer.current = null;
         dispatch({
             route: "status",
             payload: null
         })
     }
 
-    const unsaved = (saveFunction) => {
+    const unsaved = (saveFunction, caption) => {
         console.log("data is unsaved")
+        
         dispatch({
             route: "status",
-            payload: { case: "unsaved", action: saveFunction }
+            payload: { path: path, case: "unsaved", action: saveFunction, caption }
         })
     }
 
@@ -65,7 +68,7 @@ function useStatus() {
         transitionTimer.current = setTimeout(() => vanish(), 10000)
     }
     
-    return {unsaved, saving, loading, saved, error};
+    return {unsaved, saving, loading, saved, error, vanish};
 }
 
 export default useStatus;

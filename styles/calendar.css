@@ -1,8 +1,5 @@
 .weekday-headers-row {
     display: flex;
-    background: var(--gray2);
-    border-radius: 5px;
-    margin-top: 10px;
 }
 
 .weekday-header {
@@ -109,20 +106,13 @@
 }
 
 .calendar-control {
-    margin-bottom: 10px;
+    justify-content: space-between;
 }
 
-.calendar-control > a {
-    width: 35px;
-}
 .calendar-control > a:nth-child(3) {
     flex:1;
 }
 
 .calendar-control > a > button {
     flex: 1;
-}
-
-.calendar-control > a > button {
-    height: 34px;
 }

@@ -12,19 +12,12 @@ const EnsemblePage = async (context) => {
     const logoUrl = ''//data?.publicUrl
 
     return (
-        <>
-            <div className="page-header">
-                <Form id="ensembleName" APIURL="/ensembles/updateThisEnsemble" recordId={ensemble.id}>
-                    <Text id="name" field="name" value={ensemble.name} hero isRequired />
-                </Form>
-            </div>
-            <div className="page-details">
-                <div style={{ position: "relative", flex: 1, height: "100px" }}>
-                    <Image src={logoUrl} fill={true} alt="ensemble logo" style={{ objectFit: "contain" }} />
-                    
-                </div>
-            </div>
-        </>
+        <div className="page-base">
+            {/* <div style={{ position: "relative", flex: 1, height: "100px" }}>
+                <Image src={logoUrl} fill={true} alt="ensemble logo" style={{ objectFit: "contain" }} />
+                
+            </div> */}
+        </div>
     )
 }
 

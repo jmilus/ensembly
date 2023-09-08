@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { Text } from './Vcontrols/';
 
@@ -34,7 +35,7 @@ export function FilterButtons(props) {
 }
 
 const FilterContainer = (props) => {
-    const { id, title, filterTag, search, filters = [], columns, rows="min-content", Vstyle, debug, children } = props;
+    const { id, filterTag, search, filters = [], columns, rows="min-content", Vstyle, debug, children } = props;
     const [filterParams, setFilterParams] = useState({})
     const [searchString, setSearchString] = useState("")
 
@@ -64,7 +65,7 @@ const FilterContainer = (props) => {
     }
 
     const filterChild = (child) => {
-        // console.log(child)
+        console.log(child)
         //filter buttons
         let includeChild = true;
         includeChild = filters.every(filter => {
@@ -124,13 +125,18 @@ const FilterContainer = (props) => {
         <div className="clear-button-container">
             <i id={`${id}-clear-button`} className={`big ${""}`} onClick={clearAll}>cancel</i>
         </div>
+    
+    const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px" }} />
+    const searchContainer = document.getElementById(`${id}-search`)
 
     return (
         <div className="filter-container" style={Vstyle}>
             <div className="filters">
-                {title && <h1 style={{padding: "16px 20px 0 0"}}>{title}</h1>}
-                {search &&
-                    <Text id={`${id}-searchbox`} label={search.label} value={searchString} clear extraAction={(v) => setSearchString(v)} Vstyle={{ flex: 1, maxWidth: "300px" }} />
+                {searchContainer && search
+                    ?
+                    createPortal(searchBox, searchContainer)
+                    :
+                    searchBox
                 }
                 {filterButtons}
                 {filters.length > 0 ? clearButton : null}

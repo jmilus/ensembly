@@ -8,7 +8,7 @@ export const updateOnePhoneNumber = async (data) => {
 
     console.log("update member phone data:", data)
 
-    const { data, error } = await supabase
+    const { data: phonenumber, error } = await supabase
         .from('PhoneNumber')
         .upsert({
             id: id === 'undefined' ? undefined : id,
@@ -24,7 +24,7 @@ export const updateOnePhoneNumber = async (data) => {
         return new Error(error);
     }
 
-    return data;
+    return phonenumber[0];
 }
 
 export async function PUT(request, { params }) {

@@ -5,8 +5,14 @@ import SecurityWrapper from '../../components/SecurityWrapper';
 const MembersLayout = (props) => {
     return (
         <SecurityWrapper currentModule="members">
-            {props.children}
-            {props.modal}
+            <div className="page-base">
+                <div className="action-section">
+                    {props.nav}
+                </div>
+                <div className="form-section">
+                    {props.children}
+                </div>
+            </div>
         </SecurityWrapper>
     )
 }

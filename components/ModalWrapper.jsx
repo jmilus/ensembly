@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 const ModalWrapper = ({ title, children, closeModal, dismiss="Cancel" }) => {
 
     let modalBody = [];
-    let modalButtons = dismiss != null ? [<button onClick={closeModal}>{dismiss}</button>] : [];
+    let modalButtons = dismiss != null ? [<button key="dismissbutton0" className="dismiss" onClick={closeModal}>{dismiss}</button>] : [];
     React.Children.forEach(children, child => {
         console.log("filtering through modal children:", child)
         if (child.props.className === "modal-buttons") {

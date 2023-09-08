@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import MemberCard from '../../../../../components/MemberCard';
+import ItemCard from '../../../../../components/ItemCard';
 import DropContainer from '../../../../../components/DropContainer';
 import FilterContainer from '../../../../../components/FilterContainer';
 import TabControl, { Tab } from '../../../../../components/TabControl';
@@ -29,30 +29,30 @@ const LineupManager = ({ initialProps }) => {
     const status = useStatus();
 
     // console.log("View Lineup initialProps:", { initialProps })
-    console.log(assignments);
+    // console.log(assignments);
     // status.unsaved();
 
     const saveAssignments = () => {
         status.saving();
         const saveResult = fetch(`/api/ensembles/${ensemble.id}/lineup/${lineup.id}/assignments`, {
             method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    assignments: Object.values(assignments),
-                    deletions: Object.values(deletedAssignments)
-                })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                assignments: Object.values(assignments),
+                deletions: Object.values(deletedAssignments)
             })
-                .then(response => response.json())
-                .then(record => {
-                    status.saved()
-                    // console.log(record)
-                    return record;
-                })
-                .catch((err) => {
-                    status.error('Failed to update lineup assignment', err)
-                    // console.error('failed to update lineup assignment:', err);
-                    return err;
-                })
+        })
+            .then(response => response.json())
+            .then(record => {
+                status.saved()
+                // console.log(record)
+                return record;
+            })
+            .catch((err) => {
+                status.error('Failed to update lineup assignment', err)
+                // console.error('failed to update lineup assignment:', err);
+                return err;
+            })
         setDeletedAssignments([])
         setSaved(true);
     }
@@ -102,10 +102,10 @@ const LineupManager = ({ initialProps }) => {
     }
 
     const memberRosterBox = 
-        <div id="full-roster" style={{display: "flex", position: "relative", marginLeft: "20px", height: "100%", width: showRoster ? "250px" : "0px", transition: "all 0.2s ease" }}>
-            <div style={{position: "absolute", width: "250px", height: "100%"}}>
+        <div id="full-roster" style={{display: "flex", position: "relative", marginLeft: "20px", height: "100%", width: showRoster ? "200px" : "0px", transition: "all 0.2s ease" }}>
+            <div style={{position: "absolute", width: "250px", height: "100%", right: showRoster ? "-50px" : "-300px", transition: "all 0.2s ease"}}>
                 <div id="popout-tab-button" onClick={() => setShowRoster(!showRoster)}><i>groups</i></div>
-                <article style={{ boxShadow: "-1px 0 1px var(--gray4)", padding: "10px", backgroundImage: "linear-gradient(var(--gray2), var(--gray3))" }}>
+                <article style={{ boxShadow: "-1px -1px 1px var(--gray4)", padding: "10px", backgroundImage: "linear-gradient(var(--gray2), var(--gray3))" }}>
                     <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={["CARD-IN"]} />
                     <FilterContainer
                         id="roster"
@@ -119,13 +119,12 @@ const LineupManager = ({ initialProps }) => {
                         {
                             roster.map((membership, m) => {
                                 return (
-                                    <MemberCard
+                                    <ItemCard
                                         key={m}
                                         tag="member"
-                                        membership={membership}
-                                        format="drag"
-                                        cardType="CARD-OUT"
                                         name={membership.Member.aka}
+                                        dropItem={membership}
+                                        cardType="CARD-OUT"
                                         assigned={isAssignedToLineup(membership)}
                                     />
                                 )
@@ -137,8 +136,9 @@ const LineupManager = ({ initialProps }) => {
             </div>
         </div >
     
-    const renderDrops = (items, cap) => {
-        return items.map((item, d) => {
+    const renderDrops = (divisionChildren, cap) => {
+        const divKids = Array.isArray(divisionChildren) ? divisionChildren : Object.values(divisionChildren);
+        return divKids.map((item, d) => {
             let dropDivisions = [];
             if (item.capacity != cap) return null;
             if (item.children) {
@@ -156,11 +156,10 @@ const LineupManager = ({ initialProps }) => {
         if (div.id === descendantId) return true;
         let isDescendant = false;
         if (div.children) {
-            isDescendant = div.children.some(child => checkDescendants(child, descendantId))
+            isDescendant = Object.values(div.children).some(child => checkDescendants(child, descendantId))
         }
         return isDescendant;
     }
-
     const capacities = divisions.map(div => div.capacity)
     
     return (
@@ -200,15 +199,13 @@ const LineupManager = ({ initialProps }) => {
                                                             const isDescendant = checkDescendants(div, currentDivision.id)
                                                             if (isDescendant)
                                                                 return (
-                                                                    <MemberCard
+                                                                    <ItemCard
                                                                         key={m}
                                                                         tag="member"
-                                                                        membership={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
-                                                                        subtitle={currentDivision.name}
-                                                                        presentation="grid"
-                                                                        format="drag"
-                                                                        cardType="CARD-IN"
                                                                         name={assignment.EnsembleMembership.Member.aka}
+                                                                        subtitle={currentDivision.name}
+                                                                        dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
+                                                                        cardType="CARD-IN"
                                                                     />
                                                                 )
                                                         })

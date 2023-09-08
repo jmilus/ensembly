@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, createContext, useReducer } from 'react';
-import { useRouter } from 'next/navigation';
+import { createContext, useReducer } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -10,8 +9,8 @@ export const GlobalContext = createContext();
 const contextReducer = (parameters, action) => {
     // console.log({parameters}, {action});
     switch (action.route) {
-      case "modal":
-        parameters.modal = action.payload;
+      case "profile":
+        parameters.profile = action.payload;
         return { ...parameters };
       case "dropdown":
         parameters.dropdown = action.payload;
@@ -24,9 +23,9 @@ const contextReducer = (parameters, action) => {
     }
 }
   
-const ContextProvider = ({ children }) => {
+const ContextProvider = ({ profile, children }) => {
     const initialState = {
-        modal: { type: "hide", content: {} },
+        profile: profile,
         dropdown: null,
         status: null,
         config: {}
@@ -41,9 +40,9 @@ const ContextProvider = ({ children }) => {
     );
 }
 
-const ContextFrame = ({ children }) => {
+const ContextFrame = ({ profile, children }) => {
     return (
-        <ContextProvider>
+        <ContextProvider profile={profile}>
             <DndProvider backend={HTML5Backend}>
                 {children}
             </DndProvider>

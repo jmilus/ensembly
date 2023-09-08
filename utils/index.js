@@ -180,14 +180,14 @@ export const contrastColors = (bg, fg = [0, 0, 0]) => {
     return false
 }
 
-export const nester = (listToNest) => {
+export const nester = (listToNest, referenceField) => {
     const tiers = [];
     const tierMaker = (items) => {
         const idList = items.map(div => div.id)
         let currentList = [];
         let remainingList = [];
         items.forEach(item => {
-            if (!idList.includes(item.parent_division)) {
+            if (!idList.includes(item[referenceField])) {
                 currentList.push(item)
             } else {
                 remainingList.push(item);
@@ -205,11 +205,11 @@ export const nester = (listToNest) => {
         if (t + 1 < tiers.length) {
             tier.forEach(item => {
                 tiers[t + 1].forEach(upper => {
-                    if (upper.id === item.parent_division) {
+                    if (upper.id === item[referenceField]) {
                         if (!upper.children) {
-                            upper.children = [];
+                            upper.children = {};
                         }
-                        upper.children.push(item);
+                        upper.children[item.id] = item;
                     }
                 })
 
@@ -219,4 +219,14 @@ export const nester = (listToNest) => {
 
     tiers.reverse()
     return tiers[0];
+}
+
+export const deduper = (array) => {
+    return array.filter((item, i) => {
+        return !array.slice(0, i).includes(item);
+    })
+}
+
+export const validateEmail = (email) => {
+    return /.+@.+\.[A-Za-z]+$/.test(email.trim())
 }

@@ -98,7 +98,7 @@ const Select = (props) => {
 
     return (
         <>
-            <div id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}`} style={style}>
+            <div id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}${hero ? " hero" : ""}`} style={style}>
                 <label htmlFor={id} className={`label ${controlValue ? "" : "hide"}`}>{label}</label>
                 <select
                     id={id}

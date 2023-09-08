@@ -1,14 +1,19 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+
+import { validateEmail } from '../../utils';
 
 import './Vstyling.css';
 
 const Text = (props) => {
-    const { id, name, label, value="", placeholder, extraAction, format, limit, style, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
+    const { id, name, label, value = "", placeholder, extraAction, format, limit, style, hero, isRequired = false, children, pattern, clear, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value === null ? "" : value)
 
     if (debug) console.log(name, { props }, { controlValue });
+
+    let isValid = true;
+    if (format === "email") isValid = controlValue != "" ? validateEmail(controlValue) : true;
 
     useEffect(() => {
         setControlValue(value === null ? "" : value);
@@ -18,6 +23,9 @@ const Text = (props) => {
     switch (format) {
         case "phone":
             textType = "text"
+            break;
+        case "email":
+            textType = "email"
             break;
         default:
             textType = format
@@ -41,6 +49,8 @@ const Text = (props) => {
                     workingValue = workingValue.slice(0, -4) + "-" + workingValue.slice(-4);
                 }
                 break;
+            case "email":
+
             default:
                 workingValue = input;
                 break;
@@ -79,7 +89,7 @@ const Text = (props) => {
             value={controlValue}
             placeholder={placeholder || label}
             type={textType}
-            className={`text-input${clear ? " clearable" : ""}`}
+            className={`text-input${clear ? " clearable" : ""}${isValid ? "" : " not-valid"}`}
             onChange={(e) => handleControlValueChange(e.target.value)}
             required={isRequired}
             autoComplete="do-not-autofill"

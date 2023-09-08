@@ -8,7 +8,7 @@ import ModalWrapper from '../components/ModalWrapper';
 const ModalButton = ({ modalButton, title, children, buttonClass, buttonStyle, dismiss }) => {
     const [show, setShow] = useState(false);
 
-    console.log({ children })
+    // console.log({ children })
 
     return (
         <>

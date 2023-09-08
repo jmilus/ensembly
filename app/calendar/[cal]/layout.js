@@ -7,6 +7,7 @@ import CALENDAR from '../../../utils/calendarUtils';
 
 import ModalButton from '../../../components/ModalButton';
 import { Form, Text, Select, DateTime } from '../../../components/Vcontrols';
+import SubNav from '../../../components/SubNav';
 
 import '../../../styles/calendar.css'
 import { getAllEventTypes } from '../../api/calendar/event/types/route';
@@ -48,45 +49,48 @@ const EventsPage = async (context) => {
         return CALENDAR.getDashedValue(newFocusDay, true);
     }
 
+    const navButtons = [
+        <section className="calendar-control button-chain row" >
+            <Link href={`/calendar/${changeFocus(-1, "month")}`}><button className="fit"><i>keyboard_double_arrow_left</i></button></Link>
+            <Link href={`/calendar/${changeFocus(-7)}`}><button className="fit"><i>navigate_before</i></button></Link>
+            <Link href={`/calendar`}><button className="fit"><i>last_page</i>Today<i>first_page</i></button></Link>
+            <Link href={`/calendar/${changeFocus(7)}`}><button className="fit"><i>navigate_next</i></button></Link>
+            <Link href={`/calendar/${changeFocus(1, "month")}`}><button className="fit"><i>keyboard_double_arrow_right</i></button></Link>
+        </section>,
+        <ModalButton
+            title="Create New Event"
+            modalButton={<><i>event</i><span>New Event</span></>}
+            buttonClass="fit"
+        >
+            <Form id="new-event-modal-form" METHOD="POST" APIURL="/api/calendar/event/model" followPath="/calendar/event/model/$slug$" debug>
+                <section className="modal-fields">
+                    <Text id="newEventName" name="modelName" label="Event Name" value="" limit="64" isRequired/>
+                </section>
+                <section className="modal-fields">
+                    <Select id="newEventType" name="type" label="Event Type" value="" options={eventTypes} isRequired />
+                </section>
+                <section className="modal-fields">
+                    <DateTime id="newEventStart" name="modelStartDate" label="Event Start" value="" includeTime isRequired debug>
+                        <DateTime id="newEventEnd" name="modelEndDate" label="Event End" value="" includeTime isRequired/>
+                    </DateTime>
+                </section>
+            </Form>
+            <section className="modal-buttons" form="new-event-modal-form">
+                <button name="submit" form="new-event-modal-form">Create Event</button>
+            </section>
+        </ModalButton>
+        
+    ]
 
     return (
         <div className="page-base">
             <div className="action-section">
-                <article style={{ padding: "10px" }}>
-                    <h1>{monthName}</h1>
-                    <section className="calendar-control button-chain row" style={{justifyContent: "space-between"}}>
-                        <Link href={`/calendar/${changeFocus(-1, "month")}`}><button><i>keyboard_double_arrow_left</i></button></Link>
-                        <Link href={`/calendar/${changeFocus(-7)}`}><button><i>navigate_before</i></button></Link>
-                        <Link href={`/calendar`}><button><i>last_page</i>Today<i>first_page</i></button></Link>
-                        <Link href={`/calendar/${changeFocus(7)}`}><button><i>navigate_next</i></button></Link>
-                        <Link href={`/calendar/${changeFocus(1, "month")}`}><button><i>keyboard_double_arrow_right</i></button></Link>
-                    </section>
-                    <ModalButton
-                        title="Create New Event"
-                        modalButton={<><i>event</i><span>New Event</span></>}
-                        buttonClass="fat"
-                    >
-                        <Form id="new-event-modal-form" METHOD="POST" APIURL="/api/calendar/event/model" followPath="/calendar/event/model/$slug$" debug>
-                            <section className="modal-fields">
-                                <Text id="newEventName" name="modelName" label="Event Name" value="" limit="64" isRequired/>
-                            </section>
-                            <section className="modal-fields">
-                                <Select id="newEventType" name="type" label="Event Type" value="" options={eventTypes} isRequired />
-                            </section>
-                            <section className="modal-fields">
-                                <DateTime id="newEventStart" name="modelStartDate" label="Event Start" value="" includeTime isRequired debug>
-                                    <DateTime id="newEventEnd" name="modelEndDate" label="Event End" value="" includeTime isRequired/>
-                                </DateTime>
-                            </section>
-                        </Form>
-                        <section className="modal-buttons" form="new-event-modal-form">
-                            <button name="submit" form="new-event-modal-form">Create Event</button>
-                        </section>
-                    </ModalButton>
-                </article>
-                
+                <SubNav caption={monthName} root="calendar" buttons={navButtons} />
             </div>
             <div className="form-section">
+                <section>
+                    
+                </section>
                 {context.children}
             </div>
         </div>

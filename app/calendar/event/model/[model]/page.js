@@ -163,12 +163,11 @@ const EventModelPage = async (context) => {
                     <Text id="event-model-title" name="name" value={model.name} hero isRequired />
                 </Form>
             </div>
-            <div className="page-details">
-                <article className="scroll">
-                    <fieldset>
+            <div className="page-grid" style={{gridTemplateAreas: "'basic events' 'address events' 'lineups .'"}}>
+                    <fieldset style={{gridArea: "basic"}}>
                         <legend>Basic Details</legend>
                         <Form id="event-details" auto >
-                            <section>
+                            <section className="inputs">
                                 <DateTime id="startDate" name="modelStartDate" label="Start" value={model.modelStartDate} includeTime isRequired>
                                     <DateTime id="endDate" name="modelEndDate" label="End" value={model.modelEndDate} includeTime isRequired/>
                                 </DateTime>
@@ -179,21 +178,23 @@ const EventModelPage = async (context) => {
                         
                         {/* <button onClick={() => fetch(`/api/events/deleteEventModelRecurrence?id=${model.id}`)} >Remove Recurrence</button> */}
                     </fieldset>
-                    <fieldset>
+                    <fieldset style={{gridArea: "address"}}>
                         <legend>Event Address</legend>
                         <Form id="event-location" APIURL={`/api/address/${model.location}`} METHOD="PUT">
                             <Text id="street1" name="street" label="Street" value={address?.street || ""} />
                             <Text id="street2" name="street2" label="Street 2" value={address?.street2 || ""} />
-                            <section>
+                            <section className="inputs">
                                 <Text id="city" name="city" label="City" value={address?.city || ""} style={{ flex: 5 }} />
                                 <Text id="state" name="state" label="State" value={address?.state || ""} />
                                 <Text id="postalCode" name="postalCode" label="Zip Code" value={address?.postalCode || ""} style={{ flex: 2 }}/>
                             </section>
                         </Form>
                     </fieldset>
+                {/* <article className="scroll">
                 </article>
                 <article className="scroll">
-                    <fieldset>
+                </article> */}
+                    <fieldset style={{gridArea: "events"}}>
                         <legend>Events</legend>
                         <section className="button-tray">
                             <ModalButton
@@ -265,7 +266,7 @@ const EventModelPage = async (context) => {
                             { eventNodes }
                         </article>
                     </fieldset>
-                    <fieldset>
+                    <fieldset style={{gridArea: "lineups"}}>
                         <legend>Lineups</legend>
                         <section className="button-tray">
                             {parentLineups.length > 0 &&
@@ -304,7 +305,6 @@ const EventModelPage = async (context) => {
                             <Collection id="all-events-lineups" name="lineups" label="All Event Lineups" value={modelLineups} options={lineups} />
                         </Form>
                     </fieldset>
-                </article>
             </div>
         </>
     )

@@ -23,7 +23,7 @@ section>form {
     display: flex;
     flex-direction: column;
     margin: 0;
-    padding-top: 15px;
+    padding-top: 1em;
     position: relative;
 }
 .input-control-base.checkbox {
@@ -66,6 +66,20 @@ select {
         1px 1.9em;
     background-repeat: no-repeat;
 }
+.hero > select {
+    background-image: none;
+}
+.hero > select:hover {
+    background-image: 
+        linear-gradient(50deg, transparent 50%, var(--mint5) 50%),
+        linear-gradient(130deg, var(--mint5) 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(1em + 10px),
+        calc(100% - 10px) calc(1em + 10px);
+    background-size:
+        8px 13px,
+        8px 13px;
+}
 
 select:focus {
     background-image:
@@ -78,6 +92,19 @@ select:focus {
         calc(100% - 35px) 0.5em;
     outline: 0;
 }
+
+.hero > select:focus {
+    background-image:
+        linear-gradient(50deg, var(--mint5) 50%, transparent 50%),
+        linear-gradient(130deg, transparent 50%, var(--mint5) 50%);
+    background-position:
+        calc(100% - 10px) calc(1em + 2px),
+        calc(100% - 18px) calc(1em + 2px);
+    background-size:
+        8px 13px,
+        8px 13px;
+}
+
 
 select[multiple] {
     background-image: none;
@@ -209,6 +236,11 @@ select:-internal-list-box {
     padding-right: 2.5em;
 }
 
+.input-control-base input.not-valid:not(:focus) {
+    outline: 1px solid red;
+    outline-offset: -2px;
+}
+
 .input-control-base textarea {
     padding: 10px;
     min-height: 10em;
@@ -271,25 +303,39 @@ select:-internal-list-box {
     border: 1px solid white;
 }
 
-.input-control-base.hero > input {
+.input-control-base.hero {
+    padding: 20px;
+}
+
+.input-control-base.hero > input,
+.input-control-base.hero > select {
     font-size: 24px;
     font-family: var(--brand-font);
-    padding: 20px;
     border: none;
     margin: 0;
     background-color: transparent;
+    border-radius: 40px;
+    height: 50px;
+}
+.input-control-base.hero > input {
+    padding: 20px;
+}
+.input-control-base.hero > select {
+
 }
 
-.input-control-base.hero>input:not([readonly]):hover {
-    background: var(--gray2);
+.input-control-base.hero > input:not([readonly]):hover,
+.input-control-base.hero > select:not([readonly]):hover {
+    background-color: var(--gray2);
 }
 
-.input-control-base.hero>input:not([readonly]):focus-visible {
+.input-control-base.hero > input:not([readonly]):focus-visible,
+.input-control-base.hero > select:not([readonly]):focus-visible {
     outline: none;
-    background: white;
+    background-color: white;
 }
 
-.input-control-base.hero>label {
+.input-control-base.hero > label {
     display: none;
 }
 

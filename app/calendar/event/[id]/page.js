@@ -58,7 +58,7 @@ const EventPage = async (context) => {
                         <fieldset>
                             <legend>Basic Details</legend>
                             <Form id="event-details" auto >
-                                <section>
+                                <section className="inputs">
                                     <DateTime id="startDate" name="eventStartDate" label="Start" value={event.eventStartDate} includeTime >
                                         <DateTime id="endDate" name="eventEndDate" label="End" value={event.eventEndDate} includeTime/>
                                     </DateTime>

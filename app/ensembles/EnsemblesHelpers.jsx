@@ -3,12 +3,9 @@
 import Link from 'next/link'
 import { useRouter, usePathname } from "next/navigation";
 
-import { supabase } from '../../lib/supabase-client';
-
 import {Form, Text, File, Select} from '../../components/Vcontrols';
 import TabControl, { Tab } from '../../components/TabControl';
 
-import memberImportFromExcel from '../../lib/memberImportFromExcel';
 import ModalButton from '../../components/ModalButton';
 
 const EnsembleNav = ({ ensemble, lineup }) => {
@@ -61,20 +58,7 @@ const EnsembleNav = ({ ensemble, lineup }) => {
                 <Tab id="General" onLoad={() => router.push(`/ensembles/${ensemble.id}/`)}>
                     <article style={{ padding: "10px" }}>
                         <fieldset className="buttons button-chain column">
-                            <ModalButton
-                                modalButton={<><i>upload</i><span>Upload Members</span></>}
-                                buttonClass="fat"
-                                title="Upload Members From Excel File"
-                            >
-                                <Form id="upload-members-form" APIURL="/members/uploadMembers" auxData={{ensembleId: ensemble.id}} >
-                                    <section className="modal-fields">
-                                        <File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
-                                    </section>
-                                </Form>
-                                <section className="modal-buttons">
-                                    <button name="submit" form="upload-members-form">Submit</button>
-                                </section>
-                            </ModalButton>
+                            
                             <ModalButton
                                 modalButton={<><i>upload</i><span>Upload Logo</span></>}
                                 buttonClass="fat"
@@ -129,6 +113,19 @@ const EnsembleNav = ({ ensemble, lineup }) => {
                     </article>
                 </Tab>
             </TabControl>
+        </div>
+    )
+}
+
+export const LineupSelector = ({ value, lineups }) => {
+    const router = useRouter();
+    const path = usePathname();
+
+    const nextPath = path.slice(0, path.indexOf('lineup') + 6)
+
+    return (
+        <div>
+            <Select id="lineup-selector" label="Lineup" value={value} options={lineups} extraAction={(v) => router.push(`${nextPath}/${v}`)} hero/>
         </div>
     )
 }

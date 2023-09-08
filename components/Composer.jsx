@@ -19,7 +19,7 @@ const initialStyles = {
     italic: false,
     underline: false,
     strikethrough: false,
-    type: 'normal',
+    type: 'paragraph',
     size: '10',
     align: 'left'
 }
@@ -151,7 +151,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
         },
 
         setTextStyle(style) {
-            // console.log(style);
+            console.log(style);
             Transforms.setNodes(
                 editor,
                 { type: style },
@@ -161,7 +161,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
         },
 
         setTextSize(size) {
-            // console.log(size);
+            console.log(size);
             Transforms.setNodes(
                 editor,
                 { size: size },
@@ -252,7 +252,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
         const newNode = Editor.node(editor, editor.selection.anchor.path)
         console.log({ newNode })
         if (newNode[1].length === 2) {
-            Transforms.setNodes(editor, {type: 'normal'})
+            Transforms.setNodes(editor, {type: 'paragraph'})
         }
     }
 
@@ -459,7 +459,7 @@ const Element = ({ attributes, element, children, editor }) => {
 
     switch (type) {
         case 'code':
-            return <CodeElement {...props} />
+            return null;
         case 'h1':
         case 'h2':
         case 'h3':
@@ -470,6 +470,7 @@ const Element = ({ attributes, element, children, editor }) => {
                 // console.log({ props }, { ref })
                 return React.createElement(type, props)
             })
+            Header.displayName = "Header-Component"
         
             return (
                 <Header
@@ -512,7 +513,7 @@ const Element = ({ attributes, element, children, editor }) => {
                 </li>
             )
         
-        case 'normal':
+        case 'paragraph':
         default:
             return (
                 <p

@@ -29,6 +29,7 @@ export const getManyBroadcasts = async () => {
     const { data: broadcasts, error } = await supabase
         .from("Broadcast")
         .select('*')
+        .order('status_date')
     
     if (error) {
         console.error("fetch many Broadcasts error:", error);

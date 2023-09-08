@@ -1,24 +1,28 @@
 import Link from 'next/link';
 
+import SubNav from '../../../../components/SubNav';
+
 import { getOneEvent } from "../../../api/calendar/event/[id]/route"
 
 export default async function EventLayout(props) {
     const event = await getOneEvent(props.params.id)
 
+    const navButtons = [
+        <Link href={`/calendar/event/model/${event.model.id}`} >
+            <button className="fit" style={{flex:1}}>
+                <i>dynamic_feed</i><span>Event Model</span>
+            </button>
+        </Link>
+    ]
+
+    const navNodes = [
+        { caption: "Model", route: `/event/model/${event.model.id}` }
+    ]
+
     return (
         <div className="page-base">
             <div className="action-section">
-                <article style={{ padding: "10px" }}>
-                    <Link href="/calendar"><i>arrow_back</i>Calendar</Link>
-                    <h1>Event Details</h1>
-                    <article className="button-chain column" >
-                        <Link href={`/calendar/event/model/${event.model.id}`} >
-                            <button className="fat" style={{flex:1}}>
-                                <i>dynamic_feed</i><span>Event Model</span>
-                            </button>
-                        </Link>
-                    </article>
-                </article>
+                <SubNav root="calendar" buttons={navButtons} />
             </div>
             <div className="form-section">
                 {props.children}

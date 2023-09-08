@@ -5,11 +5,9 @@ import { BroadcastBox } from '../MessagesHelpers';
 
 import { getManyBroadcasts } from '../../api/messages/broadcasts/route';
 
-import '../messages.css';
-
 const BroadcastsPage = async (context) => {
     const broadcastsList = await getManyBroadcasts()
-    console.log({ broadcastsList });
+    // console.log({ broadcastsList });
 
     return (
         <div className="page-details">
@@ -20,11 +18,12 @@ const BroadcastsPage = async (context) => {
                         <FilterContainer
                             id="broadcasts-filter"
                             filterTag="broadcast"
-                            columns={{count: 1, width: "1fr"}}
+                            columns={{ count: 1, width: "1fr" }}
+                            search={{ label: "Search Broadcasts", searchProp: "subject" }}
                         >
                             {
-                                broadcastsList.map(bc => {
-                                    return <BroadcastBox info={bc} />
+                                broadcastsList.map((bc, b) => {
+                                    return <BroadcastBox key={b} info={bc} tag="broadcast" subject={bc.subject} />
                                 })
                             }
                         </FilterContainer>

@@ -18,14 +18,25 @@ export const getOneEmail = async ({member, type}) => {
     return email;
 }
 
-export const getManyEmails = async ({ group, groupId }) => {
+export const getManyEmails = async (group, groupId) => {
     const supabase = createServerComponentClient({ cookies });
 
     switch (group) {
         case "ensemble":
-            
+            const query = supabase
+                .from("Ensemble")
+                .select(`
+                    name,
+                    Division(*),
+                    Lineup(name, LineupAssignment(Division(id, name, parent_division), EnsembleMembership(Member(id, aka, EmailAddress(email)))))
+                `)
 
+            if (groupId) query.eq('id', groupId)
             
+            const { data: myresult, error } = await query;
+
+            console.log({ myresult }, { error })
+            return myresult;
                 // .eq('Member.EnsembleMembership.Ensemble.id', groupId)
             break;
         default:

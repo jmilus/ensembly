@@ -38,7 +38,7 @@ export const getOneLineup = async (id) => {
         if (divisionsError) console.log("error fetching lineup_divisions");
         lineup_divs = [...lineup_divisions];
     }
-    lineup[0].divisions = nester(lineup_divs)
+    lineup[0].divisions = nester(lineup_divs, "parent_division")
 
     // console.log("getOneLineup:", lineup);
     return formatDBObject(lineup[0]);

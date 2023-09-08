@@ -10,7 +10,7 @@ export const getAllMembers = async () => {
         .select('*')
     
     if (error) console.error("fetch all members error:", error);
-    console.log("fetched all members:", data)
+    // console.log("fetched all members:", data)
 
     return data;
 }

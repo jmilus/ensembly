@@ -47,7 +47,7 @@ export const MENUOPTIONS = [
     {
         name: "Messages",
         icon: "email",
-        route: "messages"
+        route: "messages/forum"
     },
     {
         spacer: true

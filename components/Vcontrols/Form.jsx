@@ -6,7 +6,7 @@ import useStatus from '../../hooks/useStatus';
 
 import './Vstyling.css';
 
-const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, followUp, followPath, onChange, auto, timeout = 1000, debug }) => {
+const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, followUp, followPath, onChange, auto, timeout = 1000, style, debug }) => {
     const saveTimer = useRef();
     const readOnlyInputs = useRef([]);
     const status = useStatus()
@@ -172,7 +172,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
     }
 
     return (
-        <form id={id} onSubmit={handleFormSubmit} onChange={handleFormChange} onKeyDown={handleFormKeyDown}>
+        <form id={id} onSubmit={handleFormSubmit} onChange={handleFormChange} onKeyDown={handleFormKeyDown} style={style}>
             {children}
         </form>
     )

@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 export const getOneEnsemble = async (id) => {
     const supabase = createServerComponentClient({ cookies });
 
-    const { data: [ensemble], error } = await supabase
+    const { data: ensemble, error } = await supabase
         .from('Ensemble')
         .select(`
             *,
@@ -22,7 +22,7 @@ export const getOneEnsemble = async (id) => {
     }
 
     // console.log("getOneEnsemble:", ensemble);
-    return ensemble;
+    return ensemble[0];
 }
 
 export const updateOneEnsemble = async (ensembleData) => {
@@ -31,7 +31,7 @@ export const updateOneEnsemble = async (ensembleData) => {
 
     // console.log("update ensemble profile data:", ensembleData)
 
-    const { data: [ensemble], error } = await supabase
+    const { data: ensemble, error } = await supabase
         .from('Ensemble')
         .update({
             name,
@@ -48,7 +48,7 @@ export const updateOneEnsemble = async (ensembleData) => {
 
     // console.log("update ensemble data:", ensemble)
 
-    return ensemble;
+    return ensemble[0];
 }
 
 // fetch
