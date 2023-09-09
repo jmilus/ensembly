@@ -115,7 +115,7 @@ const MemberPage = async (context) => {
                                                     membership.assignments.map((assignment, a) => {
                                                         if(!assignment.Lineup.is_primary) return null
                                                         return (
-                                                            <div className="assignment">{assignment.Division.name}</div>
+                                                            <div key={a} className="assignment">{assignment.Division.name}</div>
                                                         )
                                                     })
                                                 }

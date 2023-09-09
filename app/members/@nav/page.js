@@ -1,7 +1,7 @@
 import SubNav from '../../../components/SubNav';
 
 import ModalButton from '../../../components/ModalButton';
-import { Form, Text } from '../../../components/Vcontrols';
+import { Form, Text, File } from '../../../components/Vcontrols';
 
 export default function ModuleSubNav() {
     const navButtons = [
