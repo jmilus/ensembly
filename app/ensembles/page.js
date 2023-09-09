@@ -15,6 +15,7 @@ const EnsemblesLayout = async (props) => {
     const ensembleTypes = await getAllEnsembleTypes()
     const buttons = [
         <ModalButton
+            key="x"
             modalButton={<><i>add_circle</i><span>New Ensemble</span></>}
             title="Create New Ensemble"
             buttonClass="fit"

@@ -17,6 +17,7 @@ export default async function EnsembleRecordLayout(context) {
 
     const buttons = [
         <ModalButton
+            key="x"
             modalButton={<><i>upload</i><span>Upload Members</span></>}
             buttonClass="fit"
             title="Upload Members From Excel File"

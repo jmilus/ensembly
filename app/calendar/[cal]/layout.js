@@ -50,7 +50,7 @@ const EventsPage = async (context) => {
     }
 
     const navButtons = [
-        <section className="calendar-control button-chain row" >
+        <section key="calendar-navigator" className="calendar-control button-chain row" >
             <Link href={`/calendar/${changeFocus(-1, "month")}`}><button className="fit"><i>keyboard_double_arrow_left</i></button></Link>
             <Link href={`/calendar/${changeFocus(-7)}`}><button className="fit"><i>navigate_before</i></button></Link>
             <Link href={`/calendar`}><button className="fit"><i>last_page</i>Today<i>first_page</i></button></Link>
@@ -58,6 +58,7 @@ const EventsPage = async (context) => {
             <Link href={`/calendar/${changeFocus(1, "month")}`}><button className="fit"><i>keyboard_double_arrow_right</i></button></Link>
         </section>,
         <ModalButton
+            key="modal-button-new-event"
             title="Create New Event"
             modalButton={<><i>event</i><span>New Event</span></>}
             buttonClass="fit"

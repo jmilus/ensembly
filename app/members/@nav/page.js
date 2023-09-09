@@ -6,7 +6,7 @@ import { Form, Text } from '../../../components/Vcontrols';
 export default function ModuleSubNav() {
     const navButtons = [
         <ModalButton
-            // key="modal-button-new-member"
+            key="modal-button-new-member"
             modalButton={<><i>person_add</i><span>New Member</span></>}
             title="Create New Member"
             buttonClass="fit"
@@ -22,6 +22,7 @@ export default function ModuleSubNav() {
             </section>
         </ModalButton>,
         <ModalButton
+            key="modal-button-upload-members"
             modalButton={<></>}
             title="Upload Members from Excel File"
         >

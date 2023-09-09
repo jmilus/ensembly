@@ -102,6 +102,7 @@ const MemberPage = async (context) => {
                                 console.log("membership:", membership.assignments)
                                 return (
                                     <ItemCard
+                                        key={i}
                                         name={membership.ensemble.name}
                                     >
                                         <ModalButton
