@@ -4,10 +4,7 @@ import { getOneMember } from '../../api/members/[id]/route';
 import { getManyEnsembles } from '../../api/ensembles/route';
 import { getBioOptions } from '../../api/members/bio/route';
 
-import Link from 'next/link';
-
 import ProfilePhoto from '../../../components/ProfilePhoto';
-import EnsembleCard from '../../../components/EnsembleCard';
 import ItemCard from '../../../components/ItemCard';
 import ModalButton from '../../../components/ModalButton';
 import { Form, Text, Number, Select, DateOnly } from '../../../components/Vcontrols';

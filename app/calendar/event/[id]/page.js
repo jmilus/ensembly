@@ -9,10 +9,10 @@ import { getAttendanceStatus } from '../../../api/calendar/event/[id]/take-atten
 
 import { Form, DateTime, Select, Text, Radio } from '../../../../components/Vcontrols';
 import FilterContainer from '../../../../components/FilterContainer';
-import MemberCard from '../../../../components/MemberCard';
 import SecurityWrapper from '../../../../components/SecurityWrapper';
 import { Collection } from '../../../../components/Vcontrols';
 import ModalButton from '../../../../components/ModalButton';
+import ItemCard from '../../../../components/ItemCard';
 
 const EventPage = async (context) => {
     const event = await getOneEvent(context.params.id);
@@ -98,10 +98,9 @@ const EventPage = async (context) => {
                                         {
                                             Object.values(assignments).map((assignment, m) => {
                                                 return (
-                                                    <MemberCard
+                                                    <ItemCard
                                                         key={m}
                                                         tag="assignee"
-                                                        membership={assignment.membership}
                                                         name={assignment.membership.Member.aka}
                                                         subtitle={assignment.division.name}
                                                     />

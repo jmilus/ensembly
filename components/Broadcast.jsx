@@ -9,6 +9,7 @@ import { deduper, validateEmail } from '../utils';
 
 import Composer from './Composer';
 import DropContainer from './DropContainer';
+import ItemCard from './ItemCard';
 import ModuleCard from './ModuleCard';
 import Verify from './VerifyButton';
 import { Text } from './Vcontrols';
@@ -360,7 +361,13 @@ const Broadcast = ({ broadcastId, body, subject, to_address, cc_address, bcc_add
                 </article>
                 <TabControl type="accordion" style={{maxWidth:"300px", marginLeft: "10px"}}>
                     <Tab id="Modules">
-                        <ModuleCard module={{name: "Basic", type: "standard_paragraph"}} />
+                        {/* <ModuleCard module={{ name: "Basic", type: "standard_paragraph" }} /> */}
+                        <ItemCard
+                            cardType="MODULE"
+                            dropItem={{ name: "Basic", type: "standard_paragraph" }}
+                            itemIcon={<i style={{ fontSize: "3em", color: "var(--color-p)", cursor: "inherit" }}>view_headline</i>}
+                            name="Basic"
+                        />
                     </Tab>
                     <Tab id="Recipients">
                         <TabControl >

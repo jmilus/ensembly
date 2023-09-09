@@ -11,9 +11,9 @@ import { getOneAddress } from '../../../../api/address/[id]/route';
 import { Form, Number, Text, DateTime, DateOnly, Select, Collection, Button } from '../../../../../components/Vcontrols';
 import { EventNode } from '../../../../../components/Calendar';
 import ModalButton from '../../../../../components/ModalButton';
-import FilterContainer from '../../../../../components/FilterContainer';
-import MemberCard from '../../../../../components/MemberCard';
+import FilterContainer from '../../../../../components/FilterContainer';\
 import { LineupsGrid } from '../../../CalendarHelpers';
+import ItemCard from '../../../../../components/ItemCard';
 
 import CALENDAR from '../../../../../utils/calendarUtils';
 import { CAL } from '../../../../../utils/constants';
@@ -288,10 +288,9 @@ const EventModelPage = async (context) => {
                                     {
                                         Object.values(assignments).map((assignment, m) => {
                                             return (
-                                                <MemberCard
+                                                <ItemCard
                                                     key={m}
                                                     tag="assignee"
-                                                    membership={assignment.membership}
                                                     name={assignment.membership.Member.aka}
                                                     subtitle={assignment.division.name}
                                                 />
