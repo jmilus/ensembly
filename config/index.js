@@ -23,7 +23,7 @@ const getURL = () => {
 
 // export const HOSTURL = dev ?  : 'https://testing-lake-seven.vercel.app';
 
-export const thing = getURL();
+export const HOSTURL = getURL();
 
 export const MENUOPTIONS = [
     {
