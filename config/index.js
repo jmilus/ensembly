@@ -16,13 +16,14 @@ const getURL = () => {
         // Make sure to including trailing `/`.
         url = url.charAt(url.length - 1) === '/' ? url : `${url}/`;
 
+        console.log("automatic url:", url)
         return url;
     }
 }
 
 // export const HOSTURL = dev ?  : 'https://testing-lake-seven.vercel.app';
 
-export const HOSTURL = getURL();
+export const thing = getURL();
 
 export const MENUOPTIONS = [
     {
