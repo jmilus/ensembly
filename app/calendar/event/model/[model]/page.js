@@ -11,7 +11,7 @@ import { getOneAddress } from '../../../../api/address/[id]/route';
 import { Form, Number, Text, DateTime, DateOnly, Select, Collection, Button } from '../../../../../components/Vcontrols';
 import { EventNode } from '../../../../../components/Calendar';
 import ModalButton from '../../../../../components/ModalButton';
-import FilterContainer from '../../../../../components/FilterContainer';\
+import FilterContainer from '../../../../../components/FilterContainer';
 import { LineupsGrid } from '../../../CalendarHelpers';
 import ItemCard from '../../../../../components/ItemCard';
 
