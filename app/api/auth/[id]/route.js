@@ -4,31 +4,25 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-export const getProfile = async (ids) => {
+export const getProfile = async () => {
     // console.log({ids})
     const supabase = createServerComponentClient({ cookies });
-    const member = ids?.member;
-    const user = ids?.user;
     // console.log("getProfile ids:", { member }, { user })
     const { data: { session } } = await supabase.auth.getSession()
 
-    const userId = user ? user : session?.user?.id;
-
-    if (!member && !userId) return {user: null, member: null, permissions: null, role: null};
-    
-    const filter = member ? { member } : { user: userId }
+    if (!session) return {user: null, member: null, permissions: null, role: null};
 
     const { data: profile, error } = await supabase
         .from('Profile')
         .select(`
-            user,
+            email,
             member (*),
             role (
                 permissions,
                 role
             )
         `)
-        .match(filter)
+        .eq('email', session.user.email)
 
     if (error) {
         console.error("fetch member user error:", error)

@@ -150,7 +150,7 @@ select:-internal-list-box {
 .input-control-base > .collection-container {
     width: 100%;
     border-style: solid;
-    border-color: transparent;
+    border-color: var(--gray3);
     border-width: 0 0 1px 0;
     outline: none;
     font-size: 1em;
@@ -233,6 +233,12 @@ select:-internal-list-box {
 
 .clearable-control {
     position: relative;
+}
+
+.clearable-control > input {
+    border-width: 1px;
+    border-color: var(--gray4);
+    background: white;
 }
 
 .clearable {
@@ -318,8 +324,9 @@ select:-internal-list-box {
     border: none;
     margin: 0;
     background-color: transparent;
-    border-radius: 40px;
+    border-radius: 5px;
     height: 50px;
+    transition: all 0.2s ease;
 }
 .input-control-base.hero > input {
     padding: 0;

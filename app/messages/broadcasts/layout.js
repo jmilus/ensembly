@@ -11,30 +11,25 @@ const BroadcastsPage = async (context) => {
 
     return (
         <div className="page-details">
-            <article style={{paddingLeft: "10px"}}>
-                <section style={{flex: 1, overflow: "hidden"}}>
-                    <fieldset className="tall" style={{width: "300px"}}>
-                        <legend>Broadcasts</legend>
-                        <FilterContainer
-                            id="broadcasts-filter"
-                            filterTag="broadcast"
-                            columns={{ count: 1, width: "1fr" }}
-                            search={{ label: "Search Broadcasts", searchProp: "subject" }}
-                        >
-                            {
-                                broadcastsList.map((bc, b) => {
-                                    return <BroadcastBox key={b} info={bc} tag="broadcast" subject={bc.subject} />
-                                })
-                            }
-                        </FilterContainer>
-                    </fieldset>
-                    <fieldset className="tall" style={{flex: 1}}>
-                        <legend>Detail</legend>
-                        {context.children}
-                    </fieldset>
-                </section>
-            </article>
-
+            <fieldset className="tall" style={{width: "300px"}}>
+                <legend>Broadcasts</legend>
+                <FilterContainer
+                    id="broadcasts-filter"
+                    filterTag="broadcast"
+                    columns={{ count: 1, width: "1fr" }}
+                    search={{ label: "Search Broadcasts", searchProp: "subject" }}
+                >
+                    {
+                        broadcastsList.map((bc, b) => {
+                            return <BroadcastBox key={b} info={bc} tag="broadcast" subject={bc.subject} />
+                        })
+                    }
+                </FilterContainer>
+            </fieldset>
+            <fieldset className="tall" style={{flex: 1}}>
+                <legend>Detail</legend>
+                {context.children}
+            </fieldset>
         </div>
     )
 }

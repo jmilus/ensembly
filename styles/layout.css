@@ -50,6 +50,15 @@
     grid-gap: 40px;
 }
 
+.nav-wrapper {
+    display: flex;
+    flex: 1;
+    margin-right: 10px;
+    height: 100%;
+    --hero-size: 40px;
+    margin: auto 0;
+}
+
 .nav-header {
     font-size: 2em;
     font-family: var(--brand-font);

@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import Nav from '../components/Nav';
 import NavWrapper from '../components/NavWrapper';
 import StatusBlip from '../components/StatusBlip';
-import DropDownMenu from '../components/DropDownMenu';
+import {ClientConsole} from '../components/ClientConsole';
 import ContextFrame from '../components/ContextFrame';
 import LoginBox from '../components/LoginBox';
 
@@ -34,7 +34,7 @@ const RootLayout = async ({children}) => {
                     {session ?
                         <div id="app-body">
                             <StatusBlip />
-                            <DropDownMenu />
+                            <ClientConsole items={{ session: session, profile: profile }} />
                             <NavWrapper mainNav={nav} />
                             {children}
                         </div>

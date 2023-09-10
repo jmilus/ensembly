@@ -76,7 +76,7 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
     </div>
     
     return (
-        <div style={{display: "flex", flex: 1, marginRight: "10px"}}>
+        <div className="nav-wrapper">
             <div className="nav-header" >
                 <span onClick={() => router.push(`/${root}`)}>{caption || routeCaption}</span>
             </div>
