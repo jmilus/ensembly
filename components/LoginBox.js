@@ -51,7 +51,6 @@ const LoginBox = () => {
     }
 
     const sendMagicLink = async (signInData) => {
-        console.log({ signInData }, { HOSTURL })
         const email = signInData.email
         let formResponseMessage = "";
         if (email) {
@@ -86,6 +85,7 @@ const LoginBox = () => {
             }
         })
         if (error) console.log(`problem signing in with ${provider}`, error);
+        console.log("signin data", data)
         router.refresh();
     }
 
