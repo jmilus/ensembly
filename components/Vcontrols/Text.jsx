@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 import { validateEmail } from '../../utils';
 
-import './Vstyling.css';
+// import './Vstyling.css';
 
 const Text = (props) => {
     const { id, name, label, value = "", placeholder, extraAction, format, limit, style, hero, isRequired = false, children, pattern, clear, readonly, debug } = props;

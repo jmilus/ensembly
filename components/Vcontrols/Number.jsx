@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { floor } from 'lodash';
 
-import './Vstyling.css';
+// import './Vstyling.css';
 
 const Number = (props) => {
     const { id, name, label, value, extraAction, initialValue, format, style, hero, isRequired, recordId, updateForm, readonly, debug } = props;

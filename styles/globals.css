@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-/* @import url('https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Calistoga&family=Quicksand:wght@400&family=Shrikhand&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Calistoga&family=Montserrat:wght@100&family=Quicksand:wght@300;600&family=Shrikhand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Berkshire+Swash&family=Calistoga&family=Comfortaa&family=Montserrat:wght@400&family=Poppins:wght@400&family=Quicksand:wght@300;600&family=Shrikhand&display=swap');
 
 html, body, #__next {
   height: 100%;
@@ -16,7 +15,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Quicksand', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 14px;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
@@ -39,7 +38,7 @@ body {
   --text1: white;
   --text2: hsl(0, 0%, 11%);
 
-  --brand-font: 'Berkshire Swash', cursive;
+  --brand-font: 'Comfortaa', sans-serif;
 
   --grayx: 0 0%;
 
@@ -54,15 +53,15 @@ body {
 
   --mintx: 150 32%;
 
-  --mint1: hsl(var(--mintx), 98%);
-  --mint2: hsl(var(--mintx), 95%);
-  --mint3: hsl(var(--mintx), 90%);
-  --mint4: hsl(var(--mintx), 85%);
-  --mint5: hsl(var(--mintx), 70%);
-  --mint6: hsl(var(--mintx), 60%);
-  --mint7: hsl(var(--mintx), 55%);
-  --mint8: hsl(var(--mintx), 40%);
-  --mint9: hsl(var(--mintx), 25%);
+  --mint1: hsl(var(--mintx) 98%);
+  --mint2: hsl(var(--mintx) 95%);
+  --mint3: hsl(var(--mintx) 90%);
+  --mint4: hsl(var(--mintx) 85%);
+  --mint5: hsl(var(--mintx) 70%);
+  --mint6: hsl(var(--mintx) 60%);
+  --mint7: hsl(var(--mintx) 55%);
+  --mint8: hsl(var(--mintx) 40%);
+  --mint9: hsl(var(--mintx) 25%);
 
   --shadow1: 0px 2px 5px -1px hsl(0, 0%, 70%);
   --dd-shadow: 0px 10px 10px 0px hsla(0, 0%, 30%, 0.5);
@@ -407,19 +406,20 @@ button.dismiss {
   flex: 1;
   font-size: 32px;
   cursor: default;
+  font-family: 'Berkshire Swash';
 }
 
 .profile-button {
   height: 40px;
   width: 40px;
   border-radius: 50%;
-  margin-right: 10px;
   overflow: hidden;
   border: 1px solid var(--primary);
   box-shadow: 0 0 0px 1px white;
   transition: box-shadow 0.1s ease;
   cursor: pointer;
   user-select:none;
+  --edge-color: white;
 }
 .profile-button:hover {
   box-shadow: 0 0 0px 5px white;
@@ -432,9 +432,9 @@ button.dismiss {
 .main-menu-panel {
   position: absolute;
   overflow: hidden;
-  z-index: 10;
+  z-index: 1000;
   /* background: hsl(var(--color-p)); */
-  background-image: linear-gradient(120deg, hsl(var(--color-p)) 150px, var(--color-c3));
+  background-image: linear-gradient(140deg, hsl(var(--color-p)) 100px, var(--color-c3) 500px);
   display:flex;
   flex-direction:column;
   height: 100%;
@@ -629,8 +629,9 @@ fieldset {
 }
 
 legend {
-  color: var(--text2);
-  font-weight: 700;
+  color: hsl(var(--mintx) 75%);
+  font-weight: 900;
+  font-size: 1.5em;
 }
 
 fieldset.tall {
@@ -828,14 +829,15 @@ fieldset.buttons > legend {
 }
 
 .hero-icon {
+  height: var(--hero-size);
+  width: var(--hero-size);
   border-radius: 50%;
   /* background: hsl(var(--color-p)); */
   display: flex;
   align-items:center;
   justify-content:center;
   color: var(--text1);
-  box-shadow: 0 0 10px -5px inset darkred;
-  background-image: radial-gradient(circle at top, hsl(40, 50%, 70%) 20%, hsl(20, 40%, 50%) 70%, hsl(0, 10%, 40%));
+  background-image: linear-gradient(120deg, lch(73 74.58 62.82) 20%, lch(46 73.56 7.6) 100%);
 }
 
 .card-container.basic {
@@ -843,19 +845,18 @@ fieldset.buttons > legend {
 }
 
 .card-container.basic .hero-icon {
-  height: 40px;
-  width: 40px;
+  --hero-size: 40px;
 }
 
 .card-container.profile {
   flex-direction: column;
+  --hero-size: 100px;
 }
 .card-container.profile > .card-header {
   flex-direction: column;
 }
 .card-container.profile .hero-icon {
-  height: 100px;
-  width: 100px;
+  font-size:2em;
 }
 
 .card-header {
@@ -1008,8 +1009,7 @@ fieldset.buttons > legend {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(auto-fit, minmax(100px, auto));
-  row-gap: 5px;
-  column-gap: 5px;
+  grid-gap: 0;
   margin: 5px 0;
   flex: 1;
 }
@@ -1021,6 +1021,8 @@ fieldset.buttons > legend {
   overflow: hidden;
   color: gray;
   box-shadow: 0 0 4px -2px gray;
+  margin: 2.5px;
+  transition: margin 0.15s ease;
 }
 
 .cal-day.current-month {
@@ -1034,6 +1036,7 @@ fieldset.buttons > legend {
 
 .cal-day:hover {
   border: 1px solid var(--color-c2);
+  margin: 0;
 }
 
 .cal-day-header {

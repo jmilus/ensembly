@@ -1,8 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import './Vstyling.css';
 import useStatus from '../../hooks/useStatus';
+// import './Vstyling.css';
 
 const Button = (props) => {
     const { name, label, APIURL, METHOD, payload, output, buttonClass, style, debug } = props;

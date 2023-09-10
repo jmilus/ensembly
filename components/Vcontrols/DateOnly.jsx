@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-import './Vstyling.css';
+// import './Vstyling.css';
 
 const DateOnly = (props) => {
     const { id, name, label, value, extraAction, max, min, style, hero, isRequired, children, readonly, debug } = props;

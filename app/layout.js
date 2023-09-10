@@ -14,7 +14,7 @@ import { getProfile } from '../app/api/auth/[id]/route';
 
 import '../styles/globals.css'
 import '../styles/layout.css';
-
+import '../components/Vcontrols/Vstyling.css';
 
 export const revalidate = 0;
 

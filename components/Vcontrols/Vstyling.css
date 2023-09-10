@@ -52,18 +52,17 @@ input[type="date"][value=""] {
 select {
     appearance: none;
     padding-right: 40px !important;
+}
+select:hover {
     background-image:
-        linear-gradient(45deg, transparent 50%, var(--gray5) 50%),
-        linear-gradient(135deg, var(--gray5) 50%, transparent 50%),
-        linear-gradient(to right, var(--gray5), var(--gray5));
+        linear-gradient(45deg, transparent 50%, var(--mint4) 50%),
+        linear-gradient(135deg, var(--mint4) 50%, transparent 50%);
     background-position:
         calc(100% - 18px) calc(1em + 3px),
-        calc(100% - 10px) calc(1em + 3px),
-        calc(100% - 35px) 0.5em;
+        calc(100% - 10px) calc(1em + 3px);
     background-size:
         8px 8px,
-        8px 8px,
-        1px 1.9em;
+        8px 8px;
     background-repeat: no-repeat;
 }
 .hero > select {
@@ -71,8 +70,8 @@ select {
 }
 .hero > select:hover {
     background-image: 
-        linear-gradient(50deg, transparent 50%, var(--mint5) 50%),
-        linear-gradient(130deg, var(--mint5) 50%, transparent 50%);
+        linear-gradient(50deg, transparent 50%, var(--mint4) 50%),
+        linear-gradient(130deg, var(--mint4) 50%, transparent 50%);
     background-position:
         calc(100% - 18px) calc(1em + 10px),
         calc(100% - 10px) calc(1em + 10px);
@@ -83,20 +82,21 @@ select {
 
 select:focus {
     background-image:
-        linear-gradient(45deg, var(--gray3) 50%, transparent 50%),
-        linear-gradient(135deg, transparent 50%, var(--gray3) 50%),
-        linear-gradient(to right, var(--gray5), var(--gray5));
+        linear-gradient(135deg, transparent 50%, var(--mint4) 50%),
+        linear-gradient(45deg, var(--mint4) 50%, transparent 50%);
     background-position:
-        calc(100% - 10px) calc(1em + 2px),
-        calc(100% - 18px) calc(1em + 2px),
-        calc(100% - 35px) 0.5em;
-    outline: 0;
+        calc(100% - 18px) calc(1em + 3px),
+        calc(100% - 10px) calc(1em + 3px);
+    background-size:
+        8px 8px,
+        8px 8px;
+    background-repeat: no-repeat;
 }
 
 .hero > select:focus {
     background-image:
-        linear-gradient(50deg, var(--mint5) 50%, transparent 50%),
-        linear-gradient(130deg, transparent 50%, var(--mint5) 50%);
+        linear-gradient(50deg, var(--mint4) 50%, transparent 50%),
+        linear-gradient(130deg, transparent 50%, var(--mint4) 50%);
     background-position:
         calc(100% - 10px) calc(1em + 2px),
         calc(100% - 18px) calc(1em + 2px);
@@ -149,11 +149,13 @@ select:-internal-list-box {
 .input-control-base > textarea,
 .input-control-base > .collection-container {
     width: 100%;
-    border: 1px solid var(--gray3);
+    border-style: solid;
+    border-color: transparent;
+    border-width: 0 0 1px 0;
     outline: none;
     font-size: 1em;
     padding: 10px 15px;
-    background-color: white;
+    background-color: hsl(0 0% 100% / 0.25);
     border-radius: 3px;
 }
 
@@ -166,6 +168,7 @@ select:-internal-list-box {
 .input-control-base:hover select:not(:focus-visible):not([readonly]),
 .input-control-base:hover textarea:not(:focus-visible):not([readonly]) {
     border-color: var(--gray4);
+    background-color: hsl(0 0% 100% / 0.5);
 }
 
 .input-control-base input,
@@ -286,11 +289,12 @@ select:-internal-list-box {
     overflow: hidden;
     transition: height 0.05s ease;
     border-width: 0;
+    background: var(--gray1);
     height: var(--option-height);
 }
 
 .select-option:hover {
-    background: var(--gray2);
+    background: var(--mint2);
     cursor: pointer;
 }
 
@@ -304,12 +308,12 @@ select:-internal-list-box {
 }
 
 .input-control-base.hero {
-    padding: 20px;
+    padding: 20px 0;
 }
 
 .input-control-base.hero > input,
 .input-control-base.hero > select {
-    font-size: 24px;
+    font-size: 2.5em;
     font-family: var(--brand-font);
     border: none;
     margin: 0;
@@ -318,7 +322,7 @@ select:-internal-list-box {
     height: 50px;
 }
 .input-control-base.hero > input {
-    padding: 20px;
+    padding: 0;
 }
 .input-control-base.hero > select {
 
@@ -620,4 +624,21 @@ i.dot.selected {
 .color-input::-moz-focus-inner {
     border: none;
     padding: 0;
+}
+
+#popup-menu-wrapper {
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+.popup-children {
+    position: absolute;
+    box-shadow: 0 5px 10px -5px var(--gray4);
+}
+#popup-backing {
+    height: 100%;
+    width: 100%;
 }

@@ -9,7 +9,7 @@ const NavWrapper = ({ mainNav }) => {
         <div id="nav-base">
             <div className={`main-menu-panel ${expanded ? "expanded" : ""}`} onMouseLeave={() => setExpanded(false)}>
                 <div className="menu-header" onClick={() => setExpanded(!expanded)}>
-                    <div className="app-logo fancy">E<span className="app-full-title">nsembly</span></div>
+                    <div className="app-logo">E<span className="app-full-title">nsembly</span></div>
                 </div>
                 {mainNav}
             </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useContext } from 'react';
+import { useContext, useState, useRef } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -8,16 +8,19 @@ import { GlobalContext } from '../components/ContextFrame';
 import { getInitials } from '../utils';
 
 import Link from 'next/link';
+import PopupMenu from './PopupMenu';
 
 const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
     const supabase = createClientComponentClient();
+    const [showMenu, setShowMenu] = useState(false);
+    const userIconRef = useRef();
     const { parameters } = useContext(GlobalContext)
     const router = useRouter();
     const path = usePathname();
 
     const { profile } = parameters;
 
-    console.log({ profile })
+    console.log({ profile }, showMenu)
 
     // const user = supabase.session;
 
@@ -58,12 +61,22 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
         <div key="b" className="menu-item" onClick={signOut}>Sign Out<i>logout</i></div>
     </div>
 
-    const userIcon = <div className="hero-icon profile-button">
-        <div className="profile-icon">{initials}</div>
+    const userIcon = <div ref={userIconRef} className="hero-icon">
+        <button className="profile-button" onClick={() => setShowMenu(true)}>
+            <div className="profile-icon">{initials}</div>
+        </button>
+        {showMenu && 
+            <PopupMenu
+                parentRef={userIconRef}
+                hideMe={() => setShowMenu(false)}
+            >
+                <button className="select-option" onClick={() => signOut()}>Sign Out</button>
+            </PopupMenu>
+        }
     </div>
     
     return (
-        <>
+        <div style={{display: "flex", flex: 1, marginRight: "10px"}}>
             <div className="nav-header" >
                 <span onClick={() => router.push(`/${root}`)}>{caption || routeCaption}</span>
             </div>
@@ -76,7 +89,7 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
                 }
             </div>
             {userIcon}
-        </>
+        </div>
     )
 }
 

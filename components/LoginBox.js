@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 // import { supabase } from '../lib/supabase-client';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
@@ -22,12 +22,13 @@ const LoginBox = () => {
     const blankMessage = {message: "", vibe: ""}
     const [formMessage, setFormMessage] = useState({ ...blankMessage })
     const router = useRouter();
+    const path = usePathname();
     const supabase = createClientComponentClient();
 
     useEffect(() => {
         const getSession = async () => {
             const { data: { session } , error } = await supabase.auth.getSession();
-            console.log("login session:", { session })
+            console.log("login session:", { session }, { path })
             if (session) router.refresh();
         }
         
@@ -50,7 +51,7 @@ const LoginBox = () => {
     }
 
     const sendMagicLink = async (signInData) => {
-        console.log({signInData})
+        console.log({ signInData }, { HOSTURL })
         const email = signInData.email
         let formResponseMessage = "";
         if (email) {
@@ -74,10 +75,14 @@ const LoginBox = () => {
     }
 
     const signInWithSocial = async (provider) => {
+        const googleParams = provider === 'google' ? { access_type: 'offline', prompt: 'consent' } : {};
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider,
             options: {
-                redirectTo: HOSTURL
+                queryParams: {
+                    ...googleParams,
+                    redirectTo: HOSTURL
+                }
             }
         })
         if (error) console.log(`problem signing in with ${provider}`, error);

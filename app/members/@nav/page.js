@@ -23,8 +23,9 @@ export default function ModuleSubNav() {
         </ModalButton>,
         <ModalButton
             key="modal-button-upload-members"
-            modalButton={<></>}
+            modalButton={<><i>upload</i><span>Upload Members</span></>}
             title="Upload Members from Excel File"
+            buttonClass="fit"
         >
             <Form id="upload-members-modal-form" debug>
                 <section className="modal-fields">

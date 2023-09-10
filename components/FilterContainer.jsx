@@ -65,7 +65,7 @@ const FilterContainer = (props) => {
     }
 
     const filterChild = (child) => {
-        console.log(child)
+        // console.log(child)
         //filter buttons
         let includeChild = true;
         includeChild = filters.every(filter => {

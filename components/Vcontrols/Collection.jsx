@@ -5,7 +5,7 @@ import { packageOptions } from '../../utils';
 import { useState, useContext, useEffect } from 'react';
 
 import { GlobalContext } from '../ContextFrame';
-import './Vstyling.css';
+// import './Vstyling.css';
 
 
 const Collection = (props) => {

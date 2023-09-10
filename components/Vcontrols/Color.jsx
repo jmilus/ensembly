@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 import { HEXtoRGB, contrastColors } from '../../utils';
 
-import './Vstyling.css'
+// import './Vstyling.css'
 
 const Color = (props) => {
     const { id, name, label, value, defaultColor="#000000", extraAction, format, limit, style, icon, isRequired=false, children, pattern, clear, readonly, debug } = props;

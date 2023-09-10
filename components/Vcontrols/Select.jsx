@@ -1,16 +1,19 @@
 'use client'
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 
 import { GlobalContext } from '../ContextFrame';
 
 import { packageOptions } from '../../utils';
 
-import './Vstyling.css';
+import PopupMenu from '../PopupMenu';
+
 
 const Select = (props) => {
     const { id, name, label, value, options, filtersArray = [], extraAction, style, hero, isRequired, specialSize="", children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || "");
+    const [showPopup, setShowPopup] = useState(false);
+    const selectRef = useRef();
 
     useEffect(() => {
         setControlValue(value)
@@ -74,31 +77,13 @@ const Select = (props) => {
     const showDropDown = (e) => {
         e.preventDefault();
         if (readonly) return null;
-        const parentControl = document.getElementById(id)
-        console.log({ parentControl })
-        const { x, y } = parentControl.getBoundingClientRect()
-        console.log(parentControl.getBoundingClientRect())
-        dispatch({
-            route: "dropdown",
-            payload: {
-                dim: { x: x, y: y, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
-                options: controlOptions,
-                value: [controlValue],
-                setSelectControlValue: handleDropDownSelection,
-            }
-        })
+        
+        setShowPopup(true)
     }
-
-    // const hideOption = (option) => {
-    //     if (!multiselect) return true;
-    //     const result = controlOptions.find(fo => fo.id === option.id);
-
-    //     return result ? false : true;
-    // }
 
     return (
         <>
-            <div id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}${hero ? " hero" : ""}`} style={style}>
+            <div ref={selectRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}${hero ? " hero" : ""}`} style={style}>
                 <label htmlFor={id} className={`label ${controlValue ? "" : "hide"}`}>{label}</label>
                 <select
                     id={id}
@@ -120,6 +105,24 @@ const Select = (props) => {
                     }
                 </select>
             </div>
+            {showPopup && 
+                <PopupMenu
+                    parentRef={selectRef}
+                    hideMe={() => setShowPopup(false)}
+                >
+                    {
+                        Object.keys(controlOptions).map((key, o) => {
+                            const option = controlOptions[key];
+                            return (
+                                <div key={o} id={option.id} className="select-option" onClick={(e) => handleDropDownSelection(key, e)}>
+                                    {option.color && <div className="color-dot" style={{backgroundColor: option.color}}></div>}
+                                    {option.caption}
+                                </div>
+                            )
+                        })
+                    }
+                </PopupMenu>
+            }
             {
                 clonedChildren
             }

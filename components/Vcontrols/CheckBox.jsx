@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import './Vstyling.css';
+// import './Vstyling.css';
 
 const CheckBox = (props) => {
     const { id, name, label, value=false, extraAction, shape, style, children, recordId, readonly, debug } = props;

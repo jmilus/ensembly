@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import './Vstyling.css';
+// import './Vstyling.css';
 
 const File = (props) => {
     const { id, name, label="Browse Files", limit, style, hero, isRequired, fileTypes, handling, readonly, debug } = props;
