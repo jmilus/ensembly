@@ -13,7 +13,9 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
 
     const router = useRouter()
     const pathname = usePathname()
-    const path = pathname.slice(0, pathname.includes("/$") ? pathname.indexOf("/$") : pathname.length)
+    const path = pathname.replace("/e/", "/");
+    console.log("form path:", path)
+    // const path = pathname.slice(0, pathname.includes("/$") ? pathname.indexOf("/$") : pathname.length)
 
     useEffect(() => {
         const thisForm = document.getElementById(id);
@@ -143,9 +145,6 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
                     newPath = followPath.startsWith("$slug$") ? `${path}/${followPath}` : followPath;
                     newPath = newPath.replace("$slug$", res.id);
                 }
-                
-                if (followPath.includes("$closeModal$"))
-                    newPath = path.replace("/$closeModal$", "")
                 
                 router.push(newPath)
             }

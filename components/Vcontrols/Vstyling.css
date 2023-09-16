@@ -65,21 +65,6 @@ select:hover {
         8px 8px;
     background-repeat: no-repeat;
 }
-.hero > select {
-    background-image: none;
-}
-.hero > select:hover {
-    background-image: 
-        linear-gradient(50deg, transparent 50%, var(--mint4) 50%),
-        linear-gradient(130deg, var(--mint4) 50%, transparent 50%);
-    background-position:
-        calc(100% - 18px) calc(1em + 10px),
-        calc(100% - 10px) calc(1em + 10px);
-    background-size:
-        8px 13px,
-        8px 13px;
-}
-
 select:focus {
     background-image:
         linear-gradient(135deg, transparent 50%, var(--mint4) 50%),
@@ -93,18 +78,31 @@ select:focus {
     background-repeat: no-repeat;
 }
 
+.hero > select {
+    background-image: none;
+}
+.hero > select:hover {
+    background-image: 
+        linear-gradient(50deg, transparent 50%, var(--mint4) 50%),
+        linear-gradient(130deg, var(--mint4) 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(1em - 13px),
+        calc(100% - 10px) calc(1em - 13px);
+    background-size:
+        8px 13px,
+        8px 13px;
+}
 .hero > select:focus {
     background-image:
         linear-gradient(50deg, var(--mint4) 50%, transparent 50%),
         linear-gradient(130deg, transparent 50%, var(--mint4) 50%);
     background-position:
-        calc(100% - 10px) calc(1em + 2px),
-        calc(100% - 18px) calc(1em + 2px);
+        calc(100% - 10px) calc(1em - 17px),
+        calc(100% - 18px) calc(1em - 17px);
     background-size:
         8px 13px,
         8px 13px;
 }
-
 
 select[multiple] {
     background-image: none;
@@ -295,7 +293,7 @@ select:-internal-list-box {
     overflow: hidden;
     transition: height 0.05s ease;
     border-width: 0;
-    background: var(--gray1);
+    background: var(--gray0);
     height: var(--option-height);
 }
 
@@ -314,7 +312,8 @@ select:-internal-list-box {
 }
 
 .input-control-base.hero {
-    padding: 20px 0;
+    margin: 20px 0;
+    padding: 0;
 }
 
 .input-control-base.hero > input,
@@ -332,7 +331,7 @@ select:-internal-list-box {
     padding: 0;
 }
 .input-control-base.hero > select {
-
+    padding: 0;
 }
 
 .input-control-base.hero > input:not([readonly]):hover,

@@ -42,6 +42,7 @@ body {
 
   --grayx: 0 0%;
 
+  --gray0: hsl(var(--grayx) 100%);
   --gray1: hsl(var(--grayx) 98%);
   --gray2: hsl(var(--grayx) 95%);
   --gray3: hsl(var(--grayx) 90%);
@@ -62,6 +63,8 @@ body {
   --mint7: hsl(var(--mintx) 55%);
   --mint8: hsl(var(--mintx) 40%);
   --mint9: hsl(var(--mintx) 25%);
+
+  --cyanx: 0;
 
   --shadow1: 0px 2px 5px -1px hsl(0, 0%, 70%);
   --dd-shadow: 0px 10px 10px 0px hsla(0, 0%, 30%, 0.5);
@@ -216,11 +219,6 @@ button:active > i {
   color: inherit;
 }
 
-button:has(i):not(:has(span)) {
-  border: none;
-  background: none;
-}
-
 button > * + span {
   margin-left: 10px;
 }
@@ -348,7 +346,7 @@ button.dismiss {
 
 .button-chain.row > button:first-child,
 .button-chain.row > *:first-child > button {
-  border-left: 1px solidhsl( var(--edge-color));
+  border-left: 1px solid hsl( var(--edge-color));
   border-top-left-radius: 5px;
   /* border-top-right-radius: 0px; */
   /* border-bottom-right-radius: 0px; */
@@ -924,7 +922,7 @@ fieldset.buttons > legend {
   white-space: nowrap;
 }
 .tab-button:not(.active):hover {
-  background: var(--mint3);
+  background: var(--gray2);
 }
 
 .tab-wrapper.accordion {
@@ -966,11 +964,11 @@ fieldset.buttons > legend {
 }
 
 .normal .tab-button.active {
-  box-shadow: 0 0 0px 1px inset var(--color-moss);
-  color: var(--color-moss);
+  box-shadow: 0 0 0px 1px inset var(--mint6);
+  color: var(--mint6);
 }
 .normal .tab-button.active:hover {
-  box-shadow: 0 0 0px 2px inset var(--color-moss);
+  box-shadow: 0 0 0px 2px inset var(--mint6);
 }
 
 .tab-wrapper.filters .tab-row {

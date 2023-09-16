@@ -1,3 +1,5 @@
+import CALENDAR from 'utils/calendarUtils';
+
 const getURL = () => {
     // console.log("env:", process.env.NODE_ENV)
     if (process.env.NODE_ENV !== 'production') {
@@ -29,27 +31,27 @@ export const MENUOPTIONS = [
     {
         name: "Dashboard",
         icon: "space_dashboard",
-        route: ""
+        route: "/dashboard"
     },
     {
         name: "Ensembles",
         icon: "theater_comedy",
-        route: "ensembles"
+        route: "/ensembles"
     },
     {
         name: "Calendar",
         icon: "calendar_month",
-        route: "calendar"
+        route: `/calendar/${CALENDAR.getDashedValue(new Date()).slice(0, 10)}`
     },
     {
         name: "Members",
         icon: "emoji_people",
-        route: "members"
+        route: "/members"
     },
     {
         name: "Messages",
         icon: "email",
-        route: "messages/forum"
+        route: "/messages/forum"
     },
     {
         spacer: true
@@ -57,6 +59,6 @@ export const MENUOPTIONS = [
     {
         name: "Settings",
         icon: "settings",
-        route: "settings"
+        route: "/settings"
     },
 ];

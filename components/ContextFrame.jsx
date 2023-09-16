@@ -41,6 +41,7 @@ const ContextProvider = ({ profile, children }) => {
 }
 
 const ContextFrame = ({ profile, children }) => {
+
     return (
         <ContextProvider profile={profile}>
             <DndProvider backend={HTML5Backend}>

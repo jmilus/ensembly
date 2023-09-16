@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
-// import { supabase } from '../lib/supabase-client';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 import { HOSTURL } from '../config'
@@ -25,15 +24,15 @@ const LoginBox = () => {
     const path = usePathname();
     const supabase = createClientComponentClient();
 
-    useEffect(() => {
-        const getSession = async () => {
-            const { data: { session } , error } = await supabase.auth.getSession();
-            console.log("login session:", { session }, { path })
-            if (session) router.refresh();
-        }
+    // useEffect(() => {
+    //     const getSession = async () => {
+    //         const { data: { session } , error } = await supabase.auth.getSession();
+    //         console.log("login session:", { session }, { path })
+    //         if (session) router.refresh();
+    //     }
         
-        getSession();
-    },[])
+    //     getSession();
+    // },[])
 
     const signInHandler = async (data, route) => {
         let message
@@ -74,19 +73,17 @@ const LoginBox = () => {
     }
 
     const signInWithSocial = async (provider) => {
+        console.log("signing in with:", provider);
         const googleParams = provider === 'google' ? { access_type: 'offline', prompt: 'consent' } : {};
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: provider,
             options: {
-                queryParams: {
-                    ...googleParams,
-                    redirectTo: HOSTURL
-                }
+                queryParams: googleParams,
+                redirectTo: `http://localhost:3000/auth/callback`
             }
         })
         if (error) console.log(`problem signing in with ${provider}`, error);
         console.log("signin data", data)
-        router.refresh();
     }
 
     const signInWithPassword = async (credentials) => {
@@ -116,9 +113,9 @@ const LoginBox = () => {
                             Login to Ensembly
                         </div>
                         <div className="modal-body">
-                            <TabControl onChange={() => setFormMessage({...blankMessage})} Vstyle={{margin: "0 20px 20px"}}>
+                            <TabControl onChange={() => setFormMessage({...blankMessage})} style={{margin: "0 20px 20px"}}>
                                 <Tab id="Social">
-                                    <article>
+                                    <article >
                                         <button className="fat centered" onClick={() => signInWithSocial('google')}>
                                             <Image src={GoogleIcon} alt="google-logo" width={25} height={25} />
                                             <span>Sign in With Google</span>
@@ -135,23 +132,30 @@ const LoginBox = () => {
 
                                 </Tab>
                                 <Tab id="Magic Link">
-                                    <Form id="login-link" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "link")} debug >
+                                    {/* <Form id="login-link" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "link")} debug >
+                                    </Form> */}
+                                    <form onSubmit={(data) => signInHandler(data, "link")}>
+
                                         <article>
                                             <Text id="magic-link-email" name="email" label="Email" format="email" isRequired />
                                             <button name="submit" className="fat hero centered" ><i>forward_to_inbox</i>Send Magic Link</button>
                                             <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
                                         </article>
-                                    </Form>
+                                    </form>
                                 </Tab>
                                 <Tab id="Password">
-                                    <Form id="login-with-password" recordId="login-data" onChange={() => setFormMessage({...blankMessage})} altSubmit={(data) => signInHandler(data, "password")} >
+                                    {/* <Form id="login-with-password" recordId="login-data" onChange={() => setFormMessage({ ...blankMessage })} altSubmit={(data) => signInHandler(data, "password")} >
+                                        
+                                    </Form> */}
+                                    <form onSubmit={(data) => signInHandler(data, "password")}>
+
                                         <article>
                                             <Text id="login-email" name="email" label="Email" format="email" isRequired />
                                             <Text id="password" name="password" label="Password" format="password" isRequired />
                                             <button name="submit" className="fat hero" >Sign In</button>
                                             <span className={`form-message ${formMessage.vibe}`} >{formMessage.message}</span>
                                         </article>
-                                    </Form>
+                                    </form>
                                 </Tab>
                             </TabControl>
                         </div>

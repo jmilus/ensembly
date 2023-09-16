@@ -1,0 +1,85 @@
+.sales-base-page {
+    height:100%;
+    width:100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.sales-header {
+    height: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    padding: 10px;
+}
+
+.sales-content {
+    flex: 1;
+    display: flex;
+    width: 100%;
+}
+
+.hero-splash {
+    display: flex;
+    margin-top: 10%;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    /* justify-content: center; */
+    align-items: center;
+    background: hsl(0 0% 100% / 0.5);
+    backdrop-filter: blur(50px);
+}
+
+.slogan {
+    font-size: 2em;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    color: lch(46 73.56 7.6);
+}
+.hero-splash > .logo {
+    font-size: 10em;
+    font-family: 'Berkshire Swash';
+    background-image: linear-gradient(hsl(var(--color-p)), hsl(var(--color-h3)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.sales-button {
+    border-radius: 5px;
+    padding: 5px;
+}
+.sales-button.quiet {
+    background: var(--gray2);
+}
+
+.sales-button.quiet:hover {
+    background: var(--mint2);
+}
+.sales-button.quiet:active {
+    background: hsl(var(--color-p));
+    color: white;
+}
+
+.dynamic-background {
+    position: absolute;
+    z-index: -1;
+    rotate: 30deg;
+    left: 45%;
+    top: 25%;
+}
+
+.big-one {
+    background: hsl(var(--color-p));
+    border-radius: 50%;
+    width: 300px;
+    height: 300px;
+}
+.little-one {
+    background: hsl(var(--color-h3));
+    border-radius: 50%;
+    width: 160px;
+    height: 160px;
+}

@@ -10,19 +10,19 @@ export const getProfile = async () => {
     // console.log("getProfile ids:", { member }, { user })
     const { data: { session } } = await supabase.auth.getSession()
 
-    if (!session) return {user: null, member: null, permissions: null, role: null};
+    if (!session) return { user: null, member: null, permissions: null, role: null };
 
     const { data: profile, error } = await supabase
         .from('Profile')
         .select(`
             email,
             member (*),
-            role (
+            SecurityRole (
                 permissions,
                 role
             )
         `)
-        .eq('email', session.user.email)
+        .eq('user', session.user.id)
 
     if (error) {
         console.error("fetch member user error:", error)
@@ -34,8 +34,8 @@ export const getProfile = async () => {
     return {
         user: profile[0].user,
         member: profile[0].member,
-        role: profile[0].role.role,
-        permissions: profile[0].role.permissions
+        role: profile[0].SecurityRole.role,
+        permissions: profile[0].SecurityRole.permissions
     };
 }
 

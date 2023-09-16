@@ -36,7 +36,7 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
             return nodeCaptions.includes(segment.toLowerCase())
         })
         // console.log({ foundSegment });
-        return foundSegment;
+        return foundSegment ? foundSegment : segments[1];
     }
 
     const signOut = async () => {
@@ -53,7 +53,7 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
 
     const navNodeButtons = navNodes.map((node, n) => {
         const route = node.route.startsWith("/") ? `/${root}/${node.route}` : `./${node.route}`
-        return <div key={n} className={`sub-nav-button ${routeCaption.toLowerCase() === node.caption.toLowerCase() ? "active" : ""}`} onClick={() => router.push(route)}>{node.caption}</div>
+        return <div key={n} className={`sub-nav-button ${routeCaption.toLowerCase() === node.caption.toLowerCase() ? "selected" : ""}`} onClick={() => router.push(route)}>{node.caption}</div>
     })
 
     const userMenu = <div className={`user-menu`}>

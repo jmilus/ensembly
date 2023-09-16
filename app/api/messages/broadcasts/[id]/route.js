@@ -1,7 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { slateToHtml } from '../../../../../utils/slateToHtml';
+import { slateToHtml } from 'utils/slateToHtml';
 
 export const getOneBroadcast = async (id) => {
     const supabase = createServerComponentClient({ cookies });
