@@ -79,7 +79,7 @@ const LoginBox = () => {
             provider: provider,
             options: {
                 queryParams: googleParams,
-                redirectTo: `http://localhost:3000/auth/callback`
+                redirectTo: `${HOSTURL}/auth/callback`
             }
         })
         if (error) console.log(`problem signing in with ${provider}`, error);
