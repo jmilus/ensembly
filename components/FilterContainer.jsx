@@ -127,7 +127,11 @@ const FilterContainer = (props) => {
         </div>
     
     const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px" }} />
-    const searchContainer = document.getElementById(`${id}-search`)
+    
+    let searchContainer;
+    if (typeof window !== 'undefined') {
+        searchContainer = document.getElementById(`${id}-search`)
+    }
 
     return (
         <div className="filter-container" style={Vstyle}>

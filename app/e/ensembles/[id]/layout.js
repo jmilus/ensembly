@@ -22,7 +22,7 @@ export default async function EnsembleRecordLayout(context) {
             buttonClass="fit"
             title="Upload Members From Excel File"
         >
-            <Form id="upload-members-form" APIURL="/members/uploadMembers" auxData={{ensembleId: ensemble.id}} >
+            <Form id="upload-members-form" APIURL="members/uploadMembers" auxData={{ensembleId: ensemble.id}} >
                 <section className="modal-fields">
                     <File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
                 </section>

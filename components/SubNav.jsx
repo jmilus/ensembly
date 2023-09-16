@@ -52,7 +52,7 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
     let navButtons = buttons.map(button => button)
 
     const navNodeButtons = navNodes.map((node, n) => {
-        const route = node.route.startsWith("/") ? `/${root}/${node.route}` : `./${node.route}`
+        const route = node.route.startsWith("/") ? `/e/${root}/${node.route}` : `./${node.route}`
         return <div key={n} className={`sub-nav-button ${routeCaption.toLowerCase() === node.caption.toLowerCase() ? "selected" : ""}`} onClick={() => router.push(route)}>{node.caption}</div>
     })
 

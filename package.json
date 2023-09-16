@@ -40,7 +40,6 @@
   "devDependencies": {
     "eslint": "^8.43.0",
     "eslint-config-next": "^12.3.4",
-    "prisma": "^5.2.0",
     "supabase": "^1.93.0"
   },
   "browser": {

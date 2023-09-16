@@ -44,7 +44,7 @@ const generateOccurrences = () => {
 export const ModelNode = ({ model, inheritedStyle }) => {
 
     return (
-        <Link href={`/calendar/event/model/${model.id}`}>
+        <Link href={`/e/calendar/event/model/${model.id}`}>
             <div className="event-node model" style={{...inheritedStyle, ["--node-color"]: model.type.color}}>
                 <span><i>arrow_circle_up</i> <span>{model.name}</span></span>
                 <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(model.modelStartDate)}</span>
@@ -190,10 +190,6 @@ const EventModelPage = async (context) => {
                             </section>
                         </Form>
                     </fieldset>
-                {/* <article className="scroll">
-                </article>
-                <article className="scroll">
-                </article> */}
                     <fieldset style={{gridArea: "events"}}>
                         <legend>Events</legend>
                         <section className="button-tray">

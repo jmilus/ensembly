@@ -8,7 +8,7 @@ export default async function EventLayout(props) {
     const event = await getOneEvent(props.params.id)
 
     const navButtons = [
-        <Link key="x" href={`/calendar/event/model/${event.model.id}`} >
+        <Link key="x" href={`/e/calendar/event/model/${event.model.id}`} >
             <button className="fit" style={{flex:1}}>
                 <i>dynamic_feed</i><span>Event Model</span>
             </button>
@@ -16,7 +16,7 @@ export default async function EventLayout(props) {
     ]
 
     const navNodes = [
-        { caption: "Model", route: `/event/model/${event.model.id}` }
+        { caption: "Model", route: `/e/event/model/${event.model.id}` }
     ]
 
     return (
