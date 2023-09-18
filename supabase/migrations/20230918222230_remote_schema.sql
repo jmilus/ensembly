@@ -202,8 +202,8 @@ CREATE OR REPLACE FUNCTION "public"."get_user_tenant"() RETURNS "uuid"
 begin
   return (
     select tenant 
-    from "Profile"
-    where auth.jwt() ->> 'email' = email
+    from "Profile" p
+    where auth.uid() = p."user"
   );
 end;
 $$;
@@ -285,7 +285,7 @@ begin
     new.tenant:= (
       SELECT tenant 
       FROM "Profile"
-      WHERE auth.jwt() ->> 'email' = email
+      WHERE auth.uid() = user
     );
   END IF;
   return new;
@@ -663,7 +663,8 @@ CREATE TABLE IF NOT EXISTS "public"."Profile" (
     "role" "uuid",
     "member" "uuid",
     "tenant" "uuid" DEFAULT "public"."get_user_tenant"() NOT NULL,
-    "email" "text" NOT NULL
+    "email" "text" NOT NULL,
+    "user" "uuid"
 );
 
 ALTER TABLE "public"."Profile" OWNER TO "postgres";
@@ -855,6 +856,9 @@ ALTER TABLE ONLY "public"."Profile"
 ALTER TABLE ONLY "public"."Profile"
     ADD CONSTRAINT "Profile_pkey" PRIMARY KEY ("email", "tenant");
 
+ALTER TABLE ONLY "public"."Profile"
+    ADD CONSTRAINT "Profile_user_key" UNIQUE ("user");
+
 ALTER TABLE ONLY "public"."Race"
     ADD CONSTRAINT "Race_pkey" PRIMARY KEY ("id");
 
@@ -1028,6 +1032,9 @@ ALTER TABLE ONLY "public"."Profile"
 ALTER TABLE ONLY "public"."Profile"
     ADD CONSTRAINT "Profile_tenant_fkey" FOREIGN KEY ("tenant") REFERENCES "public"."Tenant"("id");
 
+ALTER TABLE ONLY "public"."Profile"
+    ADD CONSTRAINT "Profile_user_fkey" FOREIGN KEY ("user") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
 ALTER TABLE "public"."Address" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."AddressType" ENABLE ROW LEVEL SECURITY;
@@ -1078,6 +1085,8 @@ ALTER TABLE "public"."PhoneNumber" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."PhoneType" ENABLE ROW LEVEL SECURITY;
 
+ALTER TABLE "public"."Profile" ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE "public"."Race" ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE "public"."RecurrencePeriod" ENABLE ROW LEVEL SECURITY;
@@ -1119,6 +1128,8 @@ CREATE POLICY "authenticated read-only policy" ON "public"."SecurityRole" FOR SE
 CREATE POLICY "authenticated read-only policy" ON "public"."Sex" FOR SELECT TO "authenticated" USING (true);
 
 CREATE POLICY "authenticated read-only policy" ON "public"."Tenant" FOR SELECT TO "authenticated" USING (true);
+
+CREATE POLICY "authenticated_user Profile policy" ON "public"."Profile" TO "authenticated" USING (true) WITH CHECK (true);
 
 CREATE POLICY "tenant policy" ON "public"."Address" TO "authenticated" USING (("public"."get_user_tenant"() = "public"."get_member_tenant"("member"))) WITH CHECK (("public"."get_user_tenant"() = "public"."get_member_tenant"("member")));
 

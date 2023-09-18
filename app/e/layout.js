@@ -23,7 +23,7 @@ const ELayout = async ({children}) => {
     const supabase = createServerComponentClient({ cookies });
     const { data: { session }, error } = await supabase.auth.getSession()
     if(error) console.log("there was a session error:", error)
-    console.log("E layout runs with session:", session)
+    // console.log("E layout runs with session:", session)
     if (!session) redirect('/login');
 
     const profile = await getProfile();

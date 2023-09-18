@@ -1,6 +1,6 @@
 import Excel from 'exceljs';
 
-import { STATES } from '../utils/constants';
+import { STATES } from './constants';
 
 const fieldSet = {
     firstName:       { type: 'string' },
@@ -31,64 +31,8 @@ const fieldSet = {
     zip:            { conform: 'postalCode' }
 }
 
-const states = {
-    alabama: 'AL',
-    alaska: 'AK',
-    arizona: 'AZ',
-    arkansas: 'AR',
-    california: 'CA',
-    colorado: 'CO',
-    connecticut: 'CT',
-    delaware: 'DE',
-    districtofcolumbia: 'DC',
-    florida: 'FL',
-    georgia: 'GA',
-    hawaii: 'HI',
-    idaho: 'ID',
-    illinois: 'IL',
-    indiana: 'IN',
-    iowa: 'IA',
-    kansas: 'KS',
-    kentucky: 'KY',
-    louisiana: 'LA',
-    maine: 'ME',
-    maryland: 'MD',
-    massachusetts: 'MA',
-    michigan: 'MI',
-    minnesota: 'MN',
-    mississippi: 'MS',
-    missouri: 'MO',
-    montana: 'MT',
-    nebraska: 'NE',
-    nevada: 'NV',
-    newhampshire: 'NH',
-    newjersey: 'NJ',
-    newmexico: 'NM',
-    newyork: 'NY',
-    northcarolina: 'NC',
-    northdakota: 'ND',
-    ohio: 'OH',
-    oklahoma: 'OK',
-    oregon: 'OR',
-    pennsylvania: 'PA',
-    puertorico: 'PR',
-    rhodeisland: 'RI',
-    southcarolina: 'SC',
-    southdakota: 'SD',
-    tennessee: 'TN',
-    texas: 'TX',
-    utah: 'UT',
-    vermont: 'VT',
-    virginia: 'VA',
-    virginislands: 'VI',
-    washington: 'WA',
-    westvirginia: 'WV',
-    wisconsin: 'WI',
-    wyoming: 'WY',
-}
-
-const readXlsx = async (fileData, ensembleId) => {
-    console.log({fileData}, {ensembleId})
+export const readXlsx = async (fileData, ensembleId) => {
+    // console.log({fileData}, {ensembleId})
     const importSet = []
     const workbook = new Excel.Workbook();
     await workbook.xlsx.load(fileData)
@@ -105,7 +49,6 @@ const readXlsx = async (fileData, ensembleId) => {
                     headerSet[c] = fieldSet[validatedHeader].conform ? fieldSet[validatedHeader].conform : validatedHeader;
                 }
             })
-            console.log({ headerSet })
 
             worksheet.eachRow((row, r) => {
                 if (r > 1) {
@@ -169,7 +112,7 @@ const readXlsx = async (fileData, ensembleId) => {
                                     break;
                                 case 'state':
                                     if (cell.value.length > 2) {
-                                        validatedValue = states[cell.value.toLowerCase()] ? states[cell.value.toLowerCase()] : undefined;
+                                        validatedValue = STATES[cell.value.toLowerCase()] ? STATES[cell.value.toLowerCase()] : undefined;
                                     } else {
                                         validatedValue = cell.value.toUpperCase();
                                     }
@@ -195,18 +138,10 @@ const readXlsx = async (fileData, ensembleId) => {
     return importSet;
 }
 
-const memberImportFromExcel = async (importData, ensembleId) => {
-    console.log({ importData })
-    const reader = new FileReader()
-
-    console.log(importData.files[0])
-
-    const file = await importData.files[0].arrayBuffer();
-    console.log({ file })
+export const memberImportFromExcel = async (importData, ensembleId) => {
+    const file = await importData.arrayBuffer();
     const xlsxData = readXlsx(file, ensembleId);
     
     return xlsxData;
 
 }
-
-export default memberImportFromExcel;

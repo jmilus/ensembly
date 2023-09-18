@@ -460,7 +460,16 @@ button.dismiss {
   align-items: center;
   cursor: pointer;
   user-select: none;
-  margin-top: 5px;
+  background-size: 0px 0px;
+  background-repeat: no-repeat;
+  background-image: radial-gradient(white 50%, transparent 51%);
+  background-position: center;
+  transition: all 0.15s ease;
+}
+.expanded .menu-item {
+  background-image: linear-gradient(white, white);
+  background-size: 0% 40px;
+  background-position: left;
 }
 
 .fancy .menu-item i {
@@ -478,9 +487,13 @@ button.dismiss {
 }
 
 .menu-item:hover {
-  background: white;
+  /* background: white; */
   color: hsl(var(--color-p));
-  transition: all 0.1s;
+  background-size: 40px 40px;
+}
+
+.expanded .menu-item:hover {
+  background-size: 100% 40px;
 }
 
 .main-menu-panel.expanded .app-full-title {

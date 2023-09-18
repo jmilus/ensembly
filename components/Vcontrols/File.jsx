@@ -17,6 +17,7 @@ const File = (props) => {
             switch (handling) {
                 case "upload":
                     const fileExtension = file.name.slice(file.name.lastIndexOf("."))
+                    console.log(fileTypes, fileExtension)
                     if (fileTypes.includes(fileExtension)) {
                         setControlValue(`Selected File: ${file.name}`);
                     } else {

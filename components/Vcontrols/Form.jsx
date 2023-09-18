@@ -26,9 +26,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         })
     }, [])
 
-    const sendToJsonAPI = async (data) => {
-        // console.log("form data:", data)
-        const jsonData = JSON.stringify({ ...data, ...auxData })
+    const sendToAPI = async (data) => {
         
         let fetchURL;
         if (APIURL) {
@@ -36,12 +34,10 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         } else {
             fetchURL = `/api${path}`
         }
-        
 
         return await fetch(fetchURL, {
             method: METHOD || 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: jsonData
+            body: data
         })
             .then(response => response.json())
             .then(record => {
@@ -49,24 +45,6 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
             })
             .catch((err, message) => {
                 console.error("failed to update record...", message);
-                return err;
-            })
-        
-        
-    }
-
-    const sendToFileAPI = async (data) => {
-        return await fetch(`/api${APIURL}`, {
-            method: 'PUT',
-            body: data
-        })
-            .then(response => response.json())
-            .then(result => {
-                console.log("file successfully uploaded");
-                return result;
-            })
-            .catch((err, message) => {
-                console.error("file upload failed,", message)
                 return err;
             })
     }
@@ -78,9 +56,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         if (readOnlyInputs.current.includes(e.target.name)) return null;
         
         status.saving()
-
-
-        if (e.nativeEvent.submitter?.parentElement.className.includes("modal")) router.back();
+        // if (e.nativeEvent.submitter?.parentElement.className.includes("modal"));
 
         const formElement = e.target.form ? e.target.form : e.target;
         const formData = new FormData(formElement);
@@ -110,13 +86,6 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
             return true;
         })
 
-        const fileInput = Object.values(formElement).find(thing => thing.type === "file")
-        if (fileInput) {
-            const files = fileInput.files;
-            console.log({files})
-            dataObject.files = files;
-        }
-
         if (debug) console.log("processed form data:", dataObject);
 
         if (altSubmit) {
@@ -127,7 +96,13 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
             return;
         }
 
-        const {res} = await sendToJsonAPI(dataObject)
+        if (auxData) {
+            Object.keys(auxData).forEach(key => {
+                formData.append(key, auxData[key])
+            })
+        }
+
+        const {res} = await sendToAPI(formData)
         console.log({ res });
         if (!res) {
             status.error("response failure");
