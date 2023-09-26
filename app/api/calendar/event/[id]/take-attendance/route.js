@@ -19,40 +19,38 @@ export const getAttendanceStatus = async () => {
     return attendanceStatus;
 }
 
-export const upsertAttendance = async (data) => {
-    const { event, member, status } = data;
-    const supabase = createServerComponentClient({ cookies });
+// export const upsertAttendance = async (data) => {
+//     const { event, member, status } = data;
+//     const supabase = createServerComponentClient({ cookies });
 
-    const { data: attendance, error } = await supabase
-        .from('Attendance')
-        .upsert([
-            {
-                event,
-                member,
-                status
-            }
-        ])
-        .select()
+//     const { data: attendance, error } = await supabase
+//         .from('Attendance')
+//         .upsert([
+//             {
+//                 event,
+//                 member,
+//                 status
+//             }
+//         ])
+//         .select()
     
-    if (error) {
-        console.error("create attendance error:", error)
-        return new Error(error);
-    }
+//     if (error) {
+//         console.error("create attendance error:", error)
+//         return new Error(error);
+//     }
     
-    console.log("created attendance:", {attendance})
-    return attendance[0];
-}
+//     console.log("created attendance:", {attendance})
+//     return attendance[0];
+// }
 
-export async function GET(request, { params }) {
-    const event = params.id;
-    const req = await request.json()
-    const res = await getAttendanceStatus({...req, event})
+export async function GET() {
+    const res = await getAttendanceStatus()
     return NextResponse.json({ res })
 }
 
-export async function POST(request, { params }) {
-    const { id } = params;
-    const req = await request.json()
-    const res = await createAttendance({...req, ensemble: id})
-    return NextResponse.json({ res })
-}
+// export async function POST(request, { params }) {
+//     const _req = await request.formData()
+//     const req = extractFields(_req);
+//     const res = await createAttendance({...req, ensemble: params.id})
+//     return NextResponse.json({ res })
+// }

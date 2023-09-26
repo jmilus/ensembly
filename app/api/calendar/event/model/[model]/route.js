@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
 export const getOneEventModel = async (id) => {
     const supabase = createServerComponentClient({ cookies });
@@ -34,8 +35,7 @@ export const getOneEventModel = async (id) => {
     return eventModel[0];
 }
 
-export const updateOneEventModel = async (data) => {
-    const { id } = data;
+export const updateOneEventModel = async ({model}) => {
     const supabase = createServerComponentClient({ cookies });
 
     console.log({ data })
@@ -58,7 +58,7 @@ export const updateOneEventModel = async (data) => {
     const { data: model, error } = await supabase
         .from('EventModel')
         .update(updateObj)
-        .eq('id', id)
+        .eq('id', model)
         .select()
     
     if (error) {
@@ -95,22 +95,21 @@ export const createEvent = async (data) => {
 }
 
 export async function GET(request, { params }) {
-    const id = params.model;
     const req = await request.json()
-    const res = await getOneEventModel({...req, id})
+    const res = await getOneEventModel({...req, model: params.model})
     return NextResponse.json({ res })
 }
 
 export async function PUT(request, { params }) {
-    const id = params.model;
-    const req = await request.json()
-    const res = await updateOneEventModel({...req, id})
+    const _req = await request.formData();
+    const req = extractFields(_req);
+    const res = await updateOneEventModel({...req, model: params.model})
     return NextResponse.json({ res })
 }
 
 export async function POST(request, { params }) {
-    const model = params.model
-    const req = await request.json()
-    const res = await createEvent({...req, model})
+    const _req = await request.formData();
+    const req = extractFields(_req);
+    const res = await createEvent({...req, model: params.model})
     return NextResponse.json({res})
 }

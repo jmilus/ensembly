@@ -43,7 +43,7 @@ const DateTime = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}`} style={style}>
+            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}${controlValue === "" ? " emptry" : ""}`} style={style}>
                 <label htmlFor={name} className="label">{`${label} Date`}</label>
                 <input
                     id={id}

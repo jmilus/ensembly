@@ -11,8 +11,7 @@ import useStatus from 'hooks/useStatus';
 
 const LineupManager = ({ initialProps }) => {
     // console.log({ initialProps })
-    const { ensemble, lineup } = initialProps;
-    const { divisions } = lineup;
+    const { ensemble, lineup, capacities, divisions } = initialProps;
 
     const lineupObject = {}
     lineup.LineupAssignment.forEach(la => {
@@ -160,7 +159,6 @@ const LineupManager = ({ initialProps }) => {
         }
         return isDescendant;
     }
-    // const capacities = divisions.map(div => div.capacity)
     
     return (
         <section className="lineup-manager" style={{ flex: 1,  height: "100%", paddingLeft: "10px"}}>
@@ -174,16 +172,17 @@ const LineupManager = ({ initialProps }) => {
             >
                 <TabControl>
                     {
-                        ["Performer", "Crew", "Staff"].map((cap, t) => {
-                            // if (!capacities.includes(cap)) return;
+                        capacities.map((capacity, t) => {
+                            console.log({capacity})
                             return (
-                                <Tab key={t} id={cap}>
+                                <Tab key={t} tabName={capacity.type}>
                                     {
                                         divisions.map((div, d) => {
+                                            console.log({div})
                                             let dropDivisions = [];
-                                            if (div.capacity != cap) return null;
+                                            if (div.capacity != capacity.id) return null;
                                             if (div.children) {
-                                                dropDivisions = renderDrops(div.children, cap)
+                                                dropDivisions = renderDrops(div.children, capacity.id)
                                             }
                                             return (
                                                 <fieldset key={d} className="card-set" style={{background: "var(--gray1)"}} >

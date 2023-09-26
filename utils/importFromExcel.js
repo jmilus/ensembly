@@ -31,8 +31,82 @@ const fieldSet = {
     zip:            { conform: 'postalCode' }
 }
 
-export const readXlsx = async (fileData, ensembleId) => {
-    // console.log({fileData}, {ensembleId})
+const validateValue = (value, fieldName) => {
+    switch (fieldSet[fieldName].type) {
+        case 'string':
+            return value === null ? "" : value.toString();
+
+        case 'phone':
+            return value === null ? "" : value.toString().replace(/[^0-9]*/gm, '');
+
+        case 'height':
+            let validatedHeight;
+            if (value === null) return null;
+            if (!value.toString().match(/[^0-9]/)) {
+                //import value is pure number
+                return parseInt(value)
+
+            } else {
+                //import value is marked up
+                const h = value.toString();
+                const findFormat = () => {
+                    if (h.includes("'")) return ["separator", "'"]
+                    if (h.includes("’")) return ["separator", "’"]
+                    if (h.includes("f")) return ["separator", "f"]
+                    if (h.includes("-")) return ["separator", "-"]
+                    if (h.includes(". ")) return ["separator", ". "]
+                    if (h.includes(".")) return ["point", "."];
+                }
+                const format = findFormat()
+
+                const getFeetAndInches = (sep) => {
+                    const feet = h.slice(0, h.indexOf(sep)).replace(/[^0-9]*/gm, '');
+                    const end = h.slice(h.indexOf(sep) + 1).includes(".") ? h.indexOf(".") - 1: h.slice(h.indexOf(sep) + 1).includes("/") ? h.indexOf("/") - 1 : h.length; //have to do this because some poeple include fractions of an inch...
+                    const inch = h.slice(h.indexOf(sep) + 1, end).replace(/[^0-9]*/gm, '');
+                    return { feet, inch }
+                }
+                const { feet, inch } = getFeetAndInches(format[1])
+
+                switch (format[0]) {
+                    case "separator":
+                        validatedHeight = (parseInt(feet) * 12) + parseInt(inch);
+
+                    case "point":
+                        validatedHeight = (parseInt(feet) * 12) + (12 * Math.floor(parseInt(inch)/10));
+
+                    default:
+                        validatedHeight = 0
+                }
+            }
+            return isNaN(validatedHeight) ? 0 : validatedHeight;
+
+        case 'int':
+            return isNaN(parseInt(value)) ? null : parseInt(value);
+
+        case 'date':
+            if (value === null) return null;
+            if (!isNaN(new Date(value).getMonth())) {
+                const dateString = new Date(value);
+                return new Date(dateString.setHours(dateString.getHours() + (new Date().getTimezoneOffset() / 60)))
+            } else {
+                return null;
+            }
+
+        case 'state':
+            if (value === null) return null;
+            if (value.length > 2) {
+                return STATES[value.toLowerCase()] ? STATES[value.toLowerCase()] : undefined;
+            } else {
+                return value.toUpperCase();
+            }
+        default:
+            return null;
+
+    }
+
+}
+
+export const readXlsx = async (fileData) => {
     const importSet = []
     const workbook = new Excel.Workbook();
     await workbook.xlsx.load(fileData)
@@ -53,83 +127,15 @@ export const readXlsx = async (fileData, ensembleId) => {
             worksheet.eachRow((row, r) => {
                 if (r > 1) {
                     const record = {}
+                    const rowValues = {}
                     row.eachCell((cell, c) => {
-                        if (headerSet[c]) {
-                            let validatedValue;
-                            switch (fieldSet[headerSet[c]].type) {
-                                case 'string':
-                                    validatedValue = cell.value.toString();
-                                    break;
-                                case 'phone':
-                                    validatedValue = cell.value.toString().replace(/[^0-9]*/gm, '');
-                                    break;
-                                case 'height':
-                                    if (!cell.value.toString().match(/[^0-9]/)) {
-                                        //import value is pure number
-                                        validatedValue = parseInt(cell.value)
-                                    } else {
-                                        //import value is marked up
-                                        const h = cell.value.toString();
-                                        const findFormat = () => {
-                                            if (h.includes("'")) return ["separator", "'"]
-                                            if (h.includes("’")) return ["separator", "’"]
-                                            if (h.includes("f")) return ["separator", "f"]
-                                            if (h.includes("-")) return ["separator", "-"]
-                                            if (h.includes(". ")) return ["separator", ". "]
-                                            if (h.includes(".")) return ["point", "."];
-                                        }
-                                        const format = findFormat()
-
-                                        const getFeetAndInches = (sep) => {
-                                            const feet = h.slice(0, h.indexOf(sep)).replace(/[^0-9]*/gm, '');
-                                            const end = h.slice(h.indexOf(sep) + 1).includes(".") ? h.indexOf(".") - 1: h.slice(h.indexOf(sep) + 1).includes("/") ? h.indexOf("/") - 1 : h.length; //have to do this because some poeple include fractions of an inch...
-                                            const inch = h.slice(h.indexOf(sep) + 1, end).replace(/[^0-9]*/gm, '');
-                                            return { feet, inch }
-                                        }
-                                        const { feet, inch } = getFeetAndInches(format[1])
-
-                                        switch (format[0]) {
-                                            case "separator":
-                                                validatedValue = (parseInt(feet) * 12) + parseInt(inch);
-                                                break;
-                                            case "point":
-                                                validatedValue = (parseInt(feet) * 12) + (12 * Math.floor(parseInt(inch)/10));
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                    validatedValue = isNaN(validatedValue) ? 0 : validatedValue;
-                                    break;
-                                case 'int':
-                                    validatedValue = isNaN(parseInt(cell.value)) ? undefined : parseInt(cell.value);
-                                    break;
-                                case 'date':
-                                    if (!isNaN(new Date(cell.value).getMonth())) {
-                                        const dateString = new Date(cell.value);
-                                        validatedValue = new Date(dateString.setHours(dateString.getHours() + (new Date().getTimezoneOffset() / 60)))
-                                    }
-                                    break;
-                                case 'state':
-                                    if (cell.value.length > 2) {
-                                        validatedValue = STATES[cell.value.toLowerCase()] ? STATES[cell.value.toLowerCase()] : undefined;
-                                    } else {
-                                        validatedValue = cell.value.toUpperCase();
-                                    }
-                                default:
-                                    break;
-                            }
-                            
-                            record[headerSet[c]] = validatedValue;
-                        }
+                        rowValues[c] = cell.value;
                     })
-                    if (!record.aka) record.aka = `${record.firstName} ${record.lastName}${record.suffix ? " " + record.suffix : ""}`
-                    // if (uploadReturn.fields) {
-                    //     Object.keys(uploadReturn.fields).forEach(key => {
-                    //         record[key] = uploadReturn.fields[key];
-                    //     })
-                    // }
-                    record.ensembleId = ensembleId ? ensembleId : undefined;
+                    Object.keys(headerSet).forEach((colIndex) => {
+                        const fieldName = headerSet[colIndex];
+                        record[fieldName] = validateValue(rowValues[colIndex] ? rowValues[colIndex] : null, fieldName);
+                    })
+
                     importSet.push(record);
                 }
             })
@@ -138,9 +144,9 @@ export const readXlsx = async (fileData, ensembleId) => {
     return importSet;
 }
 
-export const memberImportFromExcel = async (importData, ensembleId) => {
+export const memberImportFromExcel = async (importData) => {
     const file = await importData.arrayBuffer();
-    const xlsxData = readXlsx(file, ensembleId);
+    const xlsxData = readXlsx(file);
     
     return xlsxData;
 

@@ -15,31 +15,35 @@ const Select = (props) => {
     const [showPopup, setShowPopup] = useState(false);
     const selectRef = useRef();
 
+    let controlOptions = packageOptions(options, value)
+
     useEffect(() => {
         setControlValue(value)
     }, [value])
 
-    let controlOptions = packageOptions(options, value)
+    if (Object.keys(controlOptions).length === 1 && !Object.keys(controlOptions).includes(controlValue)) {
+        console.log(name, "has only one option:", controlOptions)
+        setControlValue(Object.keys(controlOptions)[0])
+    }
 
     if (debug) console.log(name, "select control state", { props }, { controlValue }, { controlOptions }, {filtersArray});
 
     const { dispatch } = useContext(GlobalContext);
 
     const handleDropDownSelection = (input) => {
-        console.log(name, "selected", input);
 
         const selectControl = document.getElementById(id)
         const inputEvent = new Event('change', { bubbles: true });
         selectControl.dispatchEvent(inputEvent);
 
         if (extraAction) extraAction(input);
-
+        setShowPopup(false);
         setControlValue(input)
     }
 
     const handleChildren = () => {
         return React.Children.map(children, child => {
-            if (debug) console.log(name, child);
+            if (debug) console.log(name, "children:",  child);
             if (!child.props.options) return console.log("no options provided for", child.props.name);
             if (!child.props.filterKey) {
                 console.log(`${child.props.name} has no filterKey specified`);
@@ -83,8 +87,8 @@ const Select = (props) => {
 
     return (
         <>
-            <div ref={selectRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}${hero ? " hero" : ""}`} style={style}>
-                <label htmlFor={id} className={`label ${controlValue ? "" : "hide"}`}>{label}</label>
+            <div ref={selectRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}${hero ? " hero" : ""}${controlValue ? "" : " empty"}`} style={style}>
+                <label htmlFor={id} className="label">{label}</label>
                 <select
                     id={id}
                     name={name}

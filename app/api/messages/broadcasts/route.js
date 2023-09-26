@@ -39,13 +39,14 @@ export const getManyBroadcasts = async () => {
     return broadcasts
 }
 
-export async function POST(request) {
-    const req = await request.json();
-    const res = await createBroadcast(req)
-    return NextResponse.json(res)
-}
-
 export async function GET() {
     const res = await getManyBroadcasts()
     return NextResponse.json({ res })
+}
+
+export async function POST(request) {
+    const _req = await request.formData();
+    const req = extractFields(_req);
+    const res = await createBroadcast(req)
+    return NextResponse.json(res)
 }

@@ -64,7 +64,8 @@ export const manageEventLineups = async (eventLineups) => {
 }
 
 export async function PUT(request) {
-    const req = await request.json()
+    const _req = await request.formData()
+    const req = extractFields(_req)
     let res;
     switch (req.route) {
         case "all":

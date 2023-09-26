@@ -36,7 +36,7 @@ const DateOnly = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-only-box${label ? "" : " unlabeled"}`} style={style}>
+            <div id={`date-${id}`} className={`input-control-base date-only-box${label ? "" : " unlabeled"}${controlValue === "" ? " empty" : ""}`} style={style}>
                 <label htmlFor={name} className="label">{`${label} Date`}</label>
                 <input
                     id={id}

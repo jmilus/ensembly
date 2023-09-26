@@ -20,7 +20,7 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
 
     const { profile } = parameters;
 
-    console.log({ profile }, showMenu)
+    // console.log({ profile }, showMenu)
 
     // const user = supabase.session;
 
@@ -49,11 +49,14 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
     // console.log({ pathSegments })
     let routeCaption = navNodes.length > 0 ? findSegment(pathSegments) : root;
 
-    let navButtons = buttons.map(button => button)
+    const navigate = (route) => {
+        console.log("navigating to:", route);
+        router.push(route);
+    }
 
     const navNodeButtons = navNodes.map((node, n) => {
-        const route = node.route.startsWith("/") ? `/e/${root}/${node.route}` : `./${node.route}`
-        return <div key={n} className={`sub-nav-button ${routeCaption.toLowerCase() === node.caption.toLowerCase() ? "selected" : ""}`} onClick={() => router.push(route)}>{node.caption}</div>
+        const route = node.route.startsWith("/") ? `/e/${root}${node.route}` : `./${node.route}`
+        return <div key={n} className={`sub-nav-button ${routeCaption.toLowerCase() === node.caption.toLowerCase() ? "selected" : ""}`} onClick={() => navigate(route)}>{node.caption}</div>
     })
 
     const userMenu = <div className={`user-menu`}>
@@ -78,14 +81,18 @@ const MessagesNav = ({caption, root, navNodes=[], buttons=[]}) => {
     return (
         <div className="nav-wrapper">
             <div className="nav-header" >
-                <span onClick={() => router.push(`/${root}`)}>{caption || routeCaption}</span>
+                <span onClick={() => router.push(`/e/${root}`)}>{caption || routeCaption}</span>
             </div>
             {
                 navNodeButtons
             }
             <div className="sub-nav-actions">
                 {
-                    navButtons
+                    Array.isArray(buttons)
+                        ? 
+                        buttons.map(button => button)
+                        :
+                        buttons[routeCaption] ? buttons[routeCaption].map(button => button) : null
                 }
             </div>
             {userIcon}

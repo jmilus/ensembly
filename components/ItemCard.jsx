@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
-const ItemCard = ({ type="basic", cardType, dropItem, itemIcon, name, subtitle, cardLinkTo, captionLinkTo, children }) => {
+const ItemCard = ({ type="basic", cardType, dropItem, itemIcon, name, subtitle, cardLinkTo, captionLinkTo, style, cardBodyStyle, children }) => {
     const router = useRouter();
 
     const [{ isDragging }, drag] = useDrag(() => ({
@@ -23,7 +23,7 @@ const ItemCard = ({ type="basic", cardType, dropItem, itemIcon, name, subtitle, 
         <div
             ref={dropItem ? drag : null}
             className={`card-container ${type}${dropItem ? " dragable" : ""}`}
-            style={{ opacity: isDragging ? 0 : 1, }}
+            style={{ ...style, opacity: isDragging ? 0 : 1, }}
             onClick={cardLinkTo ? () => router.push(cardLinkTo) : null}
         >
             <div className="card-header" onClick={captionLinkTo ? () => router.push(captionLinkTo) : null}>
@@ -36,7 +36,7 @@ const ItemCard = ({ type="basic", cardType, dropItem, itemIcon, name, subtitle, 
                 }
             </div>
             {children &&
-                <div className="card-body">{children}</div>
+                <div className="card-body" style={ cardBodyStyle }>{children}</div>
             }
         </div>
     )

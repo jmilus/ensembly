@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
 export const updateOnePhoneNumber = async (data) => {
     const { id, prefix, number, type, memberId } = data;
@@ -28,8 +29,8 @@ export const updateOnePhoneNumber = async (data) => {
 }
 
 export async function PUT(request, { params }) {
-    const id = params.id;
-    const req = await request.json()
-    const res = await updateOnePhoneNumber({...req, id: id})
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateOnePhoneNumber({...req, id: params.id})
     return NextResponse.json({ res })
 }

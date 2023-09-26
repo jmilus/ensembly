@@ -18,7 +18,7 @@ const ModalButton = ({ modalButton, title, children, buttonClass, buttonStyle, d
             {show && 
                 createPortal(
                     <ModalWrapper title={title} closeModal={() => setShow(false)} dismiss={dismiss}>
-                            {children}
+                        {children}
                     </ModalWrapper>
                     , document.getElementById("app-body")
                 )

@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
 export const getOneEnsemble = async (id) => {
     const supabase = createServerComponentClient({ cookies });
@@ -52,17 +53,15 @@ export const updateOneEnsemble = async (ensembleData) => {
 }
 
 // fetch
-export async function GET(request, { params }) {
-    const { id } = params;
-    // const req = await request.json()
-    const res = await getOneEnsemble(id)
+export async function GET({ params }) {
+    const res = await getOneEnsemble(params.id)
     return NextResponse.json({ res })
 }
 
 // update
 export async function PUT(request, { params }) {
-    const id = params.id;
-    const req = await request.json()
-    const res = await updateOneEnsemble({...req, id: id})
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateOneEnsemble({...req, id: params.id})
     return NextResponse.json({ res })
 }

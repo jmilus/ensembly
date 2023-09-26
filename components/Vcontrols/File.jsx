@@ -5,19 +5,19 @@ import { useState } from 'react';
 // import './Vstyling.css';
 
 const File = (props) => {
-    const { id, name, label="Browse Files", limit, style, hero, isRequired, fileTypes, handling, readonly, debug } = props;
+    const { id, name, label="Browse Files", limit, style, hero, isRequired, fileTypes, handling, debug } = props;
     const [controlValue, setControlValue] = useState(label);
 
     if (debug) console.log(name, { props }, { controlValue });
 
     const handleControlValueChange = (input) => {
         let file = input.files[0];
-        console.log({ file })
+        // console.log({ file })
         if (input.files) {
             switch (handling) {
                 case "upload":
-                    const fileExtension = file.name.slice(file.name.lastIndexOf("."))
-                    console.log(fileTypes, fileExtension)
+                    const fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1)
+                    // console.log(fileTypes, fileExtension)
                     if (fileTypes.includes(fileExtension)) {
                         setControlValue(`Selected File: ${file.name}`);
                     } else {
@@ -35,7 +35,7 @@ const File = (props) => {
     }
 
     return (
-        <div className={`input-control-base file-box${hero ? " hero" : ""}${label ? "" : " unlabeled"} ${isRequired ? "flag" : ""}`} style={style}>
+        <div className={`input-control-base file-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}`} style={style}>
             <label htmlFor={id} className="icon-and-label">
                 <i>description</i>
                 {controlValue}
@@ -48,7 +48,6 @@ const File = (props) => {
                     required={isRequired}
                     autoComplete="do-not-autofill"
                     maxLength={limit}
-                    readOnly={readonly}
                 />
             </label>
         </div>

@@ -3,6 +3,7 @@ import 'server-only';
 import { getOneMember } from '@/api/members/[id]/route';
 import { getManyEnsembles } from '@/api/ensembles/route';
 import { getBioOptions } from '@/api/members/bio/route';
+import { getAllMembershipTypes } from '@/api/membership/types/route';
 
 import ProfilePhoto from 'components/ProfilePhoto';
 import ItemCard from 'components/ItemCard';
@@ -12,8 +13,16 @@ import { Form, Text, Number, Select, DateOnly } from 'components/Vcontrols';
 const MemberPage = async (context) => {
     const member = await getOneMember(context.params.id)
     const ensembleList = await getManyEnsembles();
+    const membershipTypes = await getAllMembershipTypes();
     
     const bioOptions = await getBioOptions();
+
+    const ensembleOptions = membershipTypes.map(mt => {
+        return mt.ensembles.map(ens => {
+            const matchingEnsemble = ensembleList.find(el => el.id === ens)
+            return {...matchingEnsemble, memType: mt.id}
+        })
+    }).flat()
 
     return (
         <>
@@ -39,6 +48,7 @@ const MemberPage = async (context) => {
                             <Text id="firstName" name="firstName" label="First Name" value={member.firstName} isRequired />
                             <Text id="middleName" name="middleName" label="Middle Name" value={member.middleName} />
                             <Text id="lastName" name="lastName" label="Last Name" value={member.lastName} isRequired />
+                            <Text id="suffix" name="suffix" label="Suffix" value={member.suffix} isRequired style={{ maxWidth: "4em" }} />
                         </section>
                         <section className="inputs">
                             <Select id="sex" name="sex" label="Sex" value={member.sex} options={bioOptions.sex} />
@@ -81,7 +91,6 @@ const MemberPage = async (context) => {
                 
                 <fieldset className="button-stack" style={{gridArea: "membership"}}>
                     <legend>Membership</legend>
-                    {/* <Link href={`/members/${member.id}/$add-membership`}><button className="fit"><i>add</i><span>Add Membership</span></button></Link> */}
                     <ModalButton
                         modalButton={<><i>add</i><span>Add Membership</span></>}
                         title="Add Membership"
@@ -89,7 +98,9 @@ const MemberPage = async (context) => {
                     >
                         <Form id="add-membership-form" METHOD="POST" APIURL={`/api/membership`} auxData={{ member: member.id }} >
                             <section className="modal-fields">
-                                <Select id="ensembleName" name="ensemble" label="Ensemble" options={ensembleList} />
+                                <Select id="membershipType" name="membershipType" label="Type" options={membershipTypes} isRequired >
+                                    <Select id="ensembleName" name="ensemble" label="Ensemble" options={ensembleOptions} filterKey="memType" filter="ensemble" isRequired />
+                                </Select>
                             </section>
                         </Form>
                         <section className="modal-buttons">

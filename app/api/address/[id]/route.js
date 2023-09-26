@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
 export const getOneAddress = async (id) => {
     const supabase = createServerComponentClient({ cookies });
@@ -19,7 +20,7 @@ export const getOneAddress = async (id) => {
 }
 
 export const updateOneAddress = async (data) => {
-    const { id, street, street2, city, state, postalCode, type, memberId, eventId, modelId } = data;
+    const { id, street, street2, city, state, postalCode, type, memberId, eventId, modelId } = extractFields(data);
     const supabase = createServerComponentClient({ cookies });
 
     console.log("upsert address data:", data)
@@ -49,15 +50,14 @@ export const updateOneAddress = async (data) => {
 }
 
 export async function GET(request, { params }) {
-    const {id} = params;
-    const res = await getOneAddress(id)
+    const res = await getOneAddress(params.id)
     return NextResponse.json({ res })
 }
 
 // upsert
 export async function PUT(request, { params }) {
-    const id = params.id;
-    const req = await request.json()
-    const res = await updateOneAddress({...req, id: id})
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateOneAddress({...req, id: params.id})
     return NextResponse.json({ res })
 }

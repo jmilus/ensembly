@@ -81,17 +81,15 @@ export const updateLineupAssignments = async ({ lineup, assignments, deletions }
     return true;
 }
 
-export async function GET(request, { params }) {
-    const lineup = params.lineup;
-    const req = await request.json()
-    const res = await getAllAssignments(req)
+export async function GET() {
+    const res = await getAllAssignments()
     return NextResponse.json({ res })
 }
 
 export async function PUT(request, { params }) {
-    const lineup = params.lineup;
-    const req = await request.json()
-    const res = await updateLineupAssignments({ ...req, lineup: lineup })
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateLineupAssignments({ ...req, lineup: params.lineup })
     console.log("this was the response:", res)
     return NextResponse.json(res)
 }

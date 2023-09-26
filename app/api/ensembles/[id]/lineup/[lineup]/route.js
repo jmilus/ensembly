@@ -1,7 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { formatDBObject, nester } from '../../../../../../utils'
+import { formatDBObject, nester, extractFields } from 'utils'
 
 export const getOneLineup = async (id) => {
     const supabase = createServerComponentClient({ cookies });
@@ -26,7 +26,7 @@ export const getOneLineup = async (id) => {
         return new Error(error);
     }
 
-    console.log("lineup:", lineup[0])
+    // console.log("lineup:", lineup[0])
 
     let lineup_divs = [];
     if (lineup[0].lineup_divisions != null) {
@@ -80,25 +80,23 @@ export const duplicateOneLineup = async (data) => {
 }
 
 // fetch
-export async function GET(request, { params }) {
-    const { id } = params;
-    // const req = await request.json()
-    const res = await getOneLineup(id)
+export async function GET({ params }) {
+    const res = await getOneLineup(params.id)
     return NextResponse.json({ res })
 }
 
 // update
 export async function PUT(request, { params }) {
-    const id = params.id;
-    const req = await request.json()
-    const res = await updateOneLineup({...req, id: id})
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateOneLineup({...req, id: params.id})
     return NextResponse.json({ res })
 }
 
 // insert (duplicate)
 export async function POST(request, { params }) {
-    const id = params.lineup;
-    const req = await request.json()
-    const res = await duplicateOneLineup({...req, id: id})
+    const _req = await request.formData()
+    const req = extractFields(_req)
+    const res = await duplicateOneLineup({...req, id: params.lineup})
     return NextResponse.json({ res })
 }

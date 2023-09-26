@@ -1,7 +1,8 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { slateToHtml } from 'utils/slateToHtml';
+import { slateToHtml, extractFields } from 'utils';
+import { POSTMARK_TOKEN } from 'config';
 
 export const getOneBroadcast = async (id) => {
     const supabase = createServerComponentClient({ cookies });
@@ -48,7 +49,7 @@ export const sendBroadcast = async (props) => {
     // const { id, to_address, cc_address, bcc_address, subject, htmlBody, textBody, tag } = props
     // console.log({ props })
     console.log(props)
-    console.log(process.env.POSTMARK_TOKEN);
+    // console.log(POSTMARK_TOKEN);
 
     const fetchedBroadcast = await getOneBroadcast(props.id)
     const broadcast = fetchedBroadcast[0];
@@ -62,7 +63,7 @@ export const sendBroadcast = async (props) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'X-Postmark-Server-Token': process.env.POSTMARK_TOKEN
+                'X-Postmark-Server-Token': POSTMARK_TOKEN
             },
             body: JSON.stringify({
                 'From': "hello@ensembly.app",
@@ -85,23 +86,21 @@ export const sendBroadcast = async (props) => {
     return pmResponse;
 }
 
-export async function GET(request, { params }) {
-    const {id} = params;
-    const req = await request.json()
-    const res = await getOneBroadcast({...req, id})
+export async function GET({ params }) {
+    const res = await getOneBroadcast(params.id)
     return NextResponse.json({ res })
 }
 
 export async function PUT(request, { params }) {
-    const {id} = params;
-    const req = await request.json()
-    const res = await updateOneBroadcast({...req, id})
+    const _req = await request.formData();
+    const req = extractFields(_req);
+    const res = await updateOneBroadcast({...req, id: params.id})
     return NextResponse.json({ res })
 }
 
 export async function POST(request, { params }) {
-    const { id } = params;
-    const req = await request.json()
-    const res = await sendBroadcast({ ...req, id })
+    const _req = await request.formData();
+    const req = extractFields(_req);
+    const res = await sendBroadcast({ ...req, id: params.id })
     return NextResponse.json({ res });
 }

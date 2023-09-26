@@ -4,7 +4,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-export const getProfile = async () => {
+export async function getProfile() {
     // console.log({ids})
     const supabase = createServerComponentClient({ cookies });
     // console.log("getProfile ids:", { member }, { user })
@@ -39,9 +39,7 @@ export const getProfile = async () => {
     };
 }
 
-export async function GET(request, { params }) {
-    const { id } = params;
-    const req = await request.json()
-    const res = await getMemberUser(id)
+export async function GET({ params }) {
+    const res = await getMemberUser(params.id)
     return NextResponse.json({ res })
 }

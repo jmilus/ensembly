@@ -1,0 +1,15 @@
+
+
+
+#-------------------------- ENSEMBLY LOCAL -------------------------------
+NEXT_PUBLIC_SITE_URL="http://localhost:3000/"
+DATABASE_URL="postgresql://postgres:postgres@localhost:54322/postgres"
+#DATABASE_CONNECTION="psql -h db.mezslhvfqorklzieequx.supabase.co -p 5432 -d postgres -U postgres"
+
+JWT_SECRET="super-secret-jwt-token-with-at-least-32-characters-long"
+
+NEXT_PUBLIC_SUPABASE_URL="http://localhost:54321"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0"
+
+SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT="731856323222-bt00k4bhte7qv9659gfmvarssenrr58g.apps.googleusercontent.com"
+SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET="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"

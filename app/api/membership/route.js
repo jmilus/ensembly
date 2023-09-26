@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
 export const getAllMemberships = async () => {
     const supabase = createServerComponentClient({ cookies });
@@ -18,9 +19,20 @@ export const getAllMemberships = async () => {
     return data;
 }
 
+export async function GET({request}) {
+    const req = await request.json()
+    console.log({req})
+    const res = await getAllMemberships(req)
+    return NextResponse.json({res})
+}
+
+
+// ############################################
+
 export const createMembership = async (data) => {
-    const { member, ensemble, status="Active", statusDate, statusNote } = data;
+    const { member, ensemble, status="Active", statusDate, statusNote, membershipType } = data;
     const supabase = createServerComponentClient({ cookies });
+    console.log({ data })
 
     const { data: membership, error } = await supabase
         .from('EnsembleMembership')
@@ -29,8 +41,9 @@ export const createMembership = async (data) => {
                 member,
                 ensemble,
                 status,
-                statusDate: statusDate ? new Date(statusDate) : new Date(),
-                statusNote
+                status_date: statusDate ? new Date(statusDate) : new Date(),
+                status_note: statusNote,
+                membership_type: membershipType
             }
         ])
         .select()
@@ -44,14 +57,9 @@ export const createMembership = async (data) => {
     return membership[0];
 }
 
-export async function GET(request) {
-    const req = await request.json()
-    const res = await getAllMemberships(req)
-    return NextResponse.json({res})
-}
-
 export async function POST(request) {
-    const req = await request.json()
+    const _req = await request.formData()
+    const req = extractFields(_req);
     const res = await createMembership(req)
     return NextResponse.json({ res })
 }

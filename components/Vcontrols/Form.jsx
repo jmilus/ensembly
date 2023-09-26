@@ -9,12 +9,13 @@ import useStatus from '../../hooks/useStatus';
 const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, followUp, followPath, onChange, auto, timeout = 1000, style, debug }) => {
     const saveTimer = useRef();
     const readOnlyInputs = useRef([]);
+    const thisForm = useRef()
     const status = useStatus()
 
     const router = useRouter()
     const pathname = usePathname()
     const path = pathname.replace("/e/", "/");
-    console.log("form path:", path)
+    // console.log("form path:", path)
     // const path = pathname.slice(0, pathname.includes("/$") ? pathname.indexOf("/$") : pathname.length)
 
     useEffect(() => {
@@ -27,6 +28,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
     }, [])
 
     const sendToAPI = async (data) => {
+        if (debug) console.log("formData:", data.entries())
         
         let fetchURL;
         if (APIURL) {
@@ -56,37 +58,9 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         if (readOnlyInputs.current.includes(e.target.name)) return null;
         
         status.saving()
-        // if (e.nativeEvent.submitter?.parentElement.className.includes("modal"));
 
         const formElement = e.target.form ? e.target.form : e.target;
         const formData = new FormData(formElement);
-
-        const dataObject = { ...auxData }
-        const iterator = [...formData.entries()]
-        console.log({ iterator })
-
-        iterator.every(item => {
-            console.log("form iterator:", item)
-            let [fieldName, fieldValue] = item;
-            if (readOnlyInputs.current.includes(fieldName)) return true;
-
-            const uniqueNameDash = fieldName.indexOf("-");
-            if(uniqueNameDash > 0) fieldName = fieldName.slice(0, uniqueNameDash)
-
-            if (debug) console.log("input name and value:", { fieldName }, { fieldValue });
-            if (dataObject[fieldName]) {
-                if (Array.isArray(dataObject[fieldName])) {
-                    dataObject[fieldName].push(fieldValue);
-                } else {
-                    dataObject[fieldName] = [dataObject[fieldName], fieldValue]
-                }
-            } else {
-                dataObject[fieldName] = fieldValue;
-            }
-            return true;
-        })
-
-        if (debug) console.log("processed form data:", dataObject);
 
         if (altSubmit) {
             altSubmit(dataObject);
@@ -117,7 +91,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
             if (followPath) {
                 let newPath = followPath;
                 if (followPath.includes("$slug$")) {
-                    newPath = followPath.startsWith("$slug$") ? `${path}/${followPath}` : followPath;
+                    newPath = followPath.startsWith("$slug$") ? `./${path}/${followPath}` : followPath;
                     newPath = newPath.replace("$slug$", res.id);
                 }
                 
@@ -132,6 +106,10 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         if (onChange) onChange(e);
 
         if (!auto) return null
+
+        console.log(thisForm.current.reportValidity())
+
+        if (!thisForm.current.reportValidity()) return null;
         
         if (saveTimer.current) {
             clearTimeout(saveTimer.current);
@@ -146,7 +124,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
     }
 
     return (
-        <form id={id} onSubmit={handleFormSubmit} onChange={handleFormChange} onKeyDown={handleFormKeyDown} style={style}>
+        <form ref={thisForm} id={id} onSubmit={handleFormSubmit} onChange={handleFormChange} onKeyDown={handleFormKeyDown} style={style}>
             {children}
         </form>
     )

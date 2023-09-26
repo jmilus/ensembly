@@ -35,7 +35,7 @@ export function FilterButtons(props) {
 }
 
 const FilterContainer = (props) => {
-    const { id, filterTag, search, filters = [], columns, rows="min-content", Vstyle, debug, children } = props;
+    const { id, filterTag, search, filters = [], columns, rows="min-content", style, debug, children } = props;
     const [filterParams, setFilterParams] = useState({})
     const [searchString, setSearchString] = useState("")
 
@@ -129,17 +129,14 @@ const FilterContainer = (props) => {
     const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px" }} />
     
     let searchContainer;
-    if (typeof window !== 'undefined') {
-        searchContainer = document.getElementById(`${id}-search`)
-    }
+    if (typeof window !== 'undefined') searchContainer = document.getElementById(`${id}-search`)
+    
+    if (searchContainer && search) createPortal(searchBox, searchContainer)
 
     return (
-        <div className="filter-container" style={Vstyle}>
+        <div className="filter-container" style={style}>
             <div className="filters">
-                {searchContainer && search
-                    ?
-                    createPortal(searchBox, searchContainer)
-                    :
+                {search &&
                     searchBox
                 }
                 {filterButtons}

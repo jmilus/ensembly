@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
 export const getOneEvent = async (id) => {
     const supabase = createServerComponentClient({ cookies });
@@ -72,16 +73,14 @@ export const updateOneEvent = async (data) => {
 
 // fetch
 export async function GET(request, { params }) {
-    const { id } = params;
-    // const req = await request.json()
-    const res = await getOneEvent(id)
+    const res = await getOneEvent(params.id)
     return NextResponse.json({ res })
 }
 
 // update
 export async function PUT(request, { params }) {
-    const id = params.id;
-    const req = await request.json()
-    const res = await updateOneEvent({...req, id: id})
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateOneEvent({...req, id: params.id})
     return NextResponse.json({ res })
 }

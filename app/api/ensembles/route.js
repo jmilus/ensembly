@@ -2,7 +2,9 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-export const getManyEnsembles = async () => {
+import { extractFields } from 'utils';
+
+export async function getManyEnsembles() {
     const supabase = createServerComponentClient({ cookies });
 
     const { data: ensembles, error } = await supabase
@@ -20,6 +22,13 @@ export const getManyEnsembles = async () => {
 
     return ensembles;
 }
+
+export async function GET() {
+    const res = await getManyEnsembles()
+    return NextResponse.json({ res })
+}
+
+//##############
 
 export const createEnsemble = async (data) => {
     const { name, type } = data;
@@ -45,14 +54,9 @@ export const createEnsemble = async (data) => {
     return ensemble[0];
 }
 
-export async function GET(request) {
-    const req = await request.json()
-    const res = await getManyEnsembles(req)
-    return NextResponse.json({ res })
-}
-
 export async function POST(request) {
-    const req = await request.json()
-    const res = await createEnsemble(req)
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await createEnsemble(extractFields(req))
     return NextResponse.json({ res })
 }

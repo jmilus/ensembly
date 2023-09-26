@@ -19,8 +19,7 @@ export const getAllEnsembleTypes = async () => {
     return types;
 }
 
-export async function GET(request) {
-    const req = await request.json()
-    const res = await getAllEnsembleTypes(req)
+export async function GET() {
+    const res = await getAllEnsembleTypes()
     return NextResponse.json({ res })
 }

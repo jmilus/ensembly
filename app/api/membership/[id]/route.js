@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
 export const getOneMembership = async (membershipId) => {
     console.log({membershipId})
@@ -21,6 +22,14 @@ export const getOneMembership = async (membershipId) => {
     // console.log("getOneMembership:", membership);
     return membership;
 }
+
+// fetch
+export async function GET({ params }) {
+    const res = await getOneMembership(params.id)
+    return NextResponse.json({ res })
+}
+
+//
 
 export const updateOneMembership = async (membershipData) => {
     const { id, member, ensemble, status, statusDate, statusNote } = membershipData;
@@ -50,18 +59,10 @@ export const updateOneMembership = async (membershipData) => {
     return membership;
 }
 
-// fetch
-export async function GET(request, { params }) {
-    const { id } = params;
-    // const req = await request.json()
-    const res = await getOneMembership(id)
-    return NextResponse.json({ res })
-}
-
 // update
 export async function PUT(request, { params }) {
-    const id = params.id;
-    const req = await request.json()
-    const res = await updateOneMembership({...req, id: id})
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateOneMembership({...req, id: params.id})
     return NextResponse.json({ res })
 }

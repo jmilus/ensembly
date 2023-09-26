@@ -2,6 +2,7 @@ import 'server-only';
 
 import 'styles/globals.css'
 import 'styles/layout.css';
+import 'styles/modal.css';
 import 'components/Vcontrols/Vstyling.css';
 
 export const revalidate = 0;

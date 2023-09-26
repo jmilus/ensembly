@@ -1,5 +1,7 @@
 import CALENDAR from 'utils/calendarUtils';
 
+export const POSTMARK_TOKEN = "a85e382c-9b5f-4383-800a-fa1a4927ef63";
+
 const getURL = () => {
     // console.log("env:", process.env.NODE_ENV)
     if (process.env.NODE_ENV !== 'production') {

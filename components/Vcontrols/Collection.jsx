@@ -2,41 +2,36 @@
 
 import { packageOptions } from '../../utils';
 
-import { useState, useContext, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-import { GlobalContext } from '../ContextFrame';
+import PopupMenu from 'components/PopupMenu';
 // import './Vstyling.css';
 
 
 const Collection = (props) => {
     const { id, name, label, value = [], options, extraAction, style, hero, isRequired, children, readonly, debug } = props;
-    const [controlValues, setControlValues] = useState({})
+    const [controlValues, setControlValues] = useState(packageOptions(value))
     const [searchStr, setSearchStr] = useState("")
+    const [showPopup, setShowPopup] = useState(false);
+    const collectorRef = useRef()
 
     useEffect(() => {
-        setControlValues(packageOptions(value))
-    }, [value])
-
-    useEffect(() => {
+        const inputEvent = new Event('change', { bubbles: true });
+        collectorRef.current.dispatchEvent(inputEvent);
         setSearchStr("")
+        if(extraAction) extraAction(controlValues)
     }, [controlValues])
 
     let controlOptions = packageOptions(options, value)
 
-    if (debug) console.log({ options }, { controlValues }, { value }, {controlOptions})
-
-    const { dispatch } = useContext(GlobalContext);
+    if (debug) console.log({ options },  {controlOptions}, { value }, { controlValues })
 
     const handleValueUpdate = (input) => {
-        const selectControl = document.getElementById(id)
-        const inputEvent = new Event('change', { bubbles: true });
-        selectControl.dispatchEvent(inputEvent);
-
+        setShowPopup(false)
         setControlValues(input)
     }
 
     const handleDropDownSelection = (input) => {
-        dispatch({ route: "dropdown", payload: null })
         let controlValuesCopy = { ...controlValues };
         controlValuesCopy[input] = controlOptions[input]
         console.log({controlValuesCopy})
@@ -64,21 +59,13 @@ const Collection = (props) => {
             })
         }
         
-        dispatch({
-            route: "dropdown",
-            payload: {
-                dim: { x: parentControl.offsetLeft, y: parentControl.offsetTop, h: parentControl.offsetHeight, w: parentControl.offsetWidth },
-                options: valuesToShow,
-                value: Object.values(controlValues).map(cv => cv.id),
-                setSelectControlValue: handleDropDownSelection
-            }
-        })
+        setShowPopup(true);
         return false;
     }
 
     const ItemNode = ({data}) => {
         // console.log({data})
-
+    
         return (
             <div className={`node-wrapper ${data.extraClass ? data.extraClass : ""}`} style={data.extraStyle}>
                 {data.icon && data.icon}
@@ -90,25 +77,9 @@ const Collection = (props) => {
 
     return (
         <>
-            <div id={`collection-${id}`} className="input-control-base collection-box" style={style}>
-                {label && <label htmlFor={id} className={`label ${Object.keys(controlValues).length > 0 ? "" : "hide"}`}>{label}</label>}
-                <select
-                    id={id}
-                    name={name}
-                    value={Object.keys(controlValues)}
-                    onChange={() => null}
-                    multiple={true}
-                    required={isRequired}
-                    readOnly={readonly}
-                    style={{display: "none"}}
-                >
-                    {
-                        Object.values(controlOptions).map((item, i) => {
-                            return <option key={i} id={item.id} value={item.value}></option>
-                        })
-                    }
-                </select>
-                <div className="collection-container" >
+            <div id={`collection-${id}`} className={`input-control-base collection-box ${Object.keys(controlValues).length > 0 ? "" : " empty"}`} style={style}>
+                {label && <label htmlFor={id} className="label">{label}</label>}
+                <div className={`collection-container${isRequired ? " required" : ""}`} >
                     {
                         Object.values(controlValues).map((option, i) => {
                             return <ItemNode key={i} data={option} />
@@ -116,7 +87,42 @@ const Collection = (props) => {
                     }
                     <input type="text" className="collection-adder" value={searchStr} onClick={(e) => showDropDown(e)} onChange={(e) => showDropDown(e)} placeholder={Object.keys(controlValues).length > 0 ? "" : label} />
                 </div>
+                <select
+                    ref={collectorRef}
+                    id={id}
+                    name={name}
+                    value={Object.keys(controlValues)}
+                    onChange={() => null}
+                    multiple={true}
+                    required={isRequired}
+                    readOnly={readonly}
+                    style={{height: "0px", overflow: "hidden"}}
+                >
+                    {
+                        Object.values(controlOptions).map((item, i) => {
+                            return <option key={i} id={item.id} value={item.value}></option>
+                        })
+                    }
+                </select>
             </div>
+            {showPopup && 
+                <PopupMenu
+                    parentRef={collectorRef}
+                    hideMe={() => setShowPopup(false)}
+                >
+                    {
+                        Object.keys(controlOptions).map((key, o) => {
+                            const option = controlOptions[key];
+                            return (
+                                <div key={o} id={option.id} className="select-option" onClick={(e) => handleDropDownSelection(key, e)}>
+                                    {option.color && <div className="color-dot" style={{backgroundColor: option.color}}></div>}
+                                    {option.caption}
+                                </div>
+                            )
+                        })
+                    }
+                </PopupMenu>
+            }
         </>
     )
 }

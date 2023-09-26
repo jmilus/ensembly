@@ -27,8 +27,8 @@ export const updateOneEmail = async (emailData) => {
 }
 
 export async function PUT(request, { params }) {
-    const id = params.id;
-    const req = await request.json()
-    const res = await updateOneEmail({...req, id: id})
+    const _req = await request.formData();
+    const req = extractFields(_req);
+    const res = await updateOneEmail({...req, id: params.id})
     return NextResponse.json({ res })
 }

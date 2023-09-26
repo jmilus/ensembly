@@ -99,8 +99,8 @@ const Text = (props) => {
         />
     return (
         <>
-            <div id={`text-${id}`} className={`input-control-base text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}`} style={style}>
-                <label htmlFor={id} className={`label ${controlValue === "" ? "hide" : ""}`}>{label}</label>
+            <div id={`text-${id}`} className={`input-control-base text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}${controlValue === "" ? " empty" : ""}`} style={style}>
+                <label htmlFor={id} className="label">{label}</label>
                 {inputControl}
                 {controlValue != "" && clearbutton}
             </div>

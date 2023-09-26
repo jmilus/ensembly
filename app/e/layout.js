@@ -9,7 +9,6 @@ import NavWrapper from 'components/NavWrapper';
 import StatusBlip from 'components/StatusBlip';
 import { ClientConsole } from 'components/ClientConsole';
 import ContextFrame from 'components/ContextFrame';
-import LoginBox from 'components/LoginBox';
 
 import { getProfile } from '@/api/auth/[id]/route';
 
@@ -35,9 +34,7 @@ const ELayout = async ({children}) => {
             <div id="app-body">
                 <StatusBlip />
                 <ClientConsole items={{ session: session, profile: profile }} />
-                {session &&
-                    <NavWrapper mainNav={nav} />
-                }
+                <NavWrapper mainNav={nav} />
                 { children }
             </div>
         </ContextFrame>

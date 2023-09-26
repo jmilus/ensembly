@@ -230,3 +230,19 @@ export const deduper = (array) => {
 export const validateEmail = (email) => {
     return /.+@.+\.[A-Za-z]+$/.test(email.trim())
 }
+
+export const extractFields = (formData) => {
+    const iterator = [...formData.entries()]
+    const data = {}
+    iterator.forEach(obj => {
+        const [dataKey, dataValue] = obj;
+        console.log({ obj })
+        if (data[dataKey]) {
+            if (!Array.isArray(data[dataKey])) data[dataKey] = [data[dataKey]]
+            data[dataKey].push(dataValue)
+        } else {
+            data[dataKey] = dataValue;
+        }
+    })
+    return data;
+}

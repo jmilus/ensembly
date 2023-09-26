@@ -11,7 +11,7 @@ export default function ModuleSubNav() {
             title="Create New Member"
             buttonClass="fit"
         >
-            <Form id="new-member-modal-form" METHOD="POST" followPath="$slug$" debug >
+            <Form id="new-member-modal-form" METHOD="POST" followPath="$slug$" >
                 <section className="modal-fields inputs">
                     <Text id="newMemberFirstName" name="firstName" label="First Name" value=""/>
                     <Text id="newMemberLastName" name="lastName" label="Last Name" value=""/>
@@ -29,7 +29,7 @@ export default function ModuleSubNav() {
         >
             <Form id="upload-members-modal-form" debug>
                 <section className="modal-fields">
-                    <File id="fileUpload" field="file" handling="upload" fileType="xlsx" />
+                    <File id="fileUpload" field="file" handling="upload" fileType="xlsx" isRequired />
                 </section>
             </Form>
             <section className="modal-buttons">

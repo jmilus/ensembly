@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import { createPortal } from 'react-dom';
 
 const ModalWrapper = ({ title, children, closeModal, dismiss="Cancel" }) => {
 
     let modalBody = [];
     let modalButtons = dismiss != null ? [<button key="dismissbutton0" className="dismiss" onClick={closeModal}>{dismiss}</button>] : [];
     React.Children.forEach(children, child => {
-        console.log("filtering through modal children:", child)
+        // console.log("filtering through modal children:", child)
         if (child.props.className === "modal-buttons") {
             React.Children.forEach(child.props.children, button => {
                 modalButtons.push(button);
@@ -18,15 +17,19 @@ const ModalWrapper = ({ title, children, closeModal, dismiss="Cancel" }) => {
         }
     })
 
-    
+    const handleFormSubmit = (e) => {
+        if (e.nativeEvent.submitter?.name === "submit") {
+            closeModal();
+        }
+    }
 
     return (
-        <div className="modal-base">
+        <div id="modal" className="modal-base">
             <div className={`modal-wrapper`} >
                 <div className="modal-border">
                     <div className="modal-container">
                         <div className="modal-header">{title}</div>
-                        <div className="modal-body">
+                        <div className="modal-body" onSubmit={handleFormSubmit}>
                             {modalBody}
                         </div>
                         <div className="modal-footer modal-buttons">
