@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export default function Collapser({ id, caption, button, type, startCollapsed=true, trigger, children, nodeHeight, style, debug }) {
     const [collapsed, setCollapsed] = useState(startCollapsed);

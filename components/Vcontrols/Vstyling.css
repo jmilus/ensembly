@@ -377,10 +377,6 @@ select:-internal-list-box {
     height: auto;
 }
 
-.input-control-base.compact {
-    /* padding: 0; */
-}
-
 .compact select {
     height: auto;
     padding: 7px;

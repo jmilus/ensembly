@@ -35,10 +35,10 @@ export const getOneEventModel = async (id) => {
     return eventModel[0];
 }
 
-export const updateOneEventModel = async ({model}) => {
+export const updateOneEventModel = async ({data}) => {
     const supabase = createServerComponentClient({ cookies });
 
-    console.log({ data })
+    console.log("update model data:", { data })
 
     let updateObj = {}
     Object.keys(data).forEach(key => {
@@ -58,7 +58,7 @@ export const updateOneEventModel = async ({model}) => {
     const { data: model, error } = await supabase
         .from('EventModel')
         .update(updateObj)
-        .eq('id', model)
+        .eq('id', data.modelId)
         .select()
     
     if (error) {
@@ -103,7 +103,7 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
     const _req = await request.formData();
     const req = extractFields(_req);
-    const res = await updateOneEventModel({...req, model: params.model})
+    const res = await updateOneEventModel({...req, modelId: params.model})
     return NextResponse.json({ res })
 }
 

@@ -121,7 +121,7 @@ const LineupManager = ({ initialProps }) => {
                                     <ItemCard
                                         key={m}
                                         tag="member"
-                                        name={membership.Member.aka}
+                                        caption={membership.Member.aka}
                                         dropItem={membership}
                                         cardType="CARD-OUT"
                                         assigned={isAssignedToLineup(membership)}
@@ -201,7 +201,7 @@ const LineupManager = ({ initialProps }) => {
                                                                     <ItemCard
                                                                         key={m}
                                                                         tag="member"
-                                                                        name={assignment.EnsembleMembership.Member.aka}
+                                                                        caption={assignment.EnsembleMembership.Member.aka}
                                                                         subtitle={currentDivision.name}
                                                                         dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
                                                                         cardType="CARD-IN"

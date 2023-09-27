@@ -48,7 +48,7 @@ const MemberPage = async (context) => {
                             <Text id="firstName" name="firstName" label="First Name" value={member.firstName} isRequired />
                             <Text id="middleName" name="middleName" label="Middle Name" value={member.middleName} />
                             <Text id="lastName" name="lastName" label="Last Name" value={member.lastName} isRequired />
-                            <Text id="suffix" name="suffix" label="Suffix" value={member.suffix} isRequired style={{ maxWidth: "4em" }} />
+                            <Text id="suffix" name="suffix" label="Suffix" value={member.suffix} style={{ maxWidth: "4em" }} />
                         </section>
                         <section className="inputs">
                             <Select id="sex" name="sex" label="Sex" value={member.sex} options={bioOptions.sex} />
@@ -114,7 +114,7 @@ const MemberPage = async (context) => {
                                 return (
                                     <ItemCard
                                         key={i}
-                                        name={membership.ensemble.name}
+                                        caption={membership.ensemble.name}
                                     >
                                         <ModalButton
                                             modalButton={<><i>feed</i></>}

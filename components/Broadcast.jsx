@@ -1,26 +1,24 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { slateToHtml } from '../utils/slateToHtml';
 
-import useStatus from '../hooks/useStatus';
-import { deduper, validateEmail } from '../utils';
+import useStatus from 'hooks/useStatus';
+import { deduper, validateEmail } from 'utils';
 
 import Composer from './Composer';
 import DropContainer from './DropContainer';
 import ItemCard from './ItemCard';
-import ModuleCard from './ModuleCard';
 import Verify from './VerifyButton';
 import { Text } from './Vcontrols';
 import TabControl, { Tab } from './TabControl';
 import Collapser from './Collapser';
 
-const Broadcast = ({ broadcastId, body, subject, to_address, cc_address, bcc_address, status, mailgroups }) => {
+const Broadcast = ({ broadcastId, body=[], subject="", to_address=[], cc_address=[], bcc_address=[], status, mailgroups }) => {
     const [broadcastContent, setBroadcastContent] = useState(body);
     const [broadcastSubject, setBroadcastSubject] = useState(subject);
     const [toList, setToList] = useState(to_address)
-    const [ccList, setCcList] = useState([])
+    const [ccList, setCcList] = useState(cc_address)
     const [bccList, setBccList] = useState(bcc_address)
     const saveStatus = useStatus();
     const router = useRouter();
@@ -28,29 +26,24 @@ const Broadcast = ({ broadcastId, body, subject, to_address, cc_address, bcc_add
 
     console.log({ toList })
 
-    useEffect(() => {
-        setCcList(cc_address)
-    }, [cc_address])
-
     const saveDraft = async () => {
         saveStatus.saving();
+        const data = new FormData()
+        data.set('id', broadcastId)
+        data.set('subject', broadcastSubject)
+        data.set('body', broadcastContent)
+        data.set('to_address', toList)
+        data.set('cc_address', ccList.filter(email => validateEmail(email)))
+        data.set('bcc_address', bccList.filter(email => validateEmail(email)))
         const savedResult = await fetch(`/api/messages/broadcasts/${broadcastId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id: broadcastId,
-                subject: broadcastSubject,
-                body: broadcastContent,
-                to_address: toList,
-                cc_address: ccList.filter(email => validateEmail(email)),
-                bcc_address: bccList.filter(email => validateEmail(email))
-            })
+            body: data
         })
             .then(res => res.json())
             .then(response => {
                 // console.log({ response })
                 if (broadcastId === 'new') {
-                    router.push(`/messages/broadcasts/${response.id}`)
+                    router.push(`/e/messages/broadcasts/${response.id}`)
                 }
                 saveStatus.saved();
                 return response;
@@ -366,7 +359,7 @@ const Broadcast = ({ broadcastId, body, subject, to_address, cc_address, bcc_add
                             cardType="MODULE"
                             dropItem={{ name: "Basic", type: "standard_paragraph" }}
                             itemIcon={<i style={{ fontSize: "3em", color: "var(--color-p)", cursor: "inherit" }}>view_headline</i>}
-                            name="Basic"
+                            caption="Basic"
                         />
                     </Tab>
                     <Tab id="Recipients">

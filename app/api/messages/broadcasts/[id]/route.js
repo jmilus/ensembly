@@ -1,7 +1,8 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { slateToHtml, extractFields } from 'utils';
+import { extractFields } from 'utils';
+import { slateToHtml } from 'utils/slateToHtml';
 import { POSTMARK_TOKEN } from 'config';
 
 export const getOneBroadcast = async (id) => {
@@ -29,9 +30,9 @@ export const updateOneBroadcast = async (props) => {
     const { data: broadcast, error } = await supabase
         .from("Broadcast")
         .upsert({
-            id: id === "new" ? undefined : id,
+            id: id,
             subject,
-            body,
+            body: JSON.stringify(body),
             to_address,
             cc_address,
             bcc_address

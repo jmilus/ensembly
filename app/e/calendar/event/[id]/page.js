@@ -99,7 +99,7 @@ const EventPage = async (context) => {
                                                     <ItemCard
                                                         key={m}
                                                         tag="assignee"
-                                                        name={assignment.membership.Member.aka}
+                                                        caption={assignment.membership.Member.aka}
                                                         subtitle={assignment.division.name}
                                                     />
                                                 )

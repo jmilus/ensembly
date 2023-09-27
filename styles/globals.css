@@ -821,9 +821,9 @@ fieldset.buttons > legend {
   border-color: var(--color-moss);
 }
 
-/* .card-container.dragable {
+.card-container.dragable {
   cursor: all-scroll;
-} */
+}
 
 .card-caption {
   flex: 1;
@@ -857,6 +857,13 @@ fieldset.buttons > legend {
 .card-container.basic {
   justify-content: space-between;
   --hero-size: 40px;
+}
+
+.card-container.dark {
+  margin: 1px;
+  border: none;
+  background-image: linear-gradient(226deg, hsl(var(--color-h3) / 0.1) 10%, hsl(var(--color-h3) / 0.25) 70%);
+  box-shadow: 0px -1px 2px -1px inset var(--color-c3);
 }
 
 .card-container.profile {

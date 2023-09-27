@@ -55,7 +55,7 @@ const EnsemblesLayout = async (props) => {
                                     return (
                                         <ItemCard
                                             key={i}
-                                            name={ensemble.name}
+                                            caption={ensemble.name}
                                             tag="ensemble"
                                             cardLinkTo={`/e/ensembles/${ensemble.id}/general`}
                                         />

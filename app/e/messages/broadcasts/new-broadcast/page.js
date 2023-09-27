@@ -42,9 +42,6 @@ const NewBroadcastPage = async () => {
     return (
         <Broadcast
             broadcastId="new"
-            subject=""
-            to_address={[]}
-            body={[]}
             status={"DRAFT"}
             mailgroups={mailgroups} /> 
     )

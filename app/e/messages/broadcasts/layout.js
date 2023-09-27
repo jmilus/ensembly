@@ -4,6 +4,9 @@ import FilterContainer from 'components/FilterContainer';
 import { BroadcastBox } from '../MessagesHelpers';
 
 import { getManyBroadcasts } from '@/api/messages/broadcasts/route';
+import ItemCard from 'components/ItemCard';
+
+
 
 const BroadcastsPage = async (context) => {
     const broadcastsList = await getManyBroadcasts()
@@ -21,7 +24,14 @@ const BroadcastsPage = async (context) => {
                 >
                     {
                         broadcastsList.map((bc, b) => {
-                            return <BroadcastBox key={b} info={bc} tag="broadcast" subject={bc.subject} />
+                            return (
+                                <ItemCard
+                                    caption={bc.subject}
+                                    subtitle={`${bc.status === "DRAFT" ? "Edited: " : "Sent: "}${new Date(bc.status_date).toLocaleString()}`}
+                                    cardLinkTo={`/e/messages/broadcasts/${id}`}
+                                ></ItemCard>
+                            )
+                            // return <BroadcastBox key={b} info={bc} tag="broadcast" subject={bc.subject} />
                         })
                     }
                 </FilterContainer>

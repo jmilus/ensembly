@@ -39,7 +39,7 @@ export default async function EnsembleRecordLayout(context) {
                 buttonClass="fit"
                 title="Create Root-Level Division"
             >
-                <Form id="upload-members-form" APIURL={`/api/ensembles/${ensemble.id}/division/create-division`} METHOD="POST">
+                <Form id="create-root-division-form" APIURL={`/api/ensembles/${ensemble.id}/division/create-division`} METHOD="POST">
                     <section className="inputs">
                         <Text id="division-name" name="name" label="Division Name" isRequired />
                         <Text id="division-taxonomy" name="taxonomy" label="Taxonomy" />
@@ -47,7 +47,7 @@ export default async function EnsembleRecordLayout(context) {
                     </section>
                 </Form>
                 <section className="modal-buttons">
-                    <button name="submit" form="upload-members-form">Create</button>
+                    <button name="submit" form="create-root-division-form">Create</button>
                 </section>
             </ModalButton>
         ]

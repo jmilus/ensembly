@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { extractFields } from 'utils'
 
 export const createDivision = async (data) => {
-    const { name, taxonomy, capacity, ensemble } = data;
+    const { name, taxonomy, capacity, ensemble, parent_division } = data;
     const supabase = createServerComponentClient({ cookies });
     console.log("create Division data:", data)
 
@@ -14,7 +14,8 @@ export const createDivision = async (data) => {
             name,
             taxonomy,
             capacity,
-            ensemble
+            ensemble,
+            parent_division
         })
         .select()
     

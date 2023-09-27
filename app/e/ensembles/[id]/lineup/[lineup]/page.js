@@ -15,7 +15,7 @@ const LineupPage = async ({ params }) => {
     const ensemble = await getOneEnsemble(params.id)
     const allcapacities = await getAllMembershipCapacities()
     const membershipTypes = await getAllMembershipTypes(params.id)
-    const divisions = await getManyDivisions(params.id)
+    const divisions = await getManyDivisions(params.id, true)
 
     const membershipcapacities = membershipTypes.map(mt => {
         return mt.capacity

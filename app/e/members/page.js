@@ -26,7 +26,7 @@ const MembersPage = async () => {
                             <ItemCard
                                 key={i}
                                 tag="member"
-                                name={member.aka}
+                                caption={member.aka}
                                 cardLinkTo={`/e/members/${member.id}`}
                                 type="profile"
                             />
