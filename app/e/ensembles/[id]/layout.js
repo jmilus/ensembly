@@ -55,11 +55,11 @@ export default async function EnsembleRecordLayout(context) {
         
     return (
         <SecurityWrapper currentModule="ensembles">
-            <div className="page-base" >
-                <div className="action-section">
+            <div id="page-base" >
+                <div id="nav-header">
                     <SubNav caption="ensembles" root="ensembles" navNodes={navNodes} buttons={buttons} />
                 </div>
-                <div className="form-section">
+                <div id="page-frame">
                     {context.children}
                 </div>
             </div>

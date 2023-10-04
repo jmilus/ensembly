@@ -28,28 +28,18 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 0 10px hsla(0, 0%, 0%, 0.5);
-    border-radius: 18px;
+    border-radius: 10px;
     overflow: hidden;
     z-index: 1;
     transition: margin 0.1s ease;
+    padding: 5px;
+    background-image: linear-gradient(45deg, var(--color-c3), var(--color-c2), var(--color-c1))
 }
 
 .modal-wrapper.min {
     min-width: unset;
     margin: auto 0 0 auto;
     border-radius: 7px 0 0 0;
-}
-
-.modal-border {
-    flex:1;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    overflow: hidden;
-    background-image: var(--normal-border);
-}
-.modal-wrapper.error .modal-border {
-    background:white;
 }
 
 .modal-header {
@@ -69,7 +59,7 @@
     display: flex;
     flex-direction: column;
     background: var(--gray1);
-    border-radius: 10px;
+    border-radius: 5px;
     overflow: hidden;
     box-shadow: 0 0 5px 3px hsla(0, 0%, 0%, 0.2);
 }

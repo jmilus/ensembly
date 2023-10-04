@@ -3,18 +3,19 @@ import 'server-only';
 import { getManyEmails } from '@/api/emails/route';
 import { nester } from 'utils';
 
-import Broadcast from 'components/Broadcast'
+import Broadcast from 'app/e/messages/broadcasts/Broadcast'
 
 const NewBroadcastPage = async () => {
-    const ensembleemails = await getManyEmails("ensemble", '5aceabd3-324b-45fb-bc7a-4f79f022d9a8')
+    const ensembleemails = await getManyEmails("ensemble")
 
     const mailgroups = {};
 
-    mailgroups.ensembles = ensembleemails.map(ee => {
+    mailgroups.children = ensembleemails.map(ee => {
         return {
             name: ee.name,
-            lineups: ee.Lineup.map(lu => {
-                const lineup = { name: lu.name, divisions: [] }
+            //lineups:
+            children: ee.Lineup.map(lu => {
+                const lineup = { name: lu.name, children: [] /* divisions */ }
 
                 const tempDivisions = {};
                 ee.Division.forEach(div => {
@@ -32,18 +33,22 @@ const NewBroadcastPage = async () => {
                         }
                     }
                 })
-                lineup.divisions = nester(Object.values(tempDivisions).map(div => div), "parent_division")
+                lineup.children = nester(Object.values(tempDivisions).map(div => div), "parent_division")
                 return lineup;
             })
         }
 
     })
 
+    const emptyBlock = {type: "standard_paragraph", key: Math.random()}
+
     return (
         <Broadcast
             broadcastId="new"
             status={"DRAFT"}
-            mailgroups={mailgroups} /> 
+            mailgroups={mailgroups}
+            body={[emptyBlock]}
+        /> 
     )
 }
 

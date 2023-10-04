@@ -5,11 +5,11 @@ import SecurityWrapper from 'components/SecurityWrapper';
 const MembersLayout = (props) => {
     return (
         <SecurityWrapper currentModule="members">
-            <div className="page-base">
-                <div className="action-section">
+            <div id="page-base">
+                <div id="nav-header">
                     {props.nav}
                 </div>
-                <div className="form-section">
+                <div id="page-frame">
                     {props.children}
                 </div>
             </div>

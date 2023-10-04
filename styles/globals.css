@@ -23,8 +23,8 @@ body {
 
   --color-p: 150 60% 45%; /* primary color */
   --color-s: 184 37% 15%; /* secondary color */
-  --color-f: lch(73 74.58 62.82); /* contrast color */
-  --color-o: lch(46 73.56 7.6);
+  --color-o: lch(73 74.58 62.82); /* contrast color */
+  --color-f: lch(46 73.56 7.6);
   --color-c1: #7ED9DE; /* light cyan */
   --color-c2: #38b0b8; /* mid cyan */
   --color-c3: #3E818E; /* dark cyan */
@@ -191,25 +191,26 @@ button {
   font-family: inherit;
   color: hsl(var(--edge-color));
   background: hsl(var(--edge-color) / 0.1);
-  border-width: 0px;
+  /* border-width: 0px;
   border-color: hsl(var(--edge-color));
-  border-style: solid;
+  border-style: solid; */
+  border: none;
   padding: 0;
   cursor: pointer;
   white-space: nowrap;
   height: fit-content;
-  border: 1px solid hsl(var(--edge-color));
-  box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
+  /* border: 1px solid hsl(var(--edge-color)); */
+  box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
   transition: box-shadow 0.1s ease;
   border-radius: 5px;
 }
 
 button:hover {
-  box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
+  box-shadow: 0 0 0 2px inset hsl(var(--edge-color));
 }
 button:active {
-  box-shadow: 0 0 0 30px inset hsl(var(--edge-color));
-  color: white;
+  box-shadow: 0 0 0 20px inset hsl(var(--edge-color));
+  color: hsl(var(--text-active));
 }
 
 button > i {
@@ -222,6 +223,14 @@ button:active > i {
 
 button > * + span {
   margin-left: 10px;
+}
+
+button:not([class]) {
+  border-width: 0;
+}
+button:not([class]):hover:not(:active) {
+  background: hsl(var(--edge-color) / 0.2);
+  box-shadow: none;
 }
 
 button.fit {
@@ -246,8 +255,9 @@ button.angry {
 }
 
 button.happy {
-  --edge-color: var(--color-p);
-  /* --text-active: white; */
+  --edge-color: 0 0% 100%;
+  background: hsl(var(--color-p));
+  --text-active: hsl(var(--color-p));
 }
 
 button.caution {
@@ -827,7 +837,6 @@ fieldset.buttons > legend {
 
 .card-caption {
   flex: 1;
-  margin: 5px 10px;
   font-size: 1.25em;
 }
 
@@ -837,15 +846,16 @@ fieldset.buttons > legend {
 }
 
 .card-subtitle {
-  color: gray;
+  color: var(--color-c2);
   font-style: italic;
+  font-size: 0.8em;
 }
 
 .hero-icon {
-  height: var(--hero-size);
-  width: var(--hero-size);
+  min-height: var(--hero-size);
+  min-width: var(--hero-size);
   border-radius: 50%;
-  margin: auto 10px;
+  margin-right: 10px;
   display: flex;
   align-items:center;
   justify-content:center;
@@ -876,6 +886,10 @@ fieldset.buttons > legend {
 
 .card-container.mini {
   --hero-size: 25px;
+}
+
+.card-container.selected {
+  border-color: var(--color-c2);
 }
 
 .card-header {
@@ -1197,6 +1211,7 @@ fieldset.buttons > legend {
 
 .composer-container {
   position: relative;
+  background: var(--gray0);
   border: 1px solid var(--gray2);
   border-color: transparent transparent var(--gray2) transparent;
 }
@@ -1237,7 +1252,7 @@ fieldset.buttons > legend {
 
 .broadcast-drafter {
   overflow-y: scroll;
-  background: white;
+  background: var(--gray1);
   border: 1px solid var(--gray3);
   margin-top: 5px;
   transition: all 0.1s ease;
@@ -1404,7 +1419,7 @@ fieldset.buttons > legend {
 .collapser-wrapper {
 }
 
-.collapser-wrapper:not(:has(.terminus)) {
+.collapser-wrapper.hide-dead-ends:not(:has(.terminus)) {
   display: none;
 }
 
@@ -1420,7 +1435,6 @@ fieldset.buttons > legend {
 
 .collapser-node {
   display: flex;
-  cursor: ns-resize;
   border-radius:3px;
   border-style: solid;
   border-color: var(--mint5);
@@ -1443,31 +1457,13 @@ fieldset.buttons > legend {
   color: var(--mint5);
 }
 
-.collapser-caption {
-  flex: 1;
-  display: flex;
-  margin-left: 5px;
-  overflow: hidden;
-}
-
-.collapser-caption > span {
-  margin: auto 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.collapser-node:not(.terminus) {
+  cursor: ns-resize;
 }
 
 .collapser-node > span {
   margin: auto 0;
   white-space: nowrap;
-}
-
-.collapser-node.terminus {
-  cursor: pointer;
-}
-
-.collapser-node.terminus > span {
-  color: hsl(var(--color-p));
 }
 
 .contact-section-label {

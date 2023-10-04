@@ -22,6 +22,14 @@ export const getAllAssignments = async () => {
     return assignments;
 }
 
+export async function GET() {
+    const res = await getAllAssignments()
+    return NextResponse.json({ res })
+}
+
+//######
+
+
 export const updateLineupAssignments = async ({ lineup, assignments, deletions }) => {
     const supabase = createServerComponentClient({ cookies });
 
@@ -81,14 +89,11 @@ export const updateLineupAssignments = async ({ lineup, assignments, deletions }
     return true;
 }
 
-export async function GET() {
-    const res = await getAllAssignments()
-    return NextResponse.json({ res })
-}
-
 export async function PUT(request, { params }) {
-    const _req = await request.formData()
-    const req = extractFields(_req);
+    // const _req = await request.formData()
+    // const req = extractFields(_req);
+    const req = await request.json();
+    console.log({req})
     const res = await updateLineupAssignments({ ...req, lineup: params.lineup })
     console.log("this was the response:", res)
     return NextResponse.json(res)

@@ -73,6 +73,7 @@ const FilterContainer = (props) => {
 
             let anyMatch = filterParams[filter.name].length === 0;
             filterParams[filter.name].forEach(param => {
+                console.log({param})
                 if (typeof param === 'string') {
                     if (child.props[filter.filterProp] === param) anyMatch = true;
                 } else {
@@ -126,7 +127,7 @@ const FilterContainer = (props) => {
             <i id={`${id}-clear-button`} className={`big ${""}`} onClick={clearAll}>cancel</i>
         </div>
     
-    const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px" }} />
+    const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px", minWidth: "150px" }} />
     
     let searchContainer;
     if (typeof window !== 'undefined') searchContainer = document.getElementById(`${id}-search`)

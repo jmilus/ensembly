@@ -33,7 +33,7 @@ const ELayout = async ({children}) => {
         <ContextFrame profile={profile}>
             <div id="app-body">
                 <StatusBlip />
-                <ClientConsole items={{ session: session, profile: profile }} />
+                {/* <ClientConsole items={{ session: session, profile: profile }} /> */}
                 <NavWrapper mainNav={nav} />
                 { children }
             </div>

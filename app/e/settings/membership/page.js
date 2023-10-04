@@ -23,6 +23,7 @@ export default async function MembershipSettingsPage(context) {
         <FilterContainer
             id="memberships-filter"
             filterTag="membership"
+            search={{label: "Search Membership Types", searchProp: "name"}}
             columns={{ count: "auto-fill", width: "500px" }}
             style={{marginTop: "40px"}}
         >
@@ -36,6 +37,7 @@ export default async function MembershipSettingsPage(context) {
                             style={{ ['--hero-size']: "75px" }}
                             cardBodyStyle={{ width: "75%" }}
                             tag="membership"
+                            name={type.name}
                             // name={type.name}
                             // subtitle="membership type"
                         >

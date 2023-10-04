@@ -2,26 +2,25 @@
 
 import React, { useState } from 'react';
 
-export default function Collapser({ id, caption, button, type, startCollapsed=true, trigger, children, nodeHeight, style, debug }) {
+export default function Collapser({ id, button, type, startCollapsed=true, trigger, children, nodeHeight, hideDeadEnds, style }) {
     const [collapsed, setCollapsed] = useState(startCollapsed);
 
     const CollapsingHandler = (value) => {
-        console.log("collapser is collapsed:", value)
         setCollapsed(value);
         if (trigger) trigger(value);
+    }
+
+    const nodeClickHandler = (e) => {
+        // console.log(e);
+        if (e.target.className.includes("expander")) CollapsingHandler(!collapsed)
     }
 
     const isCollapsed = collapsed ? "collapsed" : ""
 
     return (
-        <div id={id} className={`collapser-wrapper`} style={style}>
-            <div className="collapser-node" style={{['--node-height']: nodeHeight}}>
-                {
-                    button && button
-                }
-                <div className="collapser-caption" onClick={() => CollapsingHandler(!collapsed)}>
-                    {caption}
-                </div>
+        <div id={id} className={`collapser-wrapper${hideDeadEnds ? " hide-dead-ends" : ""}`} style={style}>
+            <div className="collapser-node" onClick={nodeClickHandler} style={{ ['--node-height']: nodeHeight }}>
+                {button}
             </div>
             <div className={`collapser-content ${isCollapsed}`}>
                 {

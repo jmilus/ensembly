@@ -10,7 +10,7 @@ const MembersPage = async () => {
     const members = await getAllMembers();
 
     return (
-        <div className="page-details">
+        <div id="page">
             <FilterContainer
                 id="members-filter"
                 filterTag="member"
@@ -26,6 +26,7 @@ const MembersPage = async () => {
                             <ItemCard
                                 key={i}
                                 tag="member"
+                                name={member.aka}
                                 caption={member.aka}
                                 cardLinkTo={`/e/members/${member.id}`}
                                 type="profile"

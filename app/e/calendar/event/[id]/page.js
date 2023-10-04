@@ -45,12 +45,12 @@ const EventPage = async (context) => {
 
     return (
         <>
-            <div className="page-header">
+            <div id="page-header">
                 <Form id="event-event-name-form" auto >
                     <Text id="event-event-title" label="Event Name" name="name" value={event.name || event.model.name} hero isRequired />
                 </Form>
             </div>
-            <div className="page-details">
+            <div id="page">
                 <section style={{flex: 1}}>
                     <article className="scroll">
                         <fieldset>

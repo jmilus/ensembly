@@ -21,9 +21,10 @@ const LoginBox = () => {
     const supabase = createClientComponentClient();
     const router = useRouter();
 
-    console.log("session:", supabase.auth.session)
+    console.log("Login box session:", supabase.auth.session)
 
-
+    
+    
     const sendMagicLink = async () => {
         console.log("signing in with email")
         if (email != "") {
@@ -70,6 +71,10 @@ const LoginBox = () => {
         }
     }
 
+    const keyHandler = (e) => {
+        if (e.key === "Enter") signIn();
+    }
+
     return (
         <div className="modal-base">
             <div className="modal-wrapper">
@@ -79,7 +84,7 @@ const LoginBox = () => {
                             Login to Ensembly
                         </div>
                         <div className="modal-body">
-                            <article >
+                            <article onKeyDown={keyHandler}>
 
                                 <article>
                                     <Text id="login-email" name="email" label="Email" format="email" extraAction={(a) => setEmail(a)} isRequired />

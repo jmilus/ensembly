@@ -1,7 +1,7 @@
 module.exports = {
   reactStrictMode: true,
   experimental: {
-    // appDir: true
+    serverActions: true
   },
   // webpack5: true,
   webpack: config => {

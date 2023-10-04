@@ -24,6 +24,7 @@ export default async function EnsembleGeneralPage({params}) {
                         <ItemCard
                             key={m}
                             tag="member"
+                            name={member.aka}
                             caption={member.aka}
                             type="mini"
                         />

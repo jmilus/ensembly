@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const ModalWrapper = ({ title, children, closeModal, dismiss="Cancel" }) => {
+const ModalWrapper = ({ title, classes="", children, closeModal, dismiss="Cancel" }) => {
 
     let modalBody = [];
     let modalButtons = dismiss != null ? [<button key="dismissbutton0" className="dismiss" onClick={closeModal}>{dismiss}</button>] : [];
@@ -25,16 +25,14 @@ const ModalWrapper = ({ title, children, closeModal, dismiss="Cancel" }) => {
 
     return (
         <div id="modal" className="modal-base">
-            <div className={`modal-wrapper`} >
-                <div className="modal-border">
-                    <div className="modal-container">
-                        <div className="modal-header">{title}</div>
-                        <div className="modal-body" onSubmit={handleFormSubmit}>
-                            {modalBody}
-                        </div>
-                        <div className="modal-footer modal-buttons">
-                            {modalButtons}
-                        </div>
+            <div className={`modal-wrapper ${classes}`} >
+                <div className="modal-container">
+                    <div className="modal-header">{title}</div>
+                    <div className="modal-body" onSubmit={handleFormSubmit}>
+                        {modalBody}
+                    </div>
+                    <div className="modal-footer modal-buttons">
+                        {modalButtons}
                     </div>
                 </div>
             </div>

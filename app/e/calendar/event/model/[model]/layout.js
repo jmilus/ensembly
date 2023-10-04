@@ -6,11 +6,11 @@ import SubNav from 'components/SubNav';
 export default async function ModelLayout(props) {
 
     return (
-        <div className="page-base">
-            <div className="action-section">
+        <div id="page-base">
+            <div id="nav-header">
                 <SubNav root="model" />
             </div>
-            <div className="form-section">
+            <div id="page-frame">
                 {props.children}
             </div>
         </div>

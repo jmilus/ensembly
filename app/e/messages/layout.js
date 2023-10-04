@@ -15,11 +15,11 @@ const buttons = {
 
 const MessagesPage = async (props) => {
     return (
-        <div className="page-base">
-            <div className="action-section">
+        <div id="page-base">
+            <div id="nav-header">
                 <SubNav caption="Messaging" root="messages" navNodes={navNodes} buttons={buttons} />
             </div>
-            <div className="form-section">
+            <div id="page-frame">
                 {props.children}
             </div>
         </div>

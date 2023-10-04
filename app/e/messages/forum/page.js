@@ -3,7 +3,7 @@ import 'server-only'
 const ForumPage = async () => {
 
     return (
-        <div className="page-details">
+        <div id="page">
             This is a forum. See?
         </div>
     )

@@ -37,7 +37,7 @@ const AccountPage = async (context) => {
     )
 
     return (
-        <div className="page-details">
+        <div id="page">
             <article>
                 <fieldset>
                     <legend>Credentials</legend>

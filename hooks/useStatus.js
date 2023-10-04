@@ -9,7 +9,6 @@ function useStatus() {
     const { dispatch } = useContext(GlobalContext);
     const transitionTimer = useRef()
     const router = useRouter();
-    const path = usePathname()
 
     const vanish = () => {
         transitionTimer.current = null;
@@ -19,50 +18,50 @@ function useStatus() {
         })
     }
 
-    const unsaved = (saveFunction, caption) => {
+    const unsaved = (caption, saveAction) => {
         console.log("data is unsaved")
         
         dispatch({
             route: "status",
-            payload: { path: path, case: "unsaved", action: saveFunction, caption }
+            payload: { case: "unsaved", action: saveAction, caption }
         })
     }
 
-    const saving = () => {
+    const saving = (caption) => {
         console.log("now saving...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         dispatch({
             route: "status",
-            payload: { case: "saving" }
+            payload: { case: "saving", caption }
         })
     }
 
-    const loading = () => {
+    const loading = (caption) => {
         console.log("loading data...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         dispatch({
             route: "status",
-            payload: { case: "loading" }
+            payload: { case: "loading", caption }
         })
     }
 
-    const saved = () => {
+    const saved = (caption) => {
         console.log("Data saved!")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         dispatch({
             route: "status",
-            payload: { case: "saved" }
+            payload: { case: "saved", caption }
         })
         router.refresh()
         transitionTimer.current = setTimeout(() => vanish(), 4000)
     }
 
-    const error = (title, message) => {
+    const error = (caption, title, message) => {
         console.log("Error!")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         dispatch({
             route: "status",
-            payload: { case: "error", error: {title, message} }
+            payload: { case: "error", error: {title, message}, caption }
         })
         // router.refresh()
         transitionTimer.current = setTimeout(() => vanish(), 10000)

@@ -34,12 +34,12 @@ const EnsemblesLayout = async (props) => {
 
     return (
         <SecurityWrapper currentModule="ensembles">
-            <div className="page-base">
-                <div className="action-section">
+            <div id="page-base">
+                <div id="nav-header">
                     <SubNav root="ensembles" buttons={buttons} />
                 </div>
-                <div className="form-section">
-                    <div className="page-details">
+                <div id="page-frame">
+                    <div id="page">
                         <FilterContainer
                             id="ensembles-filter"
                             filterTag="ensemble"
@@ -57,6 +57,7 @@ const EnsemblesLayout = async (props) => {
                                             key={i}
                                             caption={ensemble.name}
                                             tag="ensemble"
+                                            name={ensemble.name}
                                             cardLinkTo={`/e/ensembles/${ensemble.id}/general`}
                                         />
                                     )

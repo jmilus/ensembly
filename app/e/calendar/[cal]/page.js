@@ -14,7 +14,7 @@ const EventsPage = async (context) => {
     const focusDay = new Date(urlDate[0], parseInt(urlDate[1]) - 1, urlDate[2]);
 
     return (
-        <div className="page-details">
+        <div id="page">
             <article>
                 <Calendar firstDay={focusDay} events={events} />
             </article>

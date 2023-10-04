@@ -13,7 +13,7 @@ const BroadcastsPage = async (context) => {
     // console.log({ broadcastsList });
 
     return (
-        <div className="page-details">
+        <div id="page">
             <fieldset className="tall" style={{width: "300px"}}>
                 <legend>Broadcasts</legend>
                 <FilterContainer
@@ -21,14 +21,24 @@ const BroadcastsPage = async (context) => {
                     filterTag="broadcast"
                     columns={{ count: 1, width: "1fr" }}
                     search={{ label: "Search Broadcasts", searchProp: "subject" }}
+                    filters={[
+                        {name: "status", filterProp: "broadcastStatus", buttons: ["draft", "published"]}
+                    ]}
+                    debug
                 >
                     {
                         broadcastsList.map((bc, b) => {
                             return (
                                 <ItemCard
+                                    key={b}
+                                    itemIcon={<i style={{fontSize: "2em"}}>{bc.status === "DRAFT" ? "edit_note" : "outgoing_mail"}</i>}
                                     caption={bc.subject}
                                     subtitle={`${bc.status === "DRAFT" ? "Edited: " : "Sent: "}${new Date(bc.status_date).toLocaleString()}`}
-                                    cardLinkTo={`/e/messages/broadcasts/${id}`}
+                                    cardLinkTo={`/e/messages/broadcasts/${bc.id}`}
+                                    style={bc.status === "DRAFT" ? { color:  "hsl(var(--color-s))" } : { color: "hsl(var(--color-p))", background: "hsl(var(--color-s))" }}
+                                    tag="broadcast"
+                                    broadcastStatus={bc.status.toLowerCase()}
+                                    highlightWhenSelectedId={bc.id}
                                 ></ItemCard>
                             )
                             // return <BroadcastBox key={b} info={bc} tag="broadcast" subject={bc.subject} />
@@ -36,10 +46,7 @@ const BroadcastsPage = async (context) => {
                     }
                 </FilterContainer>
             </fieldset>
-            <fieldset className="tall" style={{flex: 1}}>
-                <legend>Detail</legend>
-                {context.children}
-            </fieldset>
+            {context.children}
         </div>
     )
 }

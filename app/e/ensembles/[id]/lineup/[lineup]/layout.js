@@ -7,11 +7,11 @@ export default async function LineupLayout(props) {
    
     return (
         <>
-            <div className="page-header">
+            <div id="page-header">
                 <LineupSelector value={props.params.lineup} lineups={lineups}/>
                 <div id="lineup-filter-search"></div>
             </div>
-            <div className="page-details">
+            <div id="page">
                 { props.children }
             </div>
         </>

@@ -8,6 +8,7 @@ import FilterContainer from 'components/FilterContainer';
 import TabControl, { Tab } from 'components/TabControl';
 
 import useStatus from 'hooks/useStatus';
+import { createPortal } from 'react-dom';
 
 const LineupManager = ({ initialProps }) => {
     // console.log({ initialProps })
@@ -26,6 +27,9 @@ const LineupManager = ({ initialProps }) => {
 
     const roster = ensemble.EnsembleMembership;
     const status = useStatus();
+
+    let pageFrame;
+    if (typeof window !== 'undefined') pageFrame = document.getElementById("page-frame");
 
     // console.log("View Lineup initialProps:", { initialProps })
     // console.log(assignments);
@@ -101,8 +105,8 @@ const LineupManager = ({ initialProps }) => {
     }
 
     const memberRosterBox = 
-        <div id="full-roster" style={{display: "flex", position: "relative", marginLeft: "20px", height: "100%", width: showRoster ? "200px" : "0px", transition: "all 0.2s ease" }}>
-            <div style={{position: "absolute", width: "250px", height: "100%", right: showRoster ? "-50px" : "-300px", transition: "all 0.2s ease"}}>
+        <div id="full-roster" style={{display: "flex", position: "absolute", marginLeft: "20px", height: "calc(100% -60px)", top: "60px", right: "0px", height: "calc(100% - 60px)",zIndex: 100, width: showRoster ? "250px" : "0px", transition: "all 0.2s ease" }}>
+            <div style={{position: "absolute", width: "250px", height: "100%", right: showRoster ? "0px" : "-250px", transition: "all 0.2s ease"}}>
                 <div id="popout-tab-button" onClick={() => setShowRoster(!showRoster)}><i>groups</i></div>
                 <article style={{ boxShadow: "-1px -1px 1px var(--gray4)", padding: "10px", backgroundImage: "linear-gradient(var(--gray2), var(--gray3))" }}>
                     <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={["CARD-IN"]} />
@@ -112,7 +116,7 @@ const LineupManager = ({ initialProps }) => {
                         columns={{count: 1, width:"1fr"}}
                         search={{ label: "member", searchProp: "name" }}
                         filters={[
-                            { name: "assigned", filterProp: "assigned", buttons: [{ Unassigned: (prop) => !prop }, { Assigned: (prop) => prop } ] }
+                            { name: "assigned", filterProp: "assigned", buttons: [{ unassigned: (prop) => !prop }, { assigned: (prop) => prop } ] }
                         ]}
                     >
                         {
@@ -121,6 +125,7 @@ const LineupManager = ({ initialProps }) => {
                                     <ItemCard
                                         key={m}
                                         tag="member"
+                                        name={membership.Member.aka}
                                         caption={membership.Member.aka}
                                         dropItem={membership}
                                         cardType="CARD-OUT"
@@ -161,10 +166,9 @@ const LineupManager = ({ initialProps }) => {
     }
     
     return (
-        <section className="lineup-manager" style={{ flex: 1,  height: "100%", paddingLeft: "10px"}}>
+        <section className="lineup-manager" style={{ flex: 1,  height: "100%", paddingLeft: "10px", paddingRight: showRoster ? "200px" : "0px", transition: "all 0.2s ease"}}>
             <FilterContainer
                 id={`lineup-filter`}
-                title={lineup.name}
                 filterTag="member"
                 search={{ label: "Search Assignees", searchProp: "name" }}
                 columns={{ count: 1, width: "1fr" }}
@@ -201,6 +205,7 @@ const LineupManager = ({ initialProps }) => {
                                                                     <ItemCard
                                                                         key={m}
                                                                         tag="member"
+                                                                        name={assignment.EnsembleMembership.Member.aka}
                                                                         caption={assignment.EnsembleMembership.Member.aka}
                                                                         subtitle={currentDivision.name}
                                                                         dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
@@ -220,7 +225,11 @@ const LineupManager = ({ initialProps }) => {
                     
                 </TabControl>
             </FilterContainer>
-            {memberRosterBox}
+            {createPortal(
+                memberRosterBox,
+                pageFrame
+            )}
+            {/* {memberRosterBox} */}
         </section>
     )
     

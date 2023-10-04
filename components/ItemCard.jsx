@@ -1,11 +1,12 @@
 'use client'
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
-const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subtitle, cardLinkTo, captionLinkTo, style, cardBodyStyle, children }) => {
+const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subtitle, cardLinkTo, captionLinkTo, style, cardBodyStyle, highlightWhenSelectedId, children }) => {
     const router = useRouter();
+    const pathname = usePathname()
 
     const [{ isDragging }, drag] = useDrag(() => ({
         type: cardType || "",
@@ -19,17 +20,22 @@ const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subt
         })
     }))
 
+    let selectionHighlight = pathname.includes(highlightWhenSelectedId) ? " selected" : "";
+
     return (
         <div
             ref={dropItem ? drag : null}
-            className={`card-container ${classes}${dropItem ? " dragable" : ""}`}
+            className={`card-container ${classes}${dropItem ? " dragable" : ""}${selectionHighlight}`}
             style={{ ...style, opacity: isDragging ? 0 : 1, }}
             onClick={cardLinkTo ? () => router.push(cardLinkTo) : null}
         >
             <div className="card-header" onClick={captionLinkTo ? () => router.push(captionLinkTo) : null}>
-                <div className="hero-icon">{itemIcon || getInitials(caption)}</div>
+                {itemIcon
+                    ? itemIcon
+                    : <div className="hero-icon">{getInitials(caption)}</div>
+                }
                 {caption &&
-                    <div className="card-caption">
+                    <div>
                         <div className="card-caption">{caption}</div>
                         <div className="card-subtitle">{subtitle}</div>
                     </div>

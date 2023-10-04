@@ -35,17 +35,12 @@ export const getManyEmails = async (group, groupId) => {
             
             const { data: myresult, error } = await query;
 
-            console.log({ myresult }, { error })
+            if (error) console.log({ error })
             return myresult;
                 // .eq('Member.EnsembleMembership.Ensemble.id', groupId)
-            break;
         default:
-            break;
+            return null;
     }
-
-    // const { data: emails, error } = await query;
-
-    return null;
 }
 
 export async function GET(request) {

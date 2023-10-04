@@ -54,35 +54,59 @@ const StatusBlip = () => {
         })
     }
 
-    const blipIcon = (type, error, action) => {
+    const blipIcon = (type, specialCaption, error, action) => {
         let caption;
         let dismiss = false;
         let timeout = "";
-        let blipAction = action;
+
+        let blipAction = typeof action;
+        let clickAction;
+        switch (blipAction) {
+            case 'function':
+                clickAction = blipAction;
+                break;
+            case 'object':
+                console.log("save path:", path.replace('/e/', '/api/'))
+                clickAction = () => {
+                    dispatch({route: "status", payload: { case: "saving" }})
+                    fetch(path.replace('/e/', '/api/'), {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(action)
+                    })
+                        .then(response => response.json())
+                        .then(res => {
+                            dispatch({ route: "status", payload: { case: "saved" } })
+                        })
+                        .catch((err, message) => {
+                            dispatch({ route: "status", payload: { case: "error", error: { title: "Save Error", message } } })
+                        })
+                }
+        }
         switch (type) {
             case "unsaved":
-                caption = "Click to Save";
+                caption = specialCaption || "Click to Save";
                 timeout = timeToDie === 0 ? " fade" : ""
                 break;
             case "saving":
-                caption = "Saving...";
+                caption = specialCaption || "Saving...";
                 break;
             case "loading":
-                caption = "Loading...";
+                caption = specialCaption || "Loading...";
                 break;
             case "saved":
-                caption = "Saved!";
+                caption = specialCaption || "Saved!";
                 break;
             case "error":
-                caption = "Error";
+                caption = specialCaption || "Error";
                 dismiss = true;
-                blipAction = () => openModal(error);
+                clickAction = () => openModal(error);
                 break;
             default:
                 return null;
         }
         return <div className={`status-blip-body ${type}${timeout}`}>
-            <div className="blip-caption" onClick={blipAction}>{status.caption || caption}</div>
+            <div className="blip-caption" onClick={clickAction}>{status.caption || caption}</div>
             {timeToDie != null ?
                 <div className="blip-timer">
                     <div className="timer-arc"></div>
@@ -95,7 +119,7 @@ const StatusBlip = () => {
     }
 
     if (status) {
-        const icon = blipIcon(status.case, status.error, status.action)
+        const icon = blipIcon(status.case, status.caption, status.error, status.action)
         return (
             <div className="status-blip">
                 {icon}

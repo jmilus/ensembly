@@ -1,12 +1,11 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { extractFields } from 'utils';
-import { slateToHtml } from 'utils/slateToHtml';
-import { POSTMARK_TOKEN } from 'config';
+import { validateEmail } from 'utils';
 
 export const getOneBroadcast = async (id) => {
     const supabase = createServerComponentClient({ cookies });
+    console.log("fetch broadcast with id:", id)
 
     const { data: broadcast, error } = await supabase
         .from("Broadcast")
@@ -18,73 +17,7 @@ export const getOneBroadcast = async (id) => {
         return new Error(error);
     }
 
-    return broadcast;
-}
-
-export const updateOneBroadcast = async (props) => {
-    console.log("save broadcast props:", props);
-    const supabase = createServerComponentClient({ cookies });
-
-    const { id, subject, body, to_address, cc_address, bcc_address } = props;
-
-    const { data: broadcast, error } = await supabase
-        .from("Broadcast")
-        .upsert({
-            id: id,
-            subject,
-            body: JSON.stringify(body),
-            to_address,
-            cc_address,
-            bcc_address
-        })
-    
-    if (error) {
-        console.error("save one Broadcast error:", error);
-        return new Error(error);
-    }
-
-    return broadcast;
-}
-
-export const sendBroadcast = async (props) => {
-    // const { id, to_address, cc_address, bcc_address, subject, htmlBody, textBody, tag } = props
-    // console.log({ props })
-    console.log(props)
-    // console.log(POSTMARK_TOKEN);
-
-    const fetchedBroadcast = await getOneBroadcast(props.id)
-    const broadcast = fetchedBroadcast[0];
-
-    console.log({ broadcast });
-
-    const thisHtml = slateToHtml(broadcast.body);
-
-    const pmResponse = await fetch('https://api.postmarkapp.com/email', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Postmark-Server-Token': POSTMARK_TOKEN
-            },
-            body: JSON.stringify({
-                'From': "hello@ensembly.app",
-                'To': broadcast.to_address.map(to => to).join(","),
-                'cc': broadcast.cc_address.map(cc => cc).join(","),
-                'bcc': broadcast.bcc_address.map(bcc => bcc).join(","),
-                'Subject': broadcast.subject,
-                'HtmlBody': thisHtml,
-                'TextBody': "",
-                'Tag': "BROADCAST"
-            })
-        })
-            .then(response => response.json())
-            .then(res => res)
-            .catch((err, message) => {
-                console.error("failed to send broadcast", err, message);
-                return err;
-            })
-    console.log(pmResponse);
-    return pmResponse;
+    return broadcast[0];
 }
 
 export async function GET({ params }) {
@@ -92,16 +25,80 @@ export async function GET({ params }) {
     return NextResponse.json({ res })
 }
 
+//###########
+
+export const duplicateBroadcast = async (broadcastId) => {
+    const supabase = createServerComponentClient({ cookies });
+    const { data: newBroadcast, error } = await supabase.rpc('clone_broadcast', { broadcast_id: broadcastId })
+
+    if (error) {
+        console.error("duplicate Broadcast error:", error);
+        return new Error(error);
+    }
+
+    return { id: newBroadcast };
+}
+
+export async function POST(request, { params }) {
+    const res = await duplicateBroadcast(params.id)
+    return NextResponse.json(res)
+}
+
+
+export const updateOneBroadcast = async (props) => {
+    const supabase = createServerComponentClient({ cookies });
+    console.log("updating broadcast:", props);
+
+    const { id, subject, body, to_address, cc_address, bcc_address, status } = props;
+
+    const { data: broadcast, error } = await supabase
+        .from("Broadcast")
+        .upsert({
+            id: id === "new" ? undefined : id,
+            subject,
+            body,
+            to_address,
+            cc_address: cc_address ? cc_address.filter(cc => validateEmail(cc)) : [],
+            bcc_address: bcc_address ? bcc_address.filter(bcc => validateEmail(bcc)) : [],
+            status
+        })
+        .select()
+    
+    if (error) {
+        console.error("save one Broadcast error:", error);
+        return new Error(error);
+    }
+
+    console.log("saved broadcase:", broadcast);
+    return broadcast[0];
+}
+
 export async function PUT(request, { params }) {
-    const _req = await request.formData();
-    const req = extractFields(_req);
+    const req = await request.json();
     const res = await updateOneBroadcast({...req, id: params.id})
     return NextResponse.json({ res })
 }
 
-export async function POST(request, { params }) {
-    const _req = await request.formData();
-    const req = extractFields(_req);
-    const res = await sendBroadcast({ ...req, id: params.id })
-    return NextResponse.json({ res });
+//###########
+
+export const deleteOneBroadcast = async (broadcastId) => {
+    const supabase = createServerComponentClient({ cookies });
+
+    const { data, error } = await supabase
+        .from("Broadcast")
+        .delete()
+        .eq('id', broadcastId)
+    
+    if (error) {
+        console.error("delete one Broadcast error:", error);
+        return new Error(error);
+    }
+
+    return data;
+}
+
+export async function DELETE(request, { params }) {
+    console.log("DELETE params:", params)
+    const res = await deleteOneBroadcast(params.id)
+    return NextResponse.json({ res })
 }

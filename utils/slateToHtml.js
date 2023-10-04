@@ -44,11 +44,11 @@ export const slateToHtml = (content) => {
         }
     }
 
-    const html = content.map(block => {
+    const html = content.map((block, b) => {
         const contentBlock = JSON.parse(block.content)
         // console.log({contentBlock})
         const blockHtml = contentBlock.map(con => handleChildren(con)).join("")
-        return `<div>${blockHtml}</div>`
+        return `<div>${blockHtml}</div>${b+1 < content.length ? '<hr style="width:50%;margin:40px auto">' : ''}`
     })
 
     return `<div>${html.join("")}</div>`;

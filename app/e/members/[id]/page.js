@@ -26,7 +26,7 @@ const MemberPage = async (context) => {
 
     return (
         <>
-            <div className="page-header">
+            <div id="page-header">
                 <Form id="aka-form" auto>
                     <Text id="aka" name="aka" label="A.K.A." value={member.aka} hero />
                 </Form>
