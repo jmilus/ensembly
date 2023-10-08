@@ -4,9 +4,9 @@ import SubNav from 'components/SubNav';
 import Link from 'next/link';
 
 const navNodes = [
-    { caption: "Forum", route: "/forum"},
-    { caption: "Broadcasts", route: "/broadcasts" },
-    { caption: "Surveys", route: "/surveys" }
+    { caption: "Forum", route: "/e/messages/forum"},
+    { caption: "Broadcasts", route: "/e/messages/broadcasts" },
+    { caption: "Surveys", route: "/e/messages/surveys" }
 ]
 
 const buttons = {

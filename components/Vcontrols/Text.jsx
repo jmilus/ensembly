@@ -6,8 +6,8 @@ import { validateEmail } from '../../utils';
 
 // import './Vstyling.css';
 
-const Text = (props) => {
-    const { id, name, label, value = "", placeholder, extraAction, format, limit, style, hero, isRequired = false, children, pattern, clear, readonly, debug } = props;
+const EditText = (props) => {
+    const { id, name, label, value="", placeholder, extraAction, format, limit, style, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value === null ? "" : value)
 
     if (debug) console.log(name, { props }, { controlValue });
@@ -108,5 +108,23 @@ const Text = (props) => {
         </>
     );
 }
+
+const Text = (props) => {
+    const { id, label, value="", style, hero, children, readonly } = props;
+
+    if (!readonly) return <EditText {...props} />
+
+    return (
+        <>
+            <div id={`text-${id}`} className={`input-control-base text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${value === "" ? " empty" : ""}`} style={style}>
+                <label htmlFor={id} className="label">{label}</label>
+                <div className="text-input" style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
+            </div>
+            {children}
+        </>
+    )
+
+}
+    
 
 export default Text;

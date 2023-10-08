@@ -10,7 +10,7 @@ import StatusBlip from 'components/StatusBlip';
 import { ClientConsole } from 'components/ClientConsole';
 import ContextFrame from 'components/ContextFrame';
 
-import { getProfile } from '@/api/auth/[id]/route';
+import { getMemberUserProfile } from '@/api/auth/route';
 
 // import 'styles/globals.css'
 // import 'styles/layout.css';
@@ -25,7 +25,7 @@ const ELayout = async ({children}) => {
     // console.log("E layout runs with session:", session)
     if (!session) redirect('/login');
 
-    const profile = await getProfile();
+    const profile = await getMemberUserProfile();
 
     const nav = <Nav />
     

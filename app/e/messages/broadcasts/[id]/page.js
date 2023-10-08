@@ -39,7 +39,7 @@ const BroadcastDetailsPage = async (context) => {
                             filterTag="contact"
                             search={{ label: "contact", searchProp: "email" }}
                             columns={{ count: 1, width: "1fr" }}
-                            rows="auto"
+                            rows="min-content"
                         >
                             <span>To:</span>
                             {
@@ -136,7 +136,7 @@ const BroadcastDetailsPage = async (context) => {
                                 filterTag="module"
                                 search={{ label: "module", searchProp: "module" }}
                                 columns={{ count: 1, width: "1fr" }}
-                                rows="auto"
+                                rows="min-content"
                             >
 
                                 <ItemCard

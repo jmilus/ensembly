@@ -117,7 +117,7 @@ const MemberPage = async (context) => {
                                         caption={membership.ensemble.name}
                                     >
                                         <ModalButton
-                                            modalButton={<><i>feed</i></>}
+                                            modalButton={<><i className="naked">feed</i></>}
                                             title={membership.ensemble.name}
                                             dismiss="Close"
                                         >

@@ -10,6 +10,7 @@ const Button = (props) => {
     const router = useRouter();
     const path = usePathname()
     const status = useStatus();
+    console.log(name, path)
 
     let fetchURL;
     if (APIURL) {
@@ -38,7 +39,7 @@ const Button = (props) => {
                         if (followPath) {
                             let newPath = followPath;
                             if (followPath.includes("$slug$")) {
-                                newPath = followPath.startsWith("$slug$") ? `./${path}/${followPath}` : followPath;
+                                newPath = followPath.startsWith("$slug$") ? `/${path}/${followPath}` : followPath;
                                 newPath = newPath.replace("$slug$", res.id);
                             }
                             console.log("following", newPath)

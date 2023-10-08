@@ -107,6 +107,10 @@ i.big:hover {
 i.big:active {
   color: hsl(var(--color-p));
 }
+i.naked:not(:hover) {
+  border: none;
+  box-shadow: none;
+}
 
 a {
   display: flex;
@@ -227,6 +231,7 @@ button > * + span {
 
 button:not([class]) {
   border-width: 0;
+  box-shadow: none;
 }
 button:not([class]):hover:not(:active) {
   background: hsl(var(--edge-color) / 0.2);
@@ -631,7 +636,7 @@ button.dismiss {
   cursor:not-allowed;
 }
 
-i.btn {
+/* i.btn {
   font-size: 1.25em;
   padding: 5px;
 }
@@ -639,7 +644,7 @@ i.btn.active {
   border-radius: 50%;
   background: var(--gray2);
   background-clip: content-box;
-}
+} */
 
 fieldset {
   padding: 10px;
@@ -763,14 +768,9 @@ fieldset.buttons > legend {
   --grid-columns: 1;
   --min-width: 1fr;
   grid-template-columns: repeat(var(--grid-columns), minmax(var(--min-width), 1fr));
-  grid-template-rows: min-content;
+  grid-template-rows: "none";
   overflow-y: scroll;
 }
-
-
-
-
-
 
 .carousel-title {
   
@@ -823,6 +823,7 @@ fieldset.buttons > legend {
   cursor: pointer;
   padding: 0.75em;
   --edge-color: var(--mintx) 60%;
+  transition: border 0.2s ease;
 }
 .card-container:hover {
   border-color: var(--color-c1);
@@ -890,6 +891,7 @@ fieldset.buttons > legend {
 
 .card-container.selected {
   border-color: var(--color-c2);
+  border-left-width: 15px;
 }
 
 .card-header {

@@ -11,8 +11,8 @@ import { getAllMembershipTypes } from '@/api/membership/types/route';
 import { getManyDivisions } from '@/api/ensembles/[id]/division/route';
 
 const LineupPage = async ({ params }) => {
-
     const ensemble = await getOneEnsemble(params.id)
+    const lineup = await getOneLineup(params.lineup);
     const allcapacities = await getAllMembershipCapacities()
     const membershipTypes = await getAllMembershipTypes(params.id)
     const divisions = await getManyDivisions(params.id, true)
@@ -25,12 +25,7 @@ const LineupPage = async ({ params }) => {
         return membershipcapacities.includes(ac.type)
     })
 
-    if (params.lineup === "x") {
-        const primeLineup = ensemble.Lineup.find(lu => lu.is_primary === true)
-        redirect(`${primeLineup.id}`)
-    }
-
-    const lineup = await getOneLineup(params.lineup);
+    console.log({ params })
 
     return <LineupManager initialProps={{ensemble, lineup, capacities, divisions}} />
 }

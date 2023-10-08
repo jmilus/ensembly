@@ -9,24 +9,20 @@ export const GlobalContext = createContext();
 const contextReducer = (parameters, action) => {
     // console.log({parameters}, {action});
     switch (action.route) {
-      case "profile":
-        parameters.profile = action.payload;
-        return { ...parameters };
-      case "dropdown":
-        parameters.dropdown = action.payload;
-        return { ...parameters };
-      case "status":
-        parameters.status = action.payload;
-        return { ...parameters };
-      default:
-        return null;
+        case "profile":
+            parameters.profile = action.payload;
+            return { ...parameters };
+        case "status":
+            parameters.status = action.payload;
+            return { ...parameters };
+        default:
+            return null;
     }
 }
   
 const ContextProvider = ({ profile, children }) => {
     const initialState = {
         profile: profile,
-        dropdown: null,
         status: null,
         config: {}
     };

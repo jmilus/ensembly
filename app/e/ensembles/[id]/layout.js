@@ -12,10 +12,10 @@ export default async function EnsembleRecordLayout(context) {
     const ensemble = await getOneEnsemble(context.params.id)
     const capacities = await getAllMembershipCapacities();
     const navNodes = [
-        { caption: "General", route: `/${ensemble.id}/general` },
-        { caption: "Schedule", route: `/${ensemble.id}/schedule` },
-        { caption: "Lineup", route: `/${ensemble.id}/lineup/x` },
-        { caption: "Settings", route: `/${ensemble.id}/settings` }
+        { caption: "General", route: `/e/ensembles/${ensemble.id}/general` },
+        { caption: "Schedule", route: `/e/ensembles/${ensemble.id}/schedule` },
+        { caption: "Lineup", route: `/e/ensembles/${ensemble.id}/lineup` },
+        { caption: "Settings", route: `/e/ensembles/${ensemble.id}/settings` }
     ]
 
     const buttons = {

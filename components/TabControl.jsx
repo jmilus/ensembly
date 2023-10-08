@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export const Tab = ({ id, direction, hidePage, tabStyle, children }) => {
+export const Tab = ({ tabName, direction, hidePage, tabStyle, children }) => {
     const newTabStyle = hidePage ? { ...tabStyle, display: "none" } : { ...tabStyle }
     return (
-        <div key={`page-${id}`} id={`page-${id}`} className={`tab-page ${direction ? direction : ""}`} style={newTabStyle}>{children}</div>
+        <div key={`page-${tabName}`} id={`page-${tabName}`} className={`tab-page ${direction ? direction : ""}`} style={newTabStyle}>{children}</div>
     )
 }
 

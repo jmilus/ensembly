@@ -177,12 +177,12 @@ const LineupManager = ({ initialProps }) => {
                 <TabControl>
                     {
                         capacities.map((capacity, t) => {
-                            console.log({capacity})
+                            // console.log({capacity})
                             return (
                                 <Tab key={t} tabName={capacity.type}>
                                     {
                                         divisions.map((div, d) => {
-                                            console.log({div})
+                                            // console.log({div})
                                             let dropDivisions = [];
                                             if (div.capacity != capacity.id) return null;
                                             if (div.children) {

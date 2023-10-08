@@ -3,6 +3,17 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
+
+export async function getOneEmail(id) {
+    return true;
+}
+
+export async function GET(request, { params }) {
+    const res = await getMemberEmails(params.id);
+    return NextResponse.json({ res })
+}
+
+
 export const updateOneEmail = async (emailData) => {
     const { id, email, rank, memberId } = emailData;
     const supabase = createServerComponentClient({ cookies });

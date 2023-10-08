@@ -85,7 +85,7 @@ const Collection = (props) => {
                             return <ItemNode key={i} data={option} />
                         })
                     }
-                    <input type="text" className="collection-adder" value={searchStr} onClick={(e) => showDropDown(e)} onChange={(e) => showDropDown(e)} placeholder={Object.keys(controlValues).length > 0 ? "" : label} />
+                    <input type="text" className="collection-adder" value={searchStr} style={{background:"transparent"}} onClick={(e) => showDropDown(e)} onChange={(e) => showDropDown(e)} placeholder={Object.keys(controlValues).length > 0 ? "" : label} />
                 </div>
                 <select
                     ref={collectorRef}
