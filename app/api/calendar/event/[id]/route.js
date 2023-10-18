@@ -10,7 +10,7 @@ export const getOneEvent = async (id) => {
         .from('Event')
         .select(`
             *,
-            model:EventModel (*, EventType (*), Address (*), parent (*)),
+            model:EventModel (*, EventType (*), address: Address (*), parent (*)),
             lineups:Lineup (
                 *, 
                 assignments:LineupAssignment (
@@ -21,7 +21,7 @@ export const getOneEvent = async (id) => {
                     Division (*)
                 )
             ),
-            Address (*),
+            address: Address (*),
             Attendance (*)
         `)
         .eq('id', id)
@@ -35,6 +35,14 @@ export const getOneEvent = async (id) => {
     return event[0];
 }
 
+// fetch
+export async function GET(request, { params }) {
+    const res = await getOneEvent(params.id)
+    return NextResponse.json({ res })
+}
+
+// #######
+
 export const updateOneEvent = async (data) => {
     const { id, eventStartDate, eventEndDate, note } = data;
     const supabase = createServerComponentClient({ cookies });
@@ -44,7 +52,7 @@ export const updateOneEvent = async (data) => {
     let updateObj = {};
     Object.keys(data).forEach(key => {
         const value = data[key]
-        if (value != undefined) {
+        if (value !== undefined) {
 
             if (key === "eventStartDate" || key === "eventEndDate") {
                 updateObj[key] = new Date(value);
@@ -71,12 +79,6 @@ export const updateOneEvent = async (data) => {
     return event[0];
 }
 
-// fetch
-export async function GET(request, { params }) {
-    const res = await getOneEvent(params.id)
-    return NextResponse.json({ res })
-}
-
 // update
 export async function PUT(request, { params }) {
     const _req = await request.formData()
@@ -84,3 +86,5 @@ export async function PUT(request, { params }) {
     const res = await updateOneEvent({...req, id: params.id})
     return NextResponse.json({ res })
 }
+
+// #######

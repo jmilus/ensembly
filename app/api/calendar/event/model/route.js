@@ -19,6 +19,15 @@ export const getManyEventModels = async (params) => {
     return eventModels;
 }
 
+export async function GET(request) {
+    const req = await request.json()
+    const res = await getManyEventModels(req)
+    return NextResponse.json({res})
+}
+
+// ##################
+
+
 export const createEventModel = async ({ modelName, modelStartDate, modelEndDate, type, parent }) => {
     const supabase = createServerComponentClient({ cookies });
 
@@ -26,34 +35,29 @@ export const createEventModel = async ({ modelName, modelStartDate, modelEndDate
     
     const { data: eventModel, error } = await supabase
         .from('EventModel')
-        .insert([
-            {
-                name: modelName,
-                modelStartDate: new Date(modelStartDate).toISOString(),
-                modelEndDate: new Date(modelEndDate).toISOString(),
-                type,
-                parent
-            }
-        ])
+        .insert({
+            name: modelName,
+            modelStartDate: new Date(modelStartDate).toISOString(),
+            modelEndDate: new Date(modelEndDate).toISOString(),
+            type,
+            parent: parent || null
+        })
         .select()
+        .single()
     
     if (error) {
         console.error("create new Model error:", error)
         return new Error(error);
     }
 
-    return eventModel[0];
-}
-
-export async function GET(request) {
-    const req = await request.json()
-    const res = await getManyEventModels(req)
-    return NextResponse.json({res})
+    return eventModel;
 }
 
 export async function POST(request) {
     const _req = await request.formData()
     const req = extractFields(_req);
     const res = await createEventModel(req)
-    return NextResponse.json({res})
+    console.log("error code:", res.code)
+    return NextResponse.json(res)
+
 }

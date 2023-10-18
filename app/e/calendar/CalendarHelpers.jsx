@@ -6,77 +6,62 @@ import {CheckBox} from 'components/Vcontrols';
 
 import useStatus from 'hooks/useStatus';
 import ModalButton from 'components/ModalButton';
-import { useRouter, usePathname } from 'next/navigation';
 
-const getInitialEventLineups = (model) => {
-    let lineupsInEvents = {}
-    model.events.forEach(event => {
-        lineupsInEvents[event.id] = {}
-        event.lineups.forEach(lu => {
-            lineupsInEvents[event.id][lu.id] = true;
-        })
-    })
-    return lineupsInEvents;
-}
+import { generateGrid, listModelLineups } from 'utils/lineupHelpers';
 
+export function LineupsGrid({ model, allLineups}) {
+    const [grid, setGrid] = useState(generateGrid(model))
 
-export function LineupsGrid({ model, allLineups, closeModal }) {
-    const router = useRouter();
-    const path = usePathname();
-
-    let modelLineups = {}
-    model.events.forEach(event => {
-        event.lineups.forEach(lineup => {
-            modelLineups[lineup.id] = {...lineup}
-        })
-    })
-
-    const [eventLineups, setEventLineups] = useState(getInitialEventLineups(model));
+    const modelLineups = listModelLineups(model)
     const status = useStatus();
 
-    console.log({eventLineups})
-
-    const handleChangeLineupAssignment = (action, event, lineup) => {
-        let tempEventLineups = { ...eventLineups };
-
-        tempEventLineups[event][lineup] = action;
-        
-        setEventLineups(tempEventLineups)
+    console.log({ modelLineups })
+    
+    const isLineupInAllEvents = (lineup) => {
+        return Object.values(grid).every(event => {
+            return event[lineup] && event[lineup] === true;
+        })
     }
 
-    const setAll = (lineup) => {
-        let tempEventLineups = { ...eventLineups };
-
-        const allChecked = Object.keys(tempEventLineups).every(event => {
-            return tempEventLineups[event][lineup];
-        })
-
-        Object.keys(tempEventLineups).forEach(key => {
-            tempEventLineups[key][lineup] = !allChecked;
-        })
-
-        setEventLineups(tempEventLineups);
+    const doesEventHaveAllLineups = (event) => {
+        return Object.values(grid[event]).every(lineup => lineup)
     }
 
-    const submitEventLineups = async () => {
-        let events = [];
-        let lineupsSet = [];
-        Object.keys(eventLineups).forEach(event => {
-            events.push(event);
-            const lineups = Object.keys(eventLineups[event]).filter(lu => eventLineups[event][lu] === true)
-            lineupsSet.push(lineups)
-        })
-        status.saving();
+    const handleToggleSingle = (action, event, lineup) => {
+        const tempGrid = { ...grid }
+        tempGrid[event][lineup] = action;
+        setGrid(tempGrid);
+    }
 
-        return fetch('/api/calendar/event', {
+    const handleToggleLineup = (lineup) => {
+        const action = !isLineupInAllEvents(lineup)
+        const tempGrid = { ...grid }
+        Object.keys(tempGrid).forEach(event => {
+            tempGrid[event][lineup] = action;
+        })
+        setGrid(tempGrid)
+    }
+
+    const handleToggleEvent = (event) => {
+        const action = !doesEventHaveAllLineups(event)
+        const tempGrid = { ...grid }
+        modelLineups.forEach(lineup => {
+            tempGrid[event][lineup] = action;
+        })
+        setGrid(tempGrid);
+    }
+
+    const saveChanges = () => {
+        status.saving()
+        const result = fetch(`/api/calendar/event/model/${model.id}/lineups`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(eventLineups)
+            body: JSON.stringify(grid)
         })
             .then(response => response.json())
             .then(res => {
                 status.saved()
-                return res
+                console.log(res)
             })
             .catch((err, message) => {
                 status.error()
@@ -84,7 +69,9 @@ export function LineupsGrid({ model, allLineups, closeModal }) {
                 return err;
             })
         
+        return true;
     }
+    
 
     return (
         <ModalButton
@@ -92,34 +79,34 @@ export function LineupsGrid({ model, allLineups, closeModal }) {
             modalButton={<><i>view_list</i><span>Manage Lineups</span></>}
             buttonClass="fit"
         >
-            <div className="lineup-grid">
-                <div className="event-row grid-header">
-                    <div className="event-header lineup-column"></div>
+            <div id="event-lineup-grid">
+                <div className="event-lineup-grid-row">
+                    <div className="event-lineup-grid-cell"></div>
                     {
-                        Object.values(modelLineups).map((ms, i) => {
+                        modelLineups.map((ml, i) => {
                             return (
-                                <div key={i} className="lineup-header lineup-column" >
-                                    <button className="column-button" onClick={() => setAll(ms.id)}>{ms.name}</button>
+                                <div key={i} className="event-lineup-grid-header event-lineup-grid-cell" >
+                                    <button className="grid-header-button" onClick={() => handleToggleLineup(ml.id)}>{ml.name}</button>
                                 </div>
                             )
                         })
                     }
                 </div>
-                <article>
+                <article className="scroll">
                     {
                         model.events.map((event, e) => {
                             return (
-                                <div key={e} className="event-row">
-                                    <div className="event-header lineup-column">
-                                        <span>{event.name || model.name}</span><br />
-                                        <span style={{ color: "var(--color-cactus)" }}>{new Date(event.eventStartDate).toDateString()}</span>
-                                    </div>
+                                <div key={e} className="event-lineup-grid-row">
+                                    <button className="grid-header-button event-lineup-grid-cell" onClick={() => handleToggleEvent(event.id)}>
+                                        <span>{event.name || model.name}</span>
+                                        <span style={{ color: "var(--color-c2)" }}>{new Date(event.eventStartDate).toDateString()}</span>
+                                    </button>
                                     {
-                                        Object.values(modelLineups).map((lineup, l) => {
-                                            const isChecked = eventLineups[event.id] ? eventLineups[event.id][lineup.id] : false;
+                                        modelLineups.map((lineup, l) => {
+                                            const isChecked = grid[event.id] ? grid[event.id][lineup.id] : false;
                                             return (
-                                                <div key={l} className="lineup-column" >
-                                                    <CheckBox id={`${e}-${l}`} shape="button" value={isChecked} extraAction={(action) => handleChangeLineupAssignment(action, event.id, lineup.id)} />
+                                                <div key={l} className="event-lineup-grid-cell" >
+                                                    <CheckBox id={`${e}-${l}`} shape="button" value={isChecked} extraAction={(action) => handleToggleSingle(action, event.id, lineup.id)} />
                                                 </div>
                                             )
                                         })
@@ -131,7 +118,7 @@ export function LineupsGrid({ model, allLineups, closeModal }) {
                 </article>
             </div>
             <section className="modal-buttons">
-                <button name="submit" onClick={submitEventLineups}>Save</button>
+                <button name="submit" className="fit" onClick={saveChanges}>Save Changes</button>
             </section>
         </ModalButton>
     )

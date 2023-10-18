@@ -24,7 +24,7 @@ export async function getSecurityRoles(namesOnly) {
         return new Error(error);
     }
     
-    console.log({ securityRoles });
+    // console.log({ securityRoles });
 
     return securityRoles
 }

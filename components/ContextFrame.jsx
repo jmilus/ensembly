@@ -12,9 +12,6 @@ const contextReducer = (parameters, action) => {
         case "profile":
             parameters.profile = action.payload;
             return { ...parameters };
-        case "status":
-            parameters.status = action.payload;
-            return { ...parameters };
         default:
             return null;
     }

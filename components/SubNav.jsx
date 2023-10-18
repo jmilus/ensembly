@@ -32,10 +32,6 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
         router.refresh()
     }
 
-    const navNodeButtons = navNodes.map((node, n) => {
-        return <div key={n} className={`sub-nav-button ${locations[0].caption === node.caption ? "selected" : ""}`} onClick={() => router.push(node.route)}>{node.caption}</div>
-    })
-
     const userIcon = <div ref={userIconRef} className="hero-icon">
         <button className="profile-button" onClick={() => setShowMenu(true)}>
             <div className="profile-icon">{initials}</div>
@@ -50,17 +46,20 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
         }
     </div>
 
-    const currentRoute = navNodes.find(nn => path.includes(nn.route))
+    const currentRoute = navNodes.find(nn => locations[0].caption === nn.caption)
     // console.log({navNodes},{currentRoute})
-    const routeCaption = currentRoute?.caption || ""
+    const routeCaption = currentRoute?.caption.toLowerCase() || ""
+    console.log({routeCaption})
         
     return (
         <div className="nav-wrapper">
             <div className="nav-header" >
                 <span onClick={() => router.push(`/e/${root}`)}>{caption || root}</span>
             </div>
-            {
-                navNodeButtons
+            {navNodes.length > 1 &&
+                navNodes.map((node, n) => {
+                    return <div key={n} className={`sub-nav-button ${locations[0].caption === node.caption ? "selected" : ""}`} onClick={() => router.push(node.route)}>{node.caption}</div>
+                })
             }
             <div className="sub-nav-actions">
                 {

@@ -23,7 +23,8 @@ export const getOneEventModel = async (id) => {
                         Division (*)
                     )
                 )
-            )
+            ),
+            address:Address (*)
         `)
         .eq('id', id)
     
@@ -35,7 +36,15 @@ export const getOneEventModel = async (id) => {
     return eventModel[0];
 }
 
-export const updateOneEventModel = async ({data}) => {
+export async function GET(request, { params }) {
+    const req = await request.json()
+    const res = await getOneEventModel({...req, model: params.model})
+    return NextResponse.json({ res })
+}
+
+// #######
+
+export const updateOneEventModel = async (data) => {
     const supabase = createServerComponentClient({ cookies });
 
     console.log("update model data:", { data })
@@ -43,7 +52,7 @@ export const updateOneEventModel = async ({data}) => {
     let updateObj = {}
     Object.keys(data).forEach(key => {
         const value = data[key]
-        if (value != undefined) {
+        if (value !== undefined) {
             
             if (key === "modelStartDate" || key === "modelEndDate") {
                 updateObj[key] = new Date(value);
@@ -55,22 +64,35 @@ export const updateOneEventModel = async ({data}) => {
         }
     })
 
+    console.log({updateObj})
+
     const { data: model, error } = await supabase
         .from('EventModel')
         .update(updateObj)
-        .eq('id', data.modelId)
+        .eq('id', data.id)
         .select()
+        .single()
     
     if (error) {
         console.error("update one eventModel error:", error);
         return new Error(error)
     }
 
-    return model[0]
+    return model
 
 }
 
+export async function PUT(request, { params }) {
+    const _req = await request.formData();
+    const req = extractFields(_req);
+    const res = await updateOneEventModel({...req, id: params.model})
+    return NextResponse.json(res)
+}
+
+// #####
+
 export const createEvent = async (data) => {
+    console.log("new event data:", { data })
     const { model, eventStartDate, eventEndDate, eventName, type, exception=false } = data;
     const supabase = createServerComponentClient({ cookies });
 
@@ -94,20 +116,8 @@ export const createEvent = async (data) => {
 
 }
 
-export async function GET(request, { params }) {
-    const req = await request.json()
-    const res = await getOneEventModel({...req, model: params.model})
-    return NextResponse.json({ res })
-}
-
-export async function PUT(request, { params }) {
-    const _req = await request.formData();
-    const req = extractFields(_req);
-    const res = await updateOneEventModel({...req, modelId: params.model})
-    return NextResponse.json({ res })
-}
-
 export async function POST(request, { params }) {
+    console.log("POST:", params)
     const _req = await request.formData();
     const req = extractFields(_req);
     const res = await createEvent({...req, model: params.model})

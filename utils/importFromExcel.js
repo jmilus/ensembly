@@ -1,5 +1,7 @@
 import Excel from 'exceljs';
 
+import { validateEmail } from 'utils';
+
 import { STATES } from './constants';
 
 const fieldSet = {
@@ -20,7 +22,7 @@ const fieldSet = {
     emailAddress:   { conform: 'email' },
     phonenumber:    { type: 'phone' },
     street:         { type: 'string' },
-    mailingAddress: { conform: 'street' },
+    street1:        { conform: 'street' },
     street2:        { type: 'string' },
     city:           { type: 'string' },
     state:          { type: 'state' },
@@ -28,12 +30,26 @@ const fieldSet = {
     country:        { type: 'string' },
     poBox:          { type: 'string' },
     zipCode:        { conform: 'postalCode' },
-    zip:            { conform: 'postalCode' }
+    zip:            { conform: 'postalCode' },
+    addressType:    { type: 'string' },
+    membershipType: { type: 'string' },
+    membershipStart: { type: 'date' },
+    ensemble:       { type: 'string' },
+    division:       { type: 'string' }
 }
 
 const validateValue = (value, fieldName) => {
     switch (fieldSet[fieldName].type) {
         case 'string':
+            if (fieldName === 'email') {
+                let emailtext = ''
+                if (value.text) {
+                    emailtext = validateEmail(value.text) ? value.text : "";
+                } else {
+                    emailtext = validateEmail(value) ? value : "";
+                }
+                return emailtext;
+            }
             return value === null ? "" : value.toString();
 
         case 'phone':
@@ -106,8 +122,8 @@ const validateValue = (value, fieldName) => {
 
 }
 
-export const readXlsx = async (fileData) => {
-    const importSet = []
+export const readXlsx = async (fileData) => { 
+    const records = []
     const workbook = new Excel.Workbook();
     await workbook.xlsx.load(fileData)
         .then(() => {
@@ -126,22 +142,52 @@ export const readXlsx = async (fileData) => {
 
             worksheet.eachRow((row, r) => {
                 if (r > 1) {
-                    const record = {}
+                    const member = { bio: {}, address: {}, membership: {} }
                     const rowValues = {}
                     row.eachCell((cell, c) => {
                         rowValues[c] = cell.value;
                     })
                     Object.keys(headerSet).forEach((colIndex) => {
                         const fieldName = headerSet[colIndex];
-                        record[fieldName] = validateValue(rowValues[colIndex] ? rowValues[colIndex] : null, fieldName);
+                        const validatedValue = validateValue(rowValues[colIndex] ? rowValues[colIndex] : null, fieldName);
+
+                        switch (fieldName) {
+                            case 'email':
+                                member.email = validatedValue;
+                                break;
+                            case 'phonenumber':
+                                member.phonenumber = validatedValue;
+                                break;
+                            case 'street':
+                            case 'street2':
+                            case 'city':
+                            case 'state':
+                            case 'postalCode':
+                            case 'country':
+                            case 'poBox':
+                                member.address[fieldName] = validatedValue;
+                                break;
+                            case 'membershipType':
+                            case 'membershipStart':
+                                member.membership[fieldName] = validatedValue;
+                                break;
+                            case 'ensemble':
+                                member.ensemble = validatedValue;
+                                break;
+                            case 'division':
+                                member.division = validatedValue;
+                                break;
+                            default:
+                                member.bio[fieldName] = validatedValue;
+                        }
                     })
 
-                    importSet.push(record);
+                    records.push(member)
                 }
             })
         })
     
-    return importSet;
+    return records;
 }
 
 export const memberImportFromExcel = async (importData) => {

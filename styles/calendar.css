@@ -9,53 +9,56 @@
     padding: 10px;
 }
 
-.schema-grid {
+
+/************************* LINEUPS MANAGER *************************/
+
+#event-lineup-grid {
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin: 10px 20px 0;
     overflow: hidden;
 }
-
-.schema-grid > .event-row {
-    margin: 2px;
-    border: 1px solid var(--gray4);
-    border-radius: 7px;
-    align-items: center;
+  
+.event-lineup-grid > article {
+    width: fit-content;
 }
 
-.grid-column {
-    flex: 1;
-    min-width: 10em;
-    margin: auto;
+.event-lineup-grid-header {
+    /* padding: 0 8px; */
+    /* width: 200px; */
+    /* cursor: pointer; */
 }
-
-.schema-header {
-    text-align: center;
+.event-lineup-grid-header > button {
+   flex: 1;
+}
+  
+.event-lineup-grid-cell {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    width: 150px;
+    margin: 1px;
 }
-
-.event-header {
-    padding: 0 8px;
-}
-
-.event-row {
+  
+.event-lineup-grid-row {
     display: flex;
-
+    border-bottom: 1px solid var(--gray3);
+    padding: 10px 0;
 }
-
-.column-button {
+  
+.grid-header-button {
+    white-space: normal;
     padding: 5px;
+    height: auto;
     margin: 3px;
     border-radius: 5px;
-    overflow: hidden;
-    background: var(--gray3);
     cursor: pointer;
+    --edge-color: var(--color-h3);
+    overflow: hidden;
+    box-shadow: 0 0 0 0 hsl(var(--edge-color));
 }
-.column-button:hover {
-    background: var(--gray4);
-}
+
+
+/************************* ATTENDANCE MANAGER *************************/
 
 .attendance-container {
     display: flex;

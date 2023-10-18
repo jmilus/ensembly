@@ -61,7 +61,7 @@ const LineupManager = ({ initialProps }) => {
     }
 
     useEffect(() => {
-        if(!saved) status.unsaved(saveAssignments)
+        if(!saved) status.unsaved(undefined, saveAssignments)
     }, [assignments, deletedAssignments])
 
     const handleDrop = async (payload) => {

@@ -1,8 +1,9 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { extractFields } from 'utils';
 
-export const updateEventLineups = async (props) => {
+export const bulkUpdateModelLineups = async (props) => {
     const supabase = createServerComponentClient({ cookies });
 
     console.log("updateEventLineups received:", props)
@@ -11,6 +12,8 @@ export const updateEventLineups = async (props) => {
     let lineupsList = Array.isArray(lineups) ? lineups : [lineups];
 
     console.log({ lineupsList }, { initialLineups }, { events })
+
+    // const initialLineupsArray = initialLineups === "" ? [] : initialLineups;
 
     const newLineups = lineupsList.filter(lineup => {
         return !initialLineups.includes(lineup)
@@ -42,38 +45,12 @@ export const updateEventLineups = async (props) => {
     return true;
 }
 
-export const manageEventLineups = async (eventLineups) => {
-    const supabase = createServerComponentClient({ cookies })
-    
-    console.log(eventLineups)
-
-    const queries = Object.keys(eventLineups).map(event => {
-        const eventSet = eventLineups[event];
-        return Object.keys(eventLineups[event]).map(lu => {
-            if (eventSet[lu]) {
-                return supabase.from('EventLineup').insert({ event: event, lineup: lu }).neq('event', event).neq('lineup', lu);
-            } else {
-                return supabase.from('EventLineup').delete().eq('event', event).eq('lineup', lu)
-            }
-        })
-    }).flat()
-
-    const {error} = Promise.all(queries)
-
-    return true;
-}
-
 export async function PUT(request) {
     const _req = await request.formData()
     const req = extractFields(_req)
-    let res;
-    switch (req.route) {
-        case "all":
-            res = await updateEventLineups(req)
-            break;
-        default:
-            res = await manageEventLineups(req)
-    }
+    let res = await bulkUpdateModelLineups(req)
 
-    return NextResponse.json({ res })
+    return NextResponse.json(res)
 }
+
+//

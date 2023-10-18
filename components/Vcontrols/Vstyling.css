@@ -50,6 +50,11 @@ section.spaced > * + * {
     border-color: var(--gray3);
 }
 
+.input-control-base.select-box > select {
+    border-width: 1px;
+    border-radius: 4px;
+}
+
 .number-input {
     text-align: right;
 }
@@ -62,6 +67,16 @@ input[type="date"][value=""] {
 select {
     appearance: none;
     padding-right: 40px !important;
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--mint3) 50%),
+        linear-gradient(135deg, var(--mint3) 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) calc(1em + 3px),
+        calc(100% - 10px) calc(1em + 3px);
+    background-size:
+        8px 8px,
+        8px 8px;
+    background-repeat: no-repeat;
 }
 select:hover {
     background-image:
@@ -203,7 +218,7 @@ select:-internal-list-box {
 }
 
 .node-wrapper {
-    --node-color: var(--color-moss);
+    --node-color: var(--color-c3);
     display: flex;
     align-items: center;
     margin: 1.5px;
@@ -212,7 +227,7 @@ select:-internal-list-box {
     border-radius: 5px;
     /* background: var(--node-color); */
     color: var(--node-color);
-    outline: 3px solid color-mix(in oklab, transparent, var(--node-color));
+    outline: 1px solid color-mix(in oklab, transparent, var(--node-color));
     outline-offset: -3px;
     cursor: default;
 }
@@ -263,7 +278,6 @@ select:-internal-list-box {
 
 .input-control-base textarea {
     padding: 10px;
-    min-height: 10em;
 }
 
 .input-control-base input[readonly],
@@ -301,27 +315,22 @@ select:-internal-list-box {
 .select-option {
     display: flex;
     align-items: center;
-    padding: 10px;
     font-size: 14px;
     overflow: hidden;
     transition: height 0.05s ease;
     border-width: 0;
     background: var(--gray0);
-    height: var(--option-height);
 }
 
 .select-option:hover {
-    background: var(--mint2);
     cursor: pointer;
+    box-shadow: 0 0 50px -30px inset var(--hover-color)
 }
 
-.select-option>.color-dot {
-    width: 10px;
+.color-dot {
     height: 10px;
+    width: 10px;
     border-radius: 50%;
-    overflow: hidden;
-    margin-right: 10px;
-    border: 1px solid white;
 }
 
 .input-control-base.hero {
@@ -662,6 +671,8 @@ i.dot.selected {
 .popup-children {
     position: absolute;
     box-shadow: 0 5px 10px -5px var(--gray4);
+    max-height: 300px;
+    overflow:scroll;
 }
 #popup-backing {
     height: 100%;

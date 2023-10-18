@@ -3,55 +3,40 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useRef, useContext } from 'react';
 
-import { GlobalContext } from "../components/ContextFrame";
+import { BlipContext } from 'components/BlipContext';
 
 function useStatus() {
-    const { dispatch } = useContext(GlobalContext);
+    const { setBlipState } = useContext(BlipContext);
     const transitionTimer = useRef()
     const router = useRouter();
 
     const vanish = () => {
         transitionTimer.current = null;
-        dispatch({
-            route: "status",
-            payload: null
-        })
+        setBlipState(null)
     }
 
     const unsaved = (caption, saveAction) => {
         console.log("data is unsaved")
         
-        dispatch({
-            route: "status",
-            payload: { case: "unsaved", action: saveAction, caption }
-        })
+        setBlipState({ mode: "unsaved", action: saveAction, caption })
     }
 
     const saving = (caption) => {
         console.log("now saving...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
-        dispatch({
-            route: "status",
-            payload: { case: "saving", caption }
-        })
+        setBlipState({ mode: "saving", caption })
     }
 
     const loading = (caption) => {
         console.log("loading data...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
-        dispatch({
-            route: "status",
-            payload: { case: "loading", caption }
-        })
+        setBlipState({ mode: "loading", caption })
     }
 
     const saved = (caption) => {
         console.log("Data saved!")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
-        dispatch({
-            route: "status",
-            payload: { case: "saved", caption }
-        })
+        setBlipState({ mode: "saved", caption })
         router.refresh()
         transitionTimer.current = setTimeout(() => vanish(), 4000)
     }
@@ -59,10 +44,7 @@ function useStatus() {
     const error = (caption, title, message) => {
         console.log("Error!")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
-        dispatch({
-            route: "status",
-            payload: { case: "error", error: {title, message}, caption }
-        })
+        setBlipState({ mode: "error", error: {title, message}, caption })
         // router.refresh()
         transitionTimer.current = setTimeout(() => vanish(), 10000)
     }

@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
 
 
 export const updateOneEmail = async (emailData) => {
-    const { id, email, rank, memberId } = emailData;
+    const { id, email, type, memberId } = emailData;
     const supabase = createServerComponentClient({ cookies });
 
     console.log("update member email data:", emailData)
@@ -25,7 +25,7 @@ export const updateOneEmail = async (emailData) => {
         .upsert({
             id: id === 'undefined' ? undefined : id,
             email,
-            rank,
+            type,
             member: memberId
         })
         .select()

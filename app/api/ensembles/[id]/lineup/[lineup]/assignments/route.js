@@ -66,7 +66,8 @@ export const updateLineupAssignments = async ({ lineup, assignments, deletions }
                 division: ca.newDivision.id
             }
         )
-        .eq('division', ca.Division.id)
+            .eq('division', ca.Division.id)
+            .eq('lineup', lineup)
     })
 
     const deletes = deletions.map(de => {

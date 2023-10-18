@@ -16,8 +16,6 @@ const Collection = (props) => {
     const collectorRef = useRef()
 
     useEffect(() => {
-        const inputEvent = new Event('change', { bubbles: true });
-        collectorRef.current.dispatchEvent(inputEvent);
         setSearchStr("")
         if(extraAction) extraAction(controlValues)
     }, [controlValues])
@@ -27,6 +25,8 @@ const Collection = (props) => {
     if (debug) console.log({ options },  {controlOptions}, { value }, { controlValues })
 
     const handleValueUpdate = (input) => {
+        const inputEvent = new Event('change', { bubbles: true });
+        collectorRef.current.dispatchEvent(inputEvent);
         setShowPopup(false)
         setControlValues(input)
     }
@@ -114,9 +114,9 @@ const Collection = (props) => {
                         Object.keys(controlOptions).map((key, o) => {
                             const option = controlOptions[key];
                             return (
-                                <div key={o} id={option.id} className="select-option" onClick={(e) => handleDropDownSelection(key, e)}>
-                                    {option.color && <div className="color-dot" style={{backgroundColor: option.color}}></div>}
-                                    {option.caption}
+                                <div key={o} id={option.id} className="select-option" style={{['--hover-color']: option.color ? `hsl(${option.color})` : 'var(--mint5)', padding: "10px 15px"}} onClick={(e) => handleDropDownSelection(key, e)}>
+                                    {option.color && <div className="color-dot" style={{marginRight: "10px", backgroundColor: `hsl(${option.color})`}}></div>}
+                                    <span style={{color: `hsl(${option.color})`}}>{option.caption && option.caption}</span>
                                 </div>
                             )
                         })

@@ -4,57 +4,55 @@ import { useRouter, usePathname } from 'next/navigation';
 import useStatus from '../../hooks/useStatus';
 
 const Button = (props) => {
-    const { name, caption, APIURL, METHOD, formType, payload, followPath, statusCaptions = {}, buttonClass, style, debug } = props;
+    const { name, caption, APIURL, METHOD, payload, json, followPath, statusCaptions = {}, buttonClass, style, debug } = props;
 
     if (debug) console.log({ props })
     const router = useRouter();
-    const path = usePathname()
+    const path = usePathname().replace('/e/', '/api/')
     const status = useStatus();
     console.log(name, path)
 
-    let fetchURL;
-    if (APIURL) {
-        fetchURL = APIURL.startsWith('/') ? APIURL : `/api${path}/${APIURL}`
-    } else {
-        fetchURL = `/api${path}`
-    }
+    const fetchURL = APIURL ? APIURL : path;
 
     const executeAPI = async () => {
         status.saving(statusCaptions.saving)
         let APIButtonResponse;
-        switch (formType) {
-            case "form":
-                break;
-            case "json":
-            default:
-                APIButtonResponse = await fetch(fetchURL, {
-                    method: METHOD || 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                    .then(response => response.json())
-                    .then(res => {
-                        status.saved(statusCaptions.saved)
-                        console.log("button response:", res)
-                        if (followPath) {
-                            let newPath = followPath;
-                            if (followPath.includes("$slug$")) {
-                                newPath = followPath.startsWith("$slug$") ? `/${path}/${followPath}` : followPath;
-                                newPath = newPath.replace("$slug$", res.id);
-                            }
-                            console.log("following", newPath)
-                            router.push(newPath)
-                            router.refresh()
-                        }
-                        return res
-                    })
-                    .catch((err, message) => {
-                        status.error(statusCaptions.error)
-                        console.error("API button failed", message);
-                        return err;
-                    })
-                break;
+        let data;
+        if (json) {
+            data = JSON.stringify(payload)
+        } else {
+            const formData = new FormData()
+            Object.keys(payload).forEach(field => {
+                formData.append(field, payload[field])
+            })
+            data = formData
         }
+        
+        APIButtonResponse = await fetch(fetchURL, {
+            method: METHOD || 'PUT',
+            headers: json ? { 'Content-Type': 'applicaiton/json' } : {},
+            body: data
+        })
+            .then(response => response.json())
+            .then(res => {
+                status.saved(statusCaptions.saved)
+                console.log("button response:", res)
+                if (followPath) {
+                    let newPath = followPath;
+                    if (followPath.includes("$slug$")) {
+                        newPath = newPath.replace("$slug$", res.id);
+                    }
+                    console.log("following", newPath)
+                    router.push(newPath)
+                    router.refresh()
+                }
+                return res
+            })
+            .catch((err, message) => {
+                status.error(statusCaptions.error)
+                console.error("API button failed", message);
+                return err;
+            })
         return APIButtonResponse;
     }
 

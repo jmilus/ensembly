@@ -12,7 +12,10 @@ export const getMemberEmails = async ({member, type}) => {
         .select('email')
         .eq('member', member)
 
-    if (type) query = query.eq('type', type);
+    if (type) {
+        query = query.eq('type', type);
+        query = query.maybeSingle();
+    }
 
     const { data, error } = await query;
     
@@ -24,5 +27,5 @@ export const getMemberEmails = async ({member, type}) => {
 export async function GET(request, { params }) {
     const req = await request.json();
     const res = await getMemberEmails({...req, member: params.id});
-    return NextResponse.json({ res })
+    return NextResponse.json(res)
 }

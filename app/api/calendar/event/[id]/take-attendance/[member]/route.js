@@ -32,6 +32,17 @@ export const getAttendance = async ({event, member}) => {
     return attendanceObj;
 }
 
+export async function GET(request, { params }) {
+    const event = params.id;
+    const member = params.member;
+    const req = await request.json()
+    const res = await getAttendance({...req, event, member})
+    return NextResponse.json({ res })
+}
+
+// #####
+
+
 export const updateAttendance = async ({ status, event, member }) => {
     const supabase = createServerComponentClient({ cookies });
 
@@ -51,14 +62,6 @@ export const updateAttendance = async ({ status, event, member }) => {
     }
     
     return true;
-}
-
-export async function GET(request, { params }) {
-    const event = params.id;
-    const member = params.member;
-    const req = await request.json()
-    const res = await getAttendance({...req, event, member})
-    return NextResponse.json({ res })
 }
 
 export async function PUT(request, { params }) {

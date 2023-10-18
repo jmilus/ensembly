@@ -7,7 +7,7 @@ import { getSecurityRoles } from '@/api/security/route';
 
 const SecurityWrapper = async ({ currentModule, children }) => {
     const security = await getSecurityRoles()
-    console.log({security})
+    // console.log({security})
     return children 
 }
 

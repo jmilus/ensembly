@@ -6,8 +6,7 @@ import { redirect } from 'next/navigation';
 
 import Nav from 'components/Nav';
 import NavWrapper from 'components/NavWrapper';
-import StatusBlip from 'components/StatusBlip';
-import { ClientConsole } from 'components/ClientConsole';
+// import { ClientConsole } from 'components/ClientConsole';
 import ContextFrame from 'components/ContextFrame';
 
 import { getMemberUserProfile } from '@/api/auth/route';
@@ -32,7 +31,6 @@ const ELayout = async ({children}) => {
     return (
         <ContextFrame profile={profile}>
             <div id="app-body">
-                <StatusBlip />
                 {/* <ClientConsole items={{ session: session, profile: profile }} /> */}
                 <NavWrapper mainNav={nav} />
                 { children }

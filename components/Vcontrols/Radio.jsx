@@ -38,7 +38,7 @@ const Radio = (props) => {
                             <div key={o} className="radio-option">
                                 <input
                                     id={`${name}-${id}-${o}`}
-                                    name={`${name}-${id}`}
+                                    name={name}
                                     value={option.value}
                                     type="radio"
                                     onChange={() => handleControlValueChange(option, o)}

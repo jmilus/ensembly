@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export const isEmpty = (obj) => {
     return Object.keys(obj).length === 0;
 }
@@ -27,8 +29,8 @@ export const packageOptions = (obj) => {
         });
     } else {
         //enums
+        newObj = _.cloneDeep(obj)
         Object.keys(obj).forEach(key => {
-            newObj[key] = { ...obj[key]}
             if (!newObj[key].id) newObj[key].id = key;
             if (!newObj[key].value) newObj[key].value = key;
             if (!newObj[key].caption) newObj[key].caption = newObj[key].name || key;
@@ -232,17 +234,23 @@ export const validateEmail = (email) => {
 }
 
 export const extractFields = (formData) => {
-    const iterator = [...formData.entries()]
-    const data = {}
+    const iterator = [...formData.entries()] // data
+    const extractedData = {}
     iterator.forEach(obj => {
         const [dataKey, dataValue] = obj;
-        console.log({ obj })
-        if (data[dataKey]) {
-            if (!Array.isArray(data[dataKey])) data[dataKey] = [data[dataKey]]
-            data[dataKey].push(dataValue)
+        let key = dataKey;
+        let value = dataValue === 'null' ? null : dataValue;
+        if (dataKey.includes("[]")) {
+            key = key.replace("[]", "")
+            value = JSON.parse(dataValue)
+        }
+        console.log({ obj }, {key}, {value})
+        if (extractedData[key]) {
+            if (!Array.isArray(extractedData[key])) extractedData[key] = [extractedData[key]]
+            extractedData[key].push(value)
         } else {
-            data[dataKey] = dataValue;
+            extractedData[key] = value;
         }
     })
-    return data;
+    return extractedData;
 }

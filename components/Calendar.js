@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 
-import CALENDAR from '../utils/calendarUtils';
-import { CAL } from '../utils/constants';
+import CALENDAR from 'utils/calendarUtils';
+import { CAL } from 'utils/constants';
 
 const NOW = new Date(Date.now());
 const TODAY = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate());
@@ -17,13 +17,13 @@ export const getCalendarView = (input, totalDays = 34) => {
     return { startDate, endDate, totalDays };
 }
 
-export const EventNode = ({ event, color, caption, showDate, inheritedStyle }) => {
+export const EventNode = ({ event, color, caption, showDate, style }) => {
     const isPast = new Date(event.eventStartDate) < TODAY;
-    const eventTypeColor = isPast ? "lightgrey" : color;
+    const eventTypeColor = isPast ? "lightgrey" : `hsl(${color})`;
     
     return (
-        <Link href={`/calendar/event/${event.id}`}>
-            <div className="event-node" style={{...inheritedStyle, ["--node-color"]: eventTypeColor}}>
+        <Link href={`/e/calendar/event/${event.id}`}>
+            <div className="event-node" style={{...style, ["--node-color"]: eventTypeColor}}>
                 <span>{caption}</span>
                 <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(event.eventStartDate)}</span>
             </div>
@@ -41,7 +41,7 @@ const CalDay = ({ day, events = [], inMonth }) => {
         <object className={`cal-day${inMonth ? " current-month" : ""}${isToday ? " today" : ""}${isPast ? " past" : ""}${isWeekend ? " weekend" : ""}`}>
             <div className="cal-day-header">
                 <span>{day.value.getDate() === 1 ? CAL.month.long[day.value.getMonth()] : ""}</span>
-                <Link href={`/calendar/day/${dayURL}`}>
+                <Link href={`/e/calendar/day/${dayURL}`}>
                     <div className="day-button" style={isToday ? {color: "var(--text1)"} : null}>
                         {day.value.getDate()}
                     </div>

@@ -23,9 +23,19 @@ export const getManyLineups = async (ensemble) => {
     return lineups;
 }
 
+export async function GET(request) {
+    const req = await request.json()
+    const res = await getManyLineups(req)
+    return NextResponse.json({ res })
+}
+
+//#####
+
 export const createLineup = async (data) => {
     const { name, ensemble } = data;
     const supabase = createServerComponentClient({ cookies });
+
+    console.log("creating lineup:", data)
 
     const { data: lineup, error } = await supabase
         .from('Lineup')
@@ -36,6 +46,7 @@ export const createLineup = async (data) => {
             }
         ])
         .select()
+        .single()
     
     if (error) {
         console.error("create lineup error:", error)
@@ -43,18 +54,12 @@ export const createLineup = async (data) => {
     }
     
     // console.log("created lineup:", {lineup})
-    return lineup[0];
-}
-
-export async function GET(request) {
-    const req = await request.json()
-    const res = await getManyLineups(req)
-    return NextResponse.json({ res })
+    return lineup;
 }
 
 export async function POST(request, { params }) {
     const _req = await request.formData()
     const req = extractFields(_req);
     const res = await createLineup({...req, ensemble: params.id})
-    return NextResponse.json({ res })
+    return NextResponse.json(res)
 }

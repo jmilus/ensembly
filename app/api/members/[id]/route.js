@@ -19,8 +19,8 @@ export const getOneMember = async (memberId) => {
                 ensemble ( *, type (*)),
                 assignments:LineupAssignment(
                     title,
-                    Lineup(is_primary, name),
-                    Division(name, capacity)
+                    Lineup (id, is_primary, name),
+                    Division (id, name, capacity)
                 )
             )`
         )
@@ -34,6 +34,15 @@ export const getOneMember = async (memberId) => {
     // console.log("getOneMember:", member);
     return member[0];
 }
+
+// fetch
+export async function GET({ params }) {
+    const res = await getOneMember(params.id)
+    return NextResponse.json({ res })
+}
+
+// ########
+
 
 export const updateOneMember = async (memberData) => {
     const { id, firstName, middleName, lastName, aka, suffix, birthday, sex, height, weight, race, ethnicity, hair, eyes } = memberData;
@@ -65,12 +74,6 @@ export const updateOneMember = async (memberData) => {
     if(data) console.log("update member data:", data)
 
     return data;
-}
-
-// fetch
-export async function GET({ params }) {
-    const res = await getOneMember(params.id)
-    return NextResponse.json({ res })
 }
 
 // update

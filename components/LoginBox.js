@@ -3,33 +3,32 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import useStatus from 'hooks/useStatus';
 
 import { HOSTURL } from 'config'
 
 import Image from 'next/image';
-import { Text } from './Vcontrols';
+import { Form, Text } from './Vcontrols';
 
 import GoogleIcon from 'public/images/GoogleIcon.png'
 import DiscordIcon from 'public/images/DiscordIcon.png'
 import LinkedInIcon from 'public/images/LinkedInIcon.png'
+import { validateEmail } from 'utils/index';
 
 import 'styles/modal.css';
 
 const LoginBox = () => {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [linkEmail, setLinkEmail] = useState("")
     const supabase = createClientComponentClient();
     const router = useRouter();
-
-    console.log("Login box session:", supabase.auth.session)
-
-    
+    const status = useStatus();
     
     const sendMagicLink = async () => {
-        console.log("signing in with email")
-        if (email != "") {
+        console.log(validateEmail(linkEmail), linkEmail)
+        if (validateEmail(linkEmail)) {
+            console.log("signing in with email", linkEmail)
             const { data, error } = await supabase.auth.signInWithOtp({
-              email: email,
+              email: linkEmail,
               options: {
                 emailRedirectTo: HOSTURL,
               },
@@ -57,22 +56,25 @@ const LoginBox = () => {
         console.log("signin data", data)
     }
 
-    const signIn = async () => {
-        console.log("signing in with password")
-        const { data, error } = await supabase.auth.signInWithPassword({
+    const signInWithPassword = async (formData) => {
+        const email = formData.get('email')
+        const password = formData.get('password')
+
+        if(email && password) status.saving("Logging In...")
+        
+
+        const { data: result, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
         })
         if (error) {
             console.log("login error", { error })
+            status.error(error)
         } else {
-            console.log("logging in...", { data });
+            console.log("logging in...", { result });
+            status.saved("Welcome!")
             router.refresh()
         }
-    }
-
-    const keyHandler = (e) => {
-        if (e.key === "Enter") signIn();
     }
 
     return (
@@ -84,29 +86,30 @@ const LoginBox = () => {
                             Login to Ensembly
                         </div>
                         <div className="modal-body">
-                            <article onKeyDown={keyHandler}>
+                            <article>
 
-                                <article>
-                                    <Text id="login-email" name="email" label="Email" format="email" extraAction={(a) => setEmail(a)} isRequired />
-                                    <Text id="password" name="password" label="Password" format="password" extraAction={(a) => setPassword(a)} isRequired />
-                                </article>
+                                <Form id="signin-with-password-form" altSubmit={signInWithPassword} style={{ marginBottom: "20px" }} debug>
+                                    <Text id="login-email" name="email" label="Email" format="email" extraAction={setLinkEmail} isRequired />
+                                    <Text id="password" name="password" label="Password" format="password" isRequired/>
+                                </Form>
 
-                                <section >
-                                    <button className="fit centered" onClick={() => signInWithSocial('google')}>
+                                <span style={{alignSelf: "center"}}>Social Logins</span>
+                                <section style={{justifyContent: "center", padding: "10px"}}>
+                                    <button className="fit" onClick={() => signInWithSocial('google')}>
                                         <Image src={GoogleIcon} alt="google-logo" width={25} height={25} />
                                     </button>
-                                    <button className="fit centered" onClick={() => signInWithSocial('discord')}>
+                                    <button className="fit" onClick={() => signInWithSocial('discord')}>
                                         <Image src={DiscordIcon} alt="discord-logo" width={25} height={25} />
                                     </button>
-                                    <button className="fit centered" onClick={() => signInWithSocial('linkedin')}>
+                                    <button className="fit" onClick={() => signInWithSocial('linkedin')}>
                                         <Image src={LinkedInIcon} alt="discord-logo" width={25} height={25} />
                                     </button>
                                 </section>
                             </article>
                         </div>
                         <section className="modal-buttons">
-                            <button className="fit hero centered" onClick={sendMagicLink} style={{['--edge-color']: "var(--color-h2)"}}><i>forward_to_inbox</i>Email Login</button>
-                            <button className="fit hero" onClick={signIn} style={{['--edge-color']: "var(--color-p)"}}>Sign In</button>
+                            <button className="fit hero" onClick={sendMagicLink} style={{['--edge-color']: "var(--color-h2)"}}><i>forward_to_inbox</i><span>Email Login</span></button>
+                            <button className="fit hero" name="submit" form="signin-with-password-form" style={{['--edge-color']: "var(--color-p)"}}>Sign In</button>
                         </section>
                     </div>
                 </div>

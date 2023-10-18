@@ -13,7 +13,7 @@ export const getManyEvents = async ({ startDate, endDate }) => {
         .select(`*,
             model:EventModel (*, 
                 type (*)),
-            location (*),
+            address (*),
             Attendance (*)
         `)
         .gte('eventEndDate', new Date(startDate).toISOString() || undefined)

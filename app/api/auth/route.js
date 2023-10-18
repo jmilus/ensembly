@@ -35,7 +35,7 @@ export async function getMemberUserProfile(member) {
         return;
     }
     
-    console.log({ profile });
+    // console.log({ profile });
 
     return {
         user: profile[0].user,

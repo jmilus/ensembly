@@ -44,6 +44,14 @@ export const getOneLineup = async (id) => {
     return formatDBObject(lineup[0]);
 }
 
+// fetch
+export async function GET({ params }) {
+    const res = await getOneLineup(params.id)
+    return NextResponse.json({ res })
+}
+
+// ##########
+
 export const updateOneLineup = async (data) => {
     const { id, name } = data;
     const supabase = createServerComponentClient({ cookies });
@@ -63,9 +71,21 @@ export const updateOneLineup = async (data) => {
     return data;
 }
 
+// update
+export async function PUT(request, { params }) {
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await updateOneLineup({...req, id: params.id})
+    return NextResponse.json({ res })
+}
+
+// ########
+
 export const duplicateOneLineup = async (data) => {
     const { name, id } = data;
     const supabase = createServerComponentClient({ cookies });
+
+    console.log("duplicating lineup:", data)
 
     const { data: lineupId, error } = await supabase
         .rpc('clone_lineup', { lineup_id: id, new_name: name })
@@ -77,20 +97,6 @@ export const duplicateOneLineup = async (data) => {
 
     // console.log("duplicated lineup:", lineupId)
     return { id: lineupId };
-}
-
-// fetch
-export async function GET({ params }) {
-    const res = await getOneLineup(params.id)
-    return NextResponse.json({ res })
-}
-
-// update
-export async function PUT(request, { params }) {
-    const _req = await request.formData()
-    const req = extractFields(_req);
-    const res = await updateOneLineup({...req, id: params.id})
-    return NextResponse.json({ res })
 }
 
 // insert (duplicate)

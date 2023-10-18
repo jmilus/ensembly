@@ -2,10 +2,10 @@
 
 import React from 'react';
 
-const ModalWrapper = ({ title, classes="", children, closeModal, dismiss="Cancel" }) => {
+const ModalWrapper = ({ title, classes="", children, closeModal, dismiss=undefined }) => {
 
     let modalBody = [];
-    let modalButtons = dismiss != null ? [<button key="dismissbutton0" className="dismiss" onClick={closeModal}>{dismiss}</button>] : [];
+    let modalButtons = [];
     React.Children.forEach(children, child => {
         // console.log("filtering through modal children:", child)
         if (child.props.className === "modal-buttons") {
@@ -16,6 +16,15 @@ const ModalWrapper = ({ title, classes="", children, closeModal, dismiss="Cancel
             modalBody.push(child);
         }
     })
+
+    //dismiss != null ? [<button key="dismissbutton0" className="dismiss" onClick={closeModal}>{dismiss}</button>] : [];
+    if (dismiss !== null) {
+        let dismissCaption = dismiss || "Close"
+        if (modalButtons.length > 0) {
+            dismissCaption = dismiss || "Cancel"
+        }
+        modalButtons.unshift(<button key="dismissbutton0" className="dismiss" onClick={closeModal}>{dismissCaption}</button>)
+    }
 
     const handleFormSubmit = (e) => {
         if (e.nativeEvent.submitter?.name === "submit") {

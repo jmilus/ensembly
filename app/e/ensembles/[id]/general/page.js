@@ -15,7 +15,8 @@ export default async function EnsembleGeneralPage({params}) {
             filterTag="member"
             search={{ label: "Search Members", searchProp: "name" }}
             columns={{ count: 1, width: "1fr" }}
-            rows="auto"
+            rows="min-content"
+            style={{width: "300px"}}
         >
             {
                 memberships.map((membership, m) => {

@@ -25,44 +25,46 @@ export const getOneMembership = async (membershipId) => {
 
 // fetch
 export async function GET({ params }) {
-    const res = await getOneMembership(params.id)
+    const res = await getOneMembership(params.membership)
     return NextResponse.json({ res })
 }
 
 //
 
-export const updateOneMembership = async (membershipData) => {
-    const { id, member, ensemble, status, statusDate, statusNote } = membershipData;
+export const updateOneMembership = async (props) => {
+    const { membership, member, ensemble, status, statusDate, statusNote, membership_expires } = props;
     const supabase = createServerComponentClient({ cookies });
 
-    console.log("update membership profile data:", membershipData)
+    console.log("update membership profile data:", props)
 
-    const { data: [membership], error } = await supabase
+    const { data: updatedMembership, error } = await supabase
         .from('EnsembleMembership')
         .update({
             member,
             ensemble,
             status,
             statusDate: statusDate ? new Date(statusDate) : undefined,
-            statusNote
+            statusNote,
+            membership_expires
         })
-        .eq('id', id)
+        .eq('id', membership)
         .select()
+        .single()
     
     if (error) {
         console.error("update membership error:", error);
         return new Error(error);
     }
 
-    console.log("update membership data:", membership)
+    // console.log("update membership data:", updatedMembership)
 
-    return membership;
+    return updatedMembership;
 }
 
 // update
 export async function PUT(request, { params }) {
     const _req = await request.formData()
     const req = extractFields(_req);
-    const res = await updateOneMembership({...req, id: params.id})
+    const res = await updateOneMembership({...req, ...params})
     return NextResponse.json({ res })
 }

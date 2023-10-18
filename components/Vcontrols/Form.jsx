@@ -6,7 +6,7 @@ import useStatus from '../../hooks/useStatus';
 
 // import './Vstyling.css';
 
-const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, followUp, followPath, onChange, auto, timeout = 1000, style, debug }) => {
+const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, followUp, followPath, onChange, auto, json, timeout = 1000, style, debug }) => {
     const saveTimer = useRef();
     const readOnlyInputs = useRef([]);
     const thisForm = useRef()
@@ -14,7 +14,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
 
     const router = useRouter()
     const pathname = usePathname()
-    const path = pathname.replace("/e/", "/");
+    const path = pathname.replace("/e/", "/api/");
     // console.log("form path:", path)
     // const path = pathname.slice(0, pathname.includes("/$") ? pathname.indexOf("/$") : pathname.length)
 
@@ -28,22 +28,20 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
     }, [])
 
     const sendToAPI = async (data) => {
-        if (debug) console.log("formData:", data.entries())
+        if (debug) json ? console.log(`jsonData: ${data}`) : data.forEach((value, key) => console.log(`key: ${key}, value: ${value}`))
         
-        let fetchURL;
-        if (APIURL) {
-            fetchURL = APIURL.startsWith('/') ? APIURL : `/api${path}/${APIURL}`
-        } else {
-            fetchURL = `/api${path}`
-        }
+        const fetchURL = APIURL ? APIURL : path;
+
+        if (debug) console.log({fetchURL})
 
         return await fetch(fetchURL, {
             method: METHOD || 'PUT',
-            body: data
+            headers: json ? { 'Content-Type': 'applicaiton/json' } : {},
+            body: json ? JSON.stringify(data) : data
         })
             .then(response => response.json())
-            .then(record => {
-                return record;
+            .then(res => {
+                return res;
             })
             .catch((err, message) => {
                 console.error("failed to update record...", message);
@@ -56,43 +54,74 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         if (debug) console.log("form submit event", e);
         
         if (readOnlyInputs.current.includes(e.target.name)) return null;
-        
-        status.saving()
 
-        const formElement = e.target.form ? e.target.form : e.target;
-        const formData = new FormData(formElement);
-
-        if (altSubmit) {
-            altSubmit(dataObject);
-            subActions?.forEach(action => {
-                action(dataObject);
-            })  
-            return;
-        }
-
+        const formData = new FormData(thisForm.current);
         if (auxData) {
-            Object.keys(auxData).forEach(key => {
-                formData.append(key, auxData[key])
+            Object.keys(auxData).forEach(ad => {
+                let key = ad;
+                let value = auxData[ad];
+                if (Array.isArray(auxData[ad])) {
+                    key = ad + "[]"
+                    value = JSON.stringify(auxData[ad])
+                }
+
+                formData.append(key, value)
             })
         }
 
-        const {res} = await sendToAPI(formData)
-        console.log({ res });
-        if (!res) {
+        if (altSubmit) {
+            console.log(e.nativeEvent)
+            if (Array.isArray(altSubmit)) {
+                const submitIndex = e.nativeEvent.submitter.value;
+                console.log("altSubmit is an Array", { submitIndex })
+                altSubmit[submitIndex](formData)
+            } else {
+                altSubmit(formData);
+                subActions?.forEach(action => {
+                    action(formData);
+                })  
+            }
+            return;
+        }
+        
+        status.saving()
+        
+        let submitResult;
+        if (json) {
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                if(!Reflect.has(jsonData, key)){
+                    jsonData[key] = value;
+                    return;
+                }
+                if(!Array.isArray(jsonData[key])){
+                    jsonData[key] = [jsonData[key]];    
+                }
+                jsonData[key].push(value);
+            });
+
+            submitResult = await sendToAPI(jsonData);
+            
+        } else {
+            submitResult = await sendToAPI(formData);
+            
+        }
+
+        console.log({ submitResult });
+        if (!submitResult) {
             status.error("response failure");
             return;
         }
 
-        if (res.err || res[0]?.err) {
+        if (submitResult.err || submitResult[0]?.err) {
             status.error()
             console.error(err);
         } else {
-            if (followUp) followUp(res);
+            if (followUp) followUp(submitResult);
             if (followPath) {
                 let newPath = followPath;
                 if (followPath.includes("$slug$")) {
-                    newPath = followPath.startsWith("$slug$") ? `./${path}/${followPath}` : followPath;
-                    newPath = newPath.replace("$slug$", res.id);
+                    newPath = newPath.replace("$slug$", submitResult.id);
                 }
                 
                 router.push(newPath)
@@ -107,7 +136,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
 
         if (!auto) return null
 
-        console.log(thisForm.current.reportValidity())
+        // console.log(thisForm.current.reportValidity())
 
         if (!thisForm.current.reportValidity()) return null;
         

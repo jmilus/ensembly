@@ -213,7 +213,7 @@ button:hover {
   box-shadow: 0 0 0 2px inset hsl(var(--edge-color));
 }
 button:active {
-  box-shadow: 0 0 0 20px inset hsl(var(--edge-color));
+  box-shadow: 0 0 20px 20px inset hsl(var(--edge-color));
   color: hsl(var(--text-active));
 }
 
@@ -1347,49 +1347,9 @@ fieldset.buttons > legend {
 }
 
 
-/************************* LINEUPS MANAGER *************************/
 
-.lineup-grid {
-  position: relative;
-  overflow: scroll;
-}
 
-.lineup-grid > article {
-  width: fit-content;
-}
 
-.grid-header {
-  position: sticky;
-  top: 0;
-  background: var(--gray1);
-  z-index: 1;
-}
-
-.lineup-header {
-  display: flex;
-}
-
-.lineup-column {
-  width: 150px;
-  margin: 1px;
-}
-
-.event-header {
-  width: 200px;
-}
-
-.event-row {
-  display: flex;
-  border-bottom: 1px solid var(--gray3);
-  padding: 10px 0;
-}
-
-.column-button {
-  white-space: normal;
-  padding: 5px;
-  height: auto;
-  --edge-color: var(--gray3);
-}
 
 
 

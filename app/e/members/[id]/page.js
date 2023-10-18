@@ -8,12 +8,20 @@ import { getAllMembershipTypes } from '@/api/membership/types/route';
 import ProfilePhoto from 'components/ProfilePhoto';
 import ItemCard from 'components/ItemCard';
 import ModalButton from 'components/ModalButton';
-import { Form, Text, Number, Select, DateOnly } from 'components/Vcontrols';
+import { Form, Text, Number, Select, DateOnly, Button } from 'components/Vcontrols';
+import { getManyDivisions } from '@/api/ensembles/[id]/division/route';
+import { getAllMembershipStatus } from '@/api/membership/status/route';
 
 const MemberPage = async (context) => {
     const member = await getOneMember(context.params.id)
     const ensembleList = await getManyEnsembles();
     const membershipTypes = await getAllMembershipTypes();
+    const statuses = await getAllMembershipStatus();
+
+    const divisionOptions = {}
+    member.EnsembleMembership.forEach(async membership => {
+        divisionOptions[membership.ensemble.id] = await getManyDivisions(membership.ensemble.id)
+    })
     
     const bioOptions = await getBioOptions();
 
@@ -23,6 +31,8 @@ const MemberPage = async (context) => {
             return {...matchingEnsemble, memType: mt.id}
         })
     }).flat()
+
+    console.log({statuses})
 
     return (
         <>
@@ -69,15 +79,15 @@ const MemberPage = async (context) => {
                 <fieldset id="member-contacts" style={{gridArea: "contacts"}}>
                     <legend>Contact Info</legend>
                     <section className="inputs">
-                        <Form id="member-email" APIURL={`/api/emails/${member.EmailAddress[0]?.id}`} auxData={{memberId: member.id}} auto >
+                        <Form id="member-email" APIURL={`/api/emails/${member.EmailAddress[0]?.id}`} auxData={{memberId: member.id, type: "Primary"}} auto >
                             <Text id="email" name="email" format="email" label="Email" value={member.EmailAddress[0]?.email} recordId={member.EmailAddress[0]?.id} />
                         </Form>
-                        <Form id="member-phone" APIURL={`/api/phonenumber/${member.PhoneNumber[0]?.id}`} auxData={{memberId: member.id}} auto >
+                        <Form id="member-phone" APIURL={`/api/phonenumber/${member.PhoneNumber[0]?.id}`} auxData={{memberId: member.id, type: "Primary"}} auto >
                             <Text id="phone" name="number" label="Phone Number" format="phone" value={member.PhoneNumber[0]?.phonenumber} recordId={member.PhoneNumber[0]?.id} />
                         </Form>
                     </section>
 
-                    <Form id="address" APIURL={`/api/address/${member.Address[0]?.id}`} auxData={{ memberId: member.id }} auto >
+                    <Form id="address" APIURL={`/api/address/${member.Address[0]?.id}`} auxData={{ memberId: member.id, type: "Home" }} auto >
                         <Text id="street1" name="street" label="Street" value={member.Address[0]?.street} />
                         <Text id="street2" name="street2" label="Street 2" value={member.Address[0]?.street2} />
                         <section className="inputs">
@@ -97,20 +107,32 @@ const MemberPage = async (context) => {
                         buttonClass="fit"
                     >
                         <Form id="add-membership-form" METHOD="POST" APIURL={`/api/membership`} auxData={{ member: member.id }} >
-                            <section className="modal-fields">
+                            <section className="modal-fields inputs">
                                 <Select id="membershipType" name="membershipType" label="Type" options={membershipTypes} isRequired >
                                     <Select id="ensembleName" name="ensemble" label="Ensemble" options={ensembleOptions} filterKey="memType" filter="ensemble" isRequired />
                                 </Select>
                             </section>
                         </Form>
                         <section className="modal-buttons">
-                            <button name="submit" form="add-membership-form">Submit</button>
+                            <button name="submit" className="fit" form="add-membership-form">Submit</button>
                         </section>
                     </ModalButton>
                     <div id="ensemble-membership-list" style={{marginTop:"10px"}}>
                         {
                             member.EnsembleMembership.map((membership, i) => {
-                                console.log("membership:", membership.assignments)
+                                console.log("membership:", membership)
+                                const lineupList = {}
+                                membership.assignments.forEach((assignment, a) => { 
+                                    if (!lineupList[assignment.Lineup.id]) lineupList[assignment.Lineup.id] = {name: assignment.Lineup.name, assignments: []}
+                                    lineupList[assignment.Lineup.id].assignments.push({title: assignment.title, divId: assignment.Division.id, divName: assignment.Division.name})
+                                })
+                                // const divisionOptions = await getManyDivisions(membership.ensemble.id)
+                                const modalTitle = <>{membership.ensemble.name}
+                                    <section style={{ fontSize: "0.65em", display: "flex", alignItems: "center" }}>
+                                        <span style={{ color: "var(--color-c2)", marginRight: "10px" }}>Member Since</span>
+                                        <span >{new Date(membership.created_at).toLocaleDateString()}</span>
+                                    </section>
+                                </>
                                 return (
                                     <ItemCard
                                         key={i}
@@ -118,22 +140,54 @@ const MemberPage = async (context) => {
                                     >
                                         <ModalButton
                                             modalButton={<><i className="naked">feed</i></>}
-                                            title={membership.ensemble.name}
+                                            title={modalTitle}
                                             dismiss="Close"
                                         >
-                                            <article>
-                                                {
-                                                    membership.assignments.map((assignment, a) => {
-                                                        if(!assignment.Lineup.is_primary) return null
-                                                        return (
-                                                            <div key={a} className="assignment">{assignment.Division.name}</div>
-                                                        )
-                                                    })
-                                                }
+                                            <article style={{ width: "750px" }}>
+                                                <Form id="membership-details-form" APIURL={`/api/membership/${membership.id}`} auto >
+                                                    <section className="inputs" >
+                                                        <article style={{flex: 1}}>
+                                                            <Select id="membership-status-select" label="Membership Status" name="status" value={membership.status} options={statuses.map(s => {return {...s, value: s.type} })} debug/>
+                                                            <DateOnly id="membership-expiration-date" label="Membership Expires" name="membership_expires" value={membership.membership_expires} />
+                                                        </article>
+                                                        <Text id="status-note" label="Status Note" name="status_note" value={membership.status_note} limit={1000} style={{ flex: 2 }} />
+                                                    </section>
+                                                </Form>
+                                                <article className="scroll">
+                                                    {
+                                                        Object.keys(lineupList).map((lineupId, l) => {
+                                                            // if(!assignment.Lineup.is_primary) return null
+                                                            const lineup = lineupList[lineupId]
+                                                            return (
+                                                                <section key={l} className="lineup" style={{padding: "5px 10px", border: "1px solid var(--gray3)", borderRadius: "5px", marginTop : "5px"}}>
+                                                                    <div style={{ flex: 2 }}>
+                                                                        <span style={{ fontSize: "1.25em" }}>{lineup.name}</span>
+                                                                        
+                                                                    </div>
+                                                                    <div style={{flex: 3}}>
+                                                                        {
+                                                                            lineup.assignments.map((assignment, a) => {
+                                                                                return (
+                                                                                    <section key={a} >
+                                                                                        <Form id={`${l}-${a}-update-assignment-form`} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} auto>
+                                                                                            <section className="inputs">
+                                                                                                <Select id={`${l}-${a}-division-select`} label="Division" name="new_division" value={assignment.divId} options={divisionOptions[membership.ensemble.id]} isRequired/>
+                                                                                                <Text id={`${l}-${a}-title-text`} label="Title" name="title" value={assignment.title} />
+                                                                                            </section>
+                                                                                        </Form>
+                                                                                        <Button name="delete-assignment-button" caption={<i>delete</i>} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} METHOD="DELETE" style={{ alignSelf: "end", marginBottom: "0.75em", ['--edge-color']: "var(--color-h3)", ['--text-active']: "0 100% 50%"}} />
+                                                                                    </section>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </div>
+                                                                </section>
+                                                            )
+                                                        })
+                                                    }
+                                                </article>
                                             </article>
                                             <section className="modal-buttons">
-                                                <button className="caution">Suspend</button>
-                                                <button className="angry">Terminate</button>
                                             </section>
                                         </ModalButton>
                                     </ItemCard>

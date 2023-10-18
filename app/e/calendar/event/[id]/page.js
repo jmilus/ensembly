@@ -5,7 +5,7 @@ import { getAllEventTypes } from '@/api/calendar/event/types/route';
 import { getManyLineups } from '@/api/ensembles/[id]/lineup/route';
 import { getAttendanceStatus } from '@/api/calendar/event/[id]/take-attendance/route'
 
-import { Form, DateTime, Select, Text, Radio } from 'components/Vcontrols';
+import { Form, DateTime, Select, Text, Radio, Button } from 'components/Vcontrols';
 import FilterContainer from 'components/FilterContainer';
 import SecurityWrapper from 'components/SecurityWrapper';
 import { Collection } from 'components/Vcontrols';
@@ -23,7 +23,7 @@ const EventPage = async (context) => {
         return as1.id - as2.id
     })
 
-    console.log({AttendanceStatus})
+    // console.log({AttendanceStatus})
 
     const attendance = {}
     eventAttendance.forEach(ea => {
@@ -41,7 +41,10 @@ const EventPage = async (context) => {
         })
     })
 
-    console.log({assignments})
+    console.log({event})
+    const thisEventAddress = event.address?.id ? event.address : event.model.address
+
+    console.log({thisEventAddress})
 
     return (
         <>
@@ -67,7 +70,18 @@ const EventPage = async (context) => {
                         </fieldset>
                         <fieldset>
                             <legend>Event Address</legend>
-                            {/* {locationAddress} */}
+                            {event.address &&
+                                <Button id="delete-event-button" caption="Revert to Model Address" buttonClass="fit" payload={{address: null}}/>
+                            }
+                            <Form id="event-location" APIURL={`/api/address/${event.address?.id || "new"}`} auxData={{event: event.id}} auto>
+                                <Text id="street1" name="street" label="Street" value={thisEventAddress?.street || ""} />
+                                <Text id="street2" name="street2" label="Street 2" value={thisEventAddress?.street2 || ""} />
+                                <section className="inputs">
+                                    <Text id="city" name="city" label="City" value={thisEventAddress?.city || ""} style={{ flex: 5 }} />
+                                    <Text id="state" name="state" label="State" value={thisEventAddress?.state || ""} />
+                                    <Text id="postalCode" name="postalCode" label="Zip Code" value={thisEventAddress?.postalCode || ""} style={{ flex: 2 }}/>
+                                </section>
+                            </Form>
                         </fieldset>
                     </article>
                     <article className="scroll">
@@ -118,7 +132,7 @@ const EventPage = async (context) => {
                                         filterTag="attendee"
                                         columns={{ c: 1, w: "1fr" }}
                                         search={{ label: "Search", searchProp: "name" }}
-                                        Vstyle={{width: "750px"}}
+                                        style={{width: "750px"}}
                                     >
                                         <div className="attendance-container">
                                             <div className="attendance-row slider">
@@ -135,7 +149,7 @@ const EventPage = async (context) => {
                                                     Object.values(assignments).map((assignment, m) => {
                                                         const { Member } = assignment.membership;
                                                         return (
-                                                            <Form key={m} id={`${Member.id}-attendance-form`} METHOD="PUT" APIURL={`take-attendance/${Member.id}`} auto>
+                                                            <Form key={m} id={`${Member.id}-attendance-form`} APIURL={`/api/calendar/event/${event.id}/take-attendance/${Member.id}`} auto debug>
                                                                 <div className="attendance-row" tag="attendee" name={Member.aka}>
                                                                     <div className="attendance-name">{Member.aka}</div>
                                                                     <Radio id={Member.id} name="status" value={attendance[Member.id]?.status || 1} type="slider" options={AttendanceStatus} /> {/*debug={Member.id === '0f7f9f27-7588-4d9f-91d5-9ad54dbef507'} /> */}
@@ -149,7 +163,7 @@ const EventPage = async (context) => {
                                     </FilterContainer>
                                 </ModalButton>
                             </section>
-                            <Form id="testing-thing" APIURL="/api/calendar/event" METHOD="PUT" auxData={{route: "all", initialLineups: event.lineups.map(lu => lu.id), events: [event.id]}} auto>
+                            <Form id="event-lineups-form" APIURL="/api/calendar/event" auxData={{route: "all", initialLineups: event.lineups.map(lu => lu.id), events: [event.id]}} auto>
                                 <Collection
                                     id="lineups"
                                     name="lineups"
