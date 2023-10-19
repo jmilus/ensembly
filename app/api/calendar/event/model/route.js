@@ -3,13 +3,18 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
-export const getManyEventModels = async (params) => {
+export const getManyEventModels = async (props) => {
     const supabase = createServerComponentClient({ cookies });
+
+    console.log({ props })
 
     const { data: eventModels, error } = await supabase
         .from('EventModel')
-        .select()
-        .match(params)
+        .select(`
+            *,
+            type:EventType (*)
+        `)
+        .match(props)
     
     if (error) {
         console.log("fetch many models error:", error)

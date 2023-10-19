@@ -22,11 +22,9 @@ export const EventNode = ({ event, color, caption, showDate, style }) => {
     const eventTypeColor = isPast ? "lightgrey" : `hsl(${color})`;
     
     return (
-        <Link href={`/e/calendar/event/${event.id}`}>
-            <div className="event-node" style={{...style, ["--node-color"]: eventTypeColor}}>
-                <span>{caption}</span>
-                <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(event.eventStartDate)}</span>
-            </div>
+        <Link href={`/e/calendar/event/${event.id}`} className="event-node" style={{...style, ["--node-color"]: eventTypeColor}}>
+            <span>{caption}</span>
+            <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(event.eventStartDate)}</span>
         </Link>
     )
 }

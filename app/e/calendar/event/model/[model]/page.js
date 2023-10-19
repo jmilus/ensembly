@@ -44,7 +44,7 @@ const generateOccurrences = () => {
 export const ModelNode = ({ caption, model, style }) => {
 
     return (
-        <Link href={`/e/calendar/event/model/${model.id}`} className="event-node model" style={{...style, ["--node-color"]: model.type.color}}>
+        <Link href={`/e/calendar/event/model/${model.id}`} className="event-node model" style={{ ...style, ["--node-color"]: `hsl(${model.type.color})` }}>
             {caption}
             <span style={{minWidth: "5em", textAlign: "right"}}>{CALENDAR.getTime(model.modelStartDate)}</span>
         </Link>
@@ -118,7 +118,7 @@ const EventModelPage = async (context) => {
         eventNodes.push(
             <ModelNode
                 key={"p1"}
-                caption={<><i>file_upload</i><span>{model.name}</span></>}
+                caption={<><i>publish</i><span>{new Date(parentModel.modelStartDate).toDateString()} | {model.name}</span></>}
                 model={parentModel}
                 showDate
                 sortDate={parentModel.modelStartDate}
@@ -143,7 +143,7 @@ const EventModelPage = async (context) => {
         eventNodes.push(
             <ModelNode
                 key={`c-${m}`}
-                caption={<><i>subdirectory_arrow_right</i><span>{childModel.name}</span></>}
+                caption={<><i>subdirectory_arrow_right</i><span>{new Date(childModel.modelStartDate).toDateString()} | {childModel.name}</span></>}
                 model={childModel}
                 showDate
                 sortDate={childModel.modelStartDate}

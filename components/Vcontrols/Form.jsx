@@ -41,11 +41,12 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         })
             .then(response => response.json())
             .then(res => {
+                if (res.error) throw res.error;
                 return res;
             })
-            .catch((err, message) => {
-                console.error("failed to update record...", message);
-                return err;
+            .catch(error => {
+                console.error("failed to update record...", error);
+                return Error(error);
             })
     }
 
@@ -113,9 +114,8 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
             return;
         }
 
-        if (submitResult.err || submitResult[0]?.err) {
-            status.error()
-            console.error(err);
+        if (submitResult instanceof Error) {
+            status.error(undefined, submitResult)
         } else {
             if (followUp) followUp(submitResult);
             if (followPath) {

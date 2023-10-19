@@ -1138,6 +1138,10 @@ fieldset.buttons > legend {
   padding-right: 15px;
 }
 
+.event-node.model > i {
+  font-size: 1.25em;
+}
+
 .sub-nav {
   display: flex;
   flex-direction: column;

@@ -41,10 +41,10 @@ function useStatus() {
         transitionTimer.current = setTimeout(() => vanish(), 4000)
     }
 
-    const error = (caption, title, message) => {
-        console.log("Error!")
+    const error = (caption, error) => {
+        console.error(error)
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
-        setBlipState({ mode: "error", error: {title, message}, caption })
+        setBlipState({ mode: "error", caption })
         // router.refresh()
         transitionTimer.current = setTimeout(() => vanish(), 10000)
     }

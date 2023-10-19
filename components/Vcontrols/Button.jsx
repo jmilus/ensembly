@@ -35,8 +35,9 @@ const Button = (props) => {
         })
             .then(response => response.json())
             .then(res => {
-                status.saved(statusCaptions.saved)
                 console.log("button response:", res)
+                if (res.error) throw res.error;
+                status.saved(statusCaptions.saved)
                 if (followPath) {
                     let newPath = followPath;
                     if (followPath.includes("$slug$")) {
@@ -48,10 +49,10 @@ const Button = (props) => {
                 }
                 return res
             })
-            .catch((err, message) => {
+            .catch(error => {
                 status.error(statusCaptions.error)
-                console.error("API button failed", message);
-                return err;
+                console.error("API button failed", error);
+                return error;
             })
         return APIButtonResponse;
     }
