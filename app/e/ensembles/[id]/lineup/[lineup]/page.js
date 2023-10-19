@@ -27,7 +27,7 @@ const LineupPage = async ({ params }) => {
 
     console.log({ params })
 
-    return <LineupManager initialProps={{ensemble, lineup, capacities, divisions}} />
+    return <LineupManager initialProps={{ensemble, lineup, capacities, membershipTypes, divisions}} />
 }
 
 export default LineupPage;

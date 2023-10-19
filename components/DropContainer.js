@@ -3,7 +3,7 @@ import { useDrop } from 'react-dnd';
 
 const DropContainer = ({ caption, value, acceptTypes, dropAction, dropStyles, childrenStyle, children }) => {
     // console.log(caption, value, children)
-
+    console.log({ caption }, {acceptTypes})
     const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: acceptTypes || "nothing",
         drop: (item, monitor) => {

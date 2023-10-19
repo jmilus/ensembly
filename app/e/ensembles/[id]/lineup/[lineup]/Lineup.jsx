@@ -12,7 +12,7 @@ import { createPortal } from 'react-dom';
 
 const LineupManager = ({ initialProps }) => {
     // console.log({ initialProps })
-    const { ensemble, lineup, capacities, divisions } = initialProps;
+    const { ensemble, lineup, capacities, membershipTypes, divisions } = initialProps;
 
     const lineupObject = {}
     lineup.LineupAssignment.forEach(la => {
@@ -104,12 +104,20 @@ const LineupManager = ({ initialProps }) => {
         return Object.values(assignments).find(assignment => assignment.membership === membership.id)
     }
 
+    const getDropTypes = (captype) => {
+        const dropTypes = [];
+        membershipTypes.forEach(memt => {
+            if (memt.capacity.includes(captype)) dropTypes.push(memt.name)
+        })
+        return dropTypes;
+    }
+
     const memberRosterBox = 
         <div id="full-roster" style={{display: "flex", position: "absolute", marginLeft: "20px", height: "calc(100% -60px)", top: "60px", right: "0px", height: "calc(100% - 60px)",zIndex: 100, width: showRoster ? "250px" : "0px", transition: "all 0.2s ease" }}>
             <div style={{position: "absolute", width: "250px", height: "100%", right: showRoster ? "0px" : "-250px", transition: "all 0.2s ease"}}>
                 <div id="popout-tab-button" onClick={() => setShowRoster(!showRoster)}><i>groups</i></div>
                 <article style={{ boxShadow: "-1px -1px 1px var(--gray4)", padding: "10px", backgroundImage: "linear-gradient(var(--gray2), var(--gray3))" }}>
-                    <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={["CARD-IN"]} />
+                    <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} />
                     <FilterContainer
                         id="roster"
                         filterTag="member"
@@ -121,14 +129,16 @@ const LineupManager = ({ initialProps }) => {
                     >
                         {
                             roster.map((membership, m) => {
+                                console.log({ membership })
                                 return (
                                     <ItemCard
                                         key={m}
                                         tag="member"
                                         name={membership.Member.aka}
                                         caption={membership.Member.aka}
+                                        subtitle={membership.type.name}
                                         dropItem={membership}
-                                        cardType="CARD-OUT"
+                                        cardType={membership.type.name}
                                         assigned={isAssignedToLineup(membership)}
                                     />
                                 )
@@ -144,12 +154,13 @@ const LineupManager = ({ initialProps }) => {
         const divKids = Array.isArray(divisionChildren) ? divisionChildren : Object.values(divisionChildren);
         return divKids.map((item, d) => {
             let dropDivisions = [];
-            if (item.capacity != cap) return null;
+            if (item.capacity != cap.id) return null;
             if (item.children) {
                 dropDivisions = renderDrops(item.children, cap)
             }
+            const dropTypes = getDropTypes(cap.type)
             return (
-                <DropContainer key={item.id} caption={item.name} value={item} dropAction={handleDrop} acceptTypes={["CARD-IN", "CARD-OUT"]} >
+                <DropContainer key={item.id} caption={item.name} value={item} dropAction={handleDrop} acceptTypes={dropTypes} >
                     {dropDivisions}
                 </DropContainer>
             )
@@ -186,12 +197,13 @@ const LineupManager = ({ initialProps }) => {
                                             let dropDivisions = [];
                                             if (div.capacity != capacity.id) return null;
                                             if (div.children) {
-                                                dropDivisions = renderDrops(div.children, capacity.id)
+                                                dropDivisions = renderDrops(div.children, capacity)
                                             }
+                                            const dropTypes = getDropTypes(capacity.type)
                                             return (
                                                 <fieldset key={d} className="card-set" style={{background: "var(--gray1)"}} >
                                                     <legend>{div.name}</legend>
-                                                    <DropContainer key={div.id} caption={div.name} value={div} dropAction={handleDrop} acceptTypes={["CARD-IN", "CARD-OUT"]} >
+                                                    <DropContainer key={div.id} caption={div.name} value={div} dropAction={handleDrop} acceptTypes={dropTypes} >
                                                         { dropDivisions }
                                                     </DropContainer>
                                                     {
@@ -207,9 +219,9 @@ const LineupManager = ({ initialProps }) => {
                                                                         tag="member"
                                                                         name={assignment.EnsembleMembership.Member.aka}
                                                                         caption={assignment.EnsembleMembership.Member.aka}
-                                                                        subtitle={currentDivision.name}
+                                                                        subtitle={assignment.EnsembleMembership.type.name}
                                                                         dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
-                                                                        cardType="CARD-IN"
+                                                                        cardType={assignment.EnsembleMembership.type.name}
                                                                     />
                                                                 )
                                                         })

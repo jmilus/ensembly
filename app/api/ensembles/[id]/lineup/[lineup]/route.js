@@ -15,7 +15,7 @@ export const getOneLineup = async (id) => {
             is_primary,
             LineupAssignment ( 
                 *, 
-                EnsembleMembership ( *, Member (*) ), 
+                EnsembleMembership ( *, type:membership_type (*), Member (*) ), 
                 Division (*)
             )
         `)

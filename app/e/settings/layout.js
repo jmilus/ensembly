@@ -16,10 +16,10 @@ export default async function SettingsLayout(params) {
         { id: 3, type: "Year" }
     ]
     const navNodes = [
-        { caption: "General", route: '/general' },
-        { caption: "Ensembles", route: '/ensembles' },
-        { caption: "Members", route: '/members' },
-        { caption: "Membership", route: '/membership' }
+        { caption: "General", route: '/e/settings/general' },
+        { caption: "Ensembles", route: '/e/settings/ensembles' },
+        { caption: "Members", route: '/e/settings/members' },
+        { caption: "Membership", route: '/e/settings/membership' }
     ]
     const navButtons = {
         membership: [
