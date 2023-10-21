@@ -20,14 +20,14 @@ const MembersPage = async () => {
             title="Create New Member"
             buttonClass="fit"
         >
-            <Form id="new-member-modal-form" METHOD="POST" followPath="$slug$" >
+            <Form id="new-member-modal-form" METHOD="POST" followPath="/e/members/$slug$" >
                 <section className="modal-fields inputs">
                     <Text id="newMemberFirstName" name="firstName" label="First Name" value=""/>
                     <Text id="newMemberLastName" name="lastName" label="Last Name" value=""/>
                 </section>
             </Form>
             <section className="modal-buttons">
-                <button name="submit" form="new-member-modal-form">Create Member</button>
+                <button name="submit" className="fit" form="new-member-modal-form">Create Member</button>
             </section>
         </ModalButton>,
         <ModalButton
@@ -36,13 +36,11 @@ const MembersPage = async () => {
             title="Upload Members from Excel File"
             buttonClass="fit"
         >
-            <Form id="upload-members-modal-form" debug>
-                <section className="modal-fields">
-                    <File id="fileUpload" field="file" handling="upload" fileType="xlsx" isRequired />
-                </section>
+            <Form id="upload-members-modal-form" APIURL="/api/members/uploadMembers" METHOD="POST" debug>
+                <File id="fileUpload" name="members" handling="upload" fileTypes="xlsx" isRequired />
             </Form>
             <section className="modal-buttons">
-                <button name="submit" form="upload-members-modal-form">Upload</button>
+                <button name="submit" className="fit" form="upload-members-modal-form">Upload</button>
             </section>
         </ModalButton>
     ]
@@ -67,6 +65,7 @@ const MembersPage = async () => {
                         >
                             {
                                 members.map((member, i) => {
+                                    console.log({ member })
                                     return (
                                         <ItemCard
                                             key={i}
@@ -75,6 +74,7 @@ const MembersPage = async () => {
                                             caption={member.aka}
                                             cardLinkTo={`/e/members/${member.id}`}
                                             type="profile"
+                                            sex={member.sex}
                                         />
                                     )
                                 })

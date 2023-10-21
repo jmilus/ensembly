@@ -3,16 +3,12 @@
 import { usePathname } from 'next/navigation';
 
 import { useState, useRef, useEffect, useContext } from 'react';
-// import { GlobalContext } from './ContextFrame';
 import { BlipContext } from 'components/BlipContext';
 
 import '../styles/statusBlip.css';
 
 const StatusBlip = () => {
     const { blipState, setBlipState } = useContext(BlipContext);
-    if (blipState === null) return null;
-
-    const { mode, caption, error, action } = blipState;
     const [timeToDie, setTimeToDie] = useState(null)
     const tickdown = useRef(null)
     const path = usePathname();
@@ -34,7 +30,7 @@ const StatusBlip = () => {
     }
 
     useEffect(() => {
-        // console.log("StatusBlip is rendering")
+        console.log("StatusBlip is rendering", path)
         if (blipState?.path && blipState?.path != path) {
             tickdownTimer(5)
         }
@@ -46,9 +42,9 @@ const StatusBlip = () => {
         let timeout = "";
 
         let clickAction;
-        switch (typeof action) {
+        switch (typeof blipState?.action) {
             case 'function':
-                clickAction = action;
+                clickAction = blipState?.action;
                 break;
             case 'object':
                 console.log("save path:", path.replace('/e/', '/api/'))
@@ -71,29 +67,30 @@ const StatusBlip = () => {
                 break;
         }
 
-        switch (mode) {
+        switch (blipState?.mode) {
             case "unsaved":
-                myCaption = caption || "Click to Save";
-                timeout = timeToDie === 0 ? " fade" : ""
+                myCaption = blipState?.caption || "Click to Save";
+                timeout = timeToDie === 0 ? " fade" : "";
+                dismiss = true;
                 break;
             case "saving":
-                myCaption = caption || "Saving...";
+                myCaption = blipState?.caption || "Saving...";
                 break;
             case "loading":
-                myCaption = caption || "Loading...";
+                myCaption = blipState?.caption || "Loading...";
                 break;
             case "saved":
-                myCaption = caption || "Saved!";
+                myCaption = blipState?.caption || "Saved!";
                 break;
             case "error":
-                myCaption = caption || "Error";
+                myCaption = blipState?.caption || "Error";
                 dismiss = true;
                 // clickAction = () => openModal(error);
                 break;
             default:
                 return null;
         }
-        return <div className={`status-blip-body ${mode}${timeout}`}>
+        return <div className={`status-blip-body ${blipState?.mode}${timeout}`}>
             <div className="blip-caption" onClick={clickAction}>{myCaption}</div>
             {timeToDie != null ?
                 <div className="blip-timer">
@@ -107,6 +104,7 @@ const StatusBlip = () => {
     }
 
     const icon = blipIcon()
+    if (blipState === null) return null;
     return (
         <div className="status-blip">
             {icon}

@@ -41,7 +41,7 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
                 parentRef={userIconRef}
                 hideMe={() => setShowMenu(false)}
             >
-                <button className="select-option" onClick={() => signOut()}>Sign Out</button>
+                <button className="fit select-option" onClick={() => signOut()}>Sign Out</button>
             </PopupMenu>
         }
     </div>

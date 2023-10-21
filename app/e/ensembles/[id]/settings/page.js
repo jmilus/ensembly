@@ -121,9 +121,11 @@ export default async function EnsembleSettingsPage({ params }) {
             </fieldset>
             <fieldset style={{flex:1}}>
                 <legend>Divisions</legend>
-                {
-                    generateNestedDivs(divisions)
-                }
+                <article className="scroll">
+                    {
+                        generateNestedDivs(divisions)
+                    }
+                </article>
             </fieldset>
         </div>
     )

@@ -279,8 +279,8 @@ button.dismiss {
   background: none;
 }
 
-.fancy {
-  font-family: var(--brand-font);
+label:has(input) {
+  cursor: pointer;
 }
 
 /* */
@@ -585,6 +585,15 @@ button.dismiss {
 
 .lineup-manager :not(.drop-children) > .drop-container.can-drop {
   height: 200px;
+}
+
+.full-roster .drop-container.can-drop {
+  background: hsl(0, 90%, 60%);
+  color: var(--gray0);
+  height: 75px;
+}
+.full-roster .drop-container.can-drop.is-over {
+  background: hsl(0, 90%, 70%);
 }
 
 .dc-name { display: none }

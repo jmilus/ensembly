@@ -1,7 +1,5 @@
 import 'server-only';
 
-import { redirect } from 'next/navigation';
-
 import { getOneEnsemble } from '@/api/ensembles/[id]/route'
 import { getOneLineup } from '@/api/ensembles/[id]/lineup/[lineup]/route';
 import { getAllMembershipCapacities } from '@/api/membership/capacity/route';

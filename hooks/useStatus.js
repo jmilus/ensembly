@@ -9,6 +9,7 @@ function useStatus() {
     const { setBlipState } = useContext(BlipContext);
     const transitionTimer = useRef()
     const router = useRouter();
+    const path = usePathname()
 
     const vanish = () => {
         transitionTimer.current = null;
@@ -18,7 +19,7 @@ function useStatus() {
     const unsaved = (caption, saveAction) => {
         console.log("data is unsaved")
         
-        setBlipState({ mode: "unsaved", action: saveAction, caption })
+        setBlipState({ mode: "unsaved", action: saveAction, caption, path })
     }
 
     const saving = (caption) => {

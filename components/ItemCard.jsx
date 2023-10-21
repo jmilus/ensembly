@@ -30,6 +30,7 @@ const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subt
             onClick={cardLinkTo ? () => router.push(cardLinkTo) : null}
         >
             <div className="card-header" onClick={captionLinkTo ? () => router.push(captionLinkTo) : null}>
+                {dropItem && <i style={{color: "var(--gray5)", margin: "0 10px 0 0", cursor: "all-scroll"}}>drag_indicator</i>}
                 {itemIcon
                     ? itemIcon
                     : <div className="hero-icon">{getInitials(caption)}</div>

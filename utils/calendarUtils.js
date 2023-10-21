@@ -6,6 +6,11 @@ const doubleDigit = (num) => {
     return `${leadingNum}${num}`;
 }
 
+export const straightDate = (input) => {
+    const dateArr = input.split('-');
+    return new Date(dateArr[0], dateArr[1] - 1, dateArr[2])
+}
+
 export const localizeDate = (input) => {
     const date = new Date(input)
     if (isNaN(date)) return undefined;
@@ -72,7 +77,8 @@ const CALENDAR = {
     getLastOfMonth,
     getCalendarView,
     compareDates,
-    localizeDate
+    localizeDate,
+    straightDate
 }
 
 export default CALENDAR;

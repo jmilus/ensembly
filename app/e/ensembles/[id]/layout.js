@@ -29,7 +29,7 @@ export default async function EnsembleRecordLayout(context) {
                     <File id="fileUpload" name="members" handling="upload" fileTypes="xlsx" isRequired />
                 </Form>
                 <section className="modal-buttons">
-                    <button name="submit" form="upload-members-form">Submit</button>
+                    <button name="submit" className="fit" form="upload-members-form">Upload</button>
                 </section>
             </ModalButton>
         ],
@@ -43,7 +43,7 @@ export default async function EnsembleRecordLayout(context) {
                     <Text id="lineup-name" name="name" label="Lineup Name" isRequired />
                 </Form>
                 <section className="modal-buttons">
-                    <button name="submit" form="new-lineup-form">Create</button>
+                    <button name="submit" className="fit" form="new-lineup-form">Create</button>
                 </section>
             </ModalButton>,
             <ModalButton

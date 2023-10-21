@@ -16,6 +16,7 @@ export const getOneMember = async (memberId) => {
             Address ( * ),
             EnsembleMembership ( 
                 *,
+                type:membership_type (*),
                 ensemble ( *, type (*)),
                 assignments:LineupAssignment(
                     title,

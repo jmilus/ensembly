@@ -10,7 +10,7 @@ import TabControl, { Tab } from 'components/TabControl';
 import useStatus from 'hooks/useStatus';
 import { createPortal } from 'react-dom';
 
-const LineupManager = ({ initialProps }) => {
+const LineupManager = ({ initialProps }) => { // .name
     // console.log({ initialProps })
     const { ensemble, lineup, capacities, membershipTypes, divisions } = initialProps;
 
@@ -27,9 +27,6 @@ const LineupManager = ({ initialProps }) => {
 
     const roster = ensemble.EnsembleMembership;
     const status = useStatus();
-
-    let pageFrame;
-    if (typeof window !== 'undefined') pageFrame = document.getElementById("page-frame");
 
     // console.log("View Lineup initialProps:", { initialProps })
     // console.log(assignments);
@@ -101,7 +98,7 @@ const LineupManager = ({ initialProps }) => {
 
     const isAssignedToLineup = (membership) => {
         if (Object.values(assignments).length === 0) return false;
-        return Object.values(assignments).find(assignment => assignment.membership === membership.id)
+        return Object.values(assignments).find(assignment => assignment.EnsembleMembership.id === membership.id)
     }
 
     const getDropTypes = (captype) => {
@@ -113,23 +110,25 @@ const LineupManager = ({ initialProps }) => {
     }
 
     const memberRosterBox = 
-        <div id="full-roster" style={{display: "flex", position: "absolute", marginLeft: "20px", height: "calc(100% -60px)", top: "60px", right: "0px", height: "calc(100% - 60px)",zIndex: 100, width: showRoster ? "250px" : "0px", transition: "all 0.2s ease" }}>
-            <div style={{position: "absolute", width: "250px", height: "100%", right: showRoster ? "0px" : "-250px", transition: "all 0.2s ease"}}>
+        <div className="full-roster" style={{display: "flex", position: "absolute", marginLeft: "20px", height: "calc(100% -60px)", top: "60px", right: "0px", height: "calc(100% - 60px)",zIndex: 100, width: showRoster ? "250px" : "0px", transition: "all 0.2s ease" }}>
+            <div style={{position: "absolute", width: "300px", height: "100%", right: showRoster ? "0px" : "-300px", transition: "all 0.2s ease"}}>
                 <div id="popout-tab-button" onClick={() => setShowRoster(!showRoster)}><i>groups</i></div>
                 <article style={{ boxShadow: "-1px -1px 1px var(--gray4)", padding: "10px", backgroundImage: "linear-gradient(var(--gray2), var(--gray3))" }}>
-                    <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} />
                     <FilterContainer
                         id="roster"
                         filterTag="member"
                         columns={{count: 1, width:"1fr"}}
                         search={{ label: "member", searchProp: "name" }}
                         filters={[
-                            { name: "assigned", filterProp: "assigned", buttons: [{ unassigned: (prop) => !prop }, { assigned: (prop) => prop } ] }
+                            { name: "assigned", filterProp: "assigned", buttons: [{ unassigned: (prop) => !prop }, { assigned: (prop) => prop }] },
+                            { name: "capacity", filterProp: "capacity", buttons: capacities.map(cap => cap.type) },
+                            { name: "membershipType", filterProp: "subtitle", buttons: membershipTypes.map(memt => memt.name) }
                         ]}
                     >
+                        <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} />
                         {
                             roster.map((membership, m) => {
-                                console.log({ membership })
+                                // console.log({membership})
                                 return (
                                     <ItemCard
                                         key={m}
@@ -140,6 +139,7 @@ const LineupManager = ({ initialProps }) => {
                                         dropItem={membership}
                                         cardType={membership.type.name}
                                         assigned={isAssignedToLineup(membership)}
+                                        capacity={membership.type.capacity}
                                     />
                                 )
                             })
@@ -148,7 +148,7 @@ const LineupManager = ({ initialProps }) => {
 
                 </article>
             </div>
-        </div >
+        </div > 
     
     const renderDrops = (divisionChildren, cap) => {
         const divKids = Array.isArray(divisionChildren) ? divisionChildren : Object.values(divisionChildren);
@@ -177,72 +177,69 @@ const LineupManager = ({ initialProps }) => {
     }
     
     return (
-        <section className="lineup-manager" style={{ flex: 1,  height: "100%", paddingLeft: "10px", paddingRight: showRoster ? "200px" : "0px", transition: "all 0.2s ease"}}>
-            <FilterContainer
-                id={`lineup-filter`}
-                filterTag="member"
-                search={{ label: "Search Assignees", searchProp: "name" }}
-                columns={{ count: 1, width: "1fr" }}
-                rows="auto"
-            >
-                <TabControl>
-                    {
-                        capacities.map((capacity, t) => {
-                            // console.log({capacity})
-                            return (
-                                <Tab key={t} tabName={capacity.type}>
-                                    {
-                                        divisions.map((div, d) => {
-                                            // console.log({div})
-                                            let dropDivisions = [];
-                                            if (div.capacity != capacity.id) return null;
-                                            if (div.children) {
-                                                dropDivisions = renderDrops(div.children, capacity)
-                                            }
-                                            const dropTypes = getDropTypes(capacity.type)
-                                            return (
-                                                <fieldset key={d} className="card-set" style={{background: "var(--gray1)"}} >
-                                                    <legend>{div.name}</legend>
-                                                    <DropContainer key={div.id} caption={div.name} value={div} dropAction={handleDrop} acceptTypes={dropTypes} >
-                                                        { dropDivisions }
-                                                    </DropContainer>
-                                                    {
-                                                        Object.keys(assignments).map((assignmentId, m) => {
-                                                            const assignment = assignments[assignmentId];
-                                                            // console.log({assignment})
-                                                            const currentDivision = assignment.newDivision ? assignment.newDivision : assignment.Division;
-                                                            const isDescendant = checkDescendants(div, currentDivision.id)
-                                                            if (isDescendant)
-                                                                return (
-                                                                    <ItemCard
-                                                                        key={m}
-                                                                        tag="member"
-                                                                        name={assignment.EnsembleMembership.Member.aka}
-                                                                        caption={assignment.EnsembleMembership.Member.aka}
-                                                                        subtitle={assignment.EnsembleMembership.type.name}
-                                                                        dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
-                                                                        cardType={assignment.EnsembleMembership.type.name}
-                                                                    />
-                                                                )
-                                                        })
-                                                    }
-                                                </fieldset>
-                                            )
-                                        })
-                                    }
-                                </Tab>
-                            )
-                        })
-                    }
-                    
-                </TabControl>
-            </FilterContainer>
-            {createPortal(
-                memberRosterBox,
-                pageFrame
-            )}
-            {/* {memberRosterBox} */}
-        </section>
+        <>
+            { memberRosterBox }
+            <section className="lineup-manager" style={{ flex: 1,  height: "100%", paddingLeft: "10px", paddingRight: showRoster ? "260px" : "0px", transition: "all 0.2s ease"}}>
+                <FilterContainer
+                    id={`lineup-filter`}
+                    filterTag="member"
+                    search={{ label: "Search Assignees", searchProp: "name" }}
+                    columns={{ count: 1, width: "1fr" }}
+                    rows="auto"
+                >
+                    <TabControl>
+                        {
+                            capacities.map((capacity, t) => {
+                                // console.log({capacity})
+                                return (
+                                    <Tab key={t} tabName={capacity.type}>
+                                        {
+                                            divisions.map((div, d) => {
+                                                // console.log({div})
+                                                let dropDivisions = [];
+                                                if (div.capacity != capacity.id) return null;
+                                                if (div.children) {
+                                                    dropDivisions = renderDrops(div.children, capacity)
+                                                }
+                                                const dropTypes = getDropTypes(capacity.type)
+                                                return (
+                                                    <fieldset key={d} className="card-set" style={{background: "var(--gray1)"}} >
+                                                        <legend>{div.name}</legend>
+                                                        <DropContainer key={div.id} caption={div.name} value={div} dropAction={handleDrop} acceptTypes={dropTypes} >
+                                                            { dropDivisions }
+                                                        </DropContainer>
+                                                        {
+                                                            Object.keys(assignments).map((assignmentId, m) => {
+                                                                const assignment = assignments[assignmentId];
+                                                                const currentDivision = assignment.newDivision ? assignment.newDivision : assignment.Division;
+                                                                const isDescendant = checkDescendants(div, currentDivision.id)
+                                                                if (isDescendant)
+                                                                    return (
+                                                                        <ItemCard
+                                                                            key={m}
+                                                                            tag="member"
+                                                                            name={assignment.EnsembleMembership.Member.aka}
+                                                                            caption={assignment.EnsembleMembership.Member.aka}
+                                                                            subtitle={currentDivision.name}
+                                                                            dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
+                                                                            cardType={assignment.EnsembleMembership.type.name}
+                                                                        />
+                                                                    )
+                                                            })
+                                                        }
+                                                    </fieldset>
+                                                )
+                                            })
+                                        }
+                                    </Tab>
+                                )
+                            })
+                        }
+                        
+                    </TabControl>
+                </FilterContainer>
+            </section>
+        </>
     )
     
 }

@@ -478,6 +478,13 @@ i.dot.selected {
     cursor: pointer;
     user-select: none;
 }
+.file-box label:hover {
+    background: var(--mint3);
+    border-color: var(--mint5);
+}
+.file-box label:hover:active {
+    border-color: var(--color-c2);
+}
 
 .file-box i {
     margin-right: 10px;

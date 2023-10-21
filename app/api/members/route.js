@@ -16,6 +16,16 @@ export const getAllMembers = async () => {
     return data;
 }
 
+export async function GET(request) {
+    const req = await request.json()
+    console.log("get all members:", { req })
+    const res = await getAllMembers()
+    return NextResponse.json({res})
+}
+
+//#########
+
+
 export const createMember = async (memberData) => {
     const { firstName, middleName, lastName, suffix, aka, birthday, sex, height, weight, race, ethnicity, hair, eyes, email, phonenumber, street, street2, city, state, postalCode, country, poBox } = memberData;
     const supabase = createServerComponentClient({ cookies });
@@ -27,9 +37,9 @@ export const createMember = async (memberData) => {
         .insert([
             {
                 firstName,
-                middleName,
+                middleName: middleName ? middleName : "",
                 lastName,
-                suffix,
+                suffix: suffix ? suffix : "",
                 aka: myAka,
                 birthday,
                 sex: parseInt(sex),
@@ -42,25 +52,20 @@ export const createMember = async (memberData) => {
             }
         ])
         .select()
+        .single()
     
     if (error) {
         console.error("create member error:", error)
-        return new Error(error);
+        return new Error(error.message);
     }
     
-    return member[0];
-}
-
-export async function GET(request) {
-    const req = await request.json()
-    console.log("get all members:", { req })
-    const res = await getAllMembers()
-    return NextResponse.json({res})
+    return member;
 }
 
 export async function POST(request) {
     const _req = await request.formData()
     const req = extractFields(_req);
     const res = await createMember(req)
-    return NextResponse.json({ res })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }

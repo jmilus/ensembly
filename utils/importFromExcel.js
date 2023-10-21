@@ -5,42 +5,47 @@ import { validateEmail } from 'utils';
 import { STATES } from './constants';
 
 const fieldSet = {
-    firstName:       { type: 'string' },
-    middleName:     { type: 'string' },
-    lastName:       { type: 'string' },
-    suffix:          { type: 'string' },
-    aka:            { type: 'string' },
-    birthday:       { type: 'date' },
-    sex:            { type: 'string' },
-    height:         { type: 'height' },
-    weight:         { type: 'int' },
-    race:           { type: 'string' },
-    ethnicity:      { type: 'string' },
-    hair:           { type: 'string' },
-    eyes:           { type: 'string' },
-    email:          { type: 'string' },
-    emailAddress:   { conform: 'email' },
-    phonenumber:    { type: 'phone' },
-    street:         { type: 'string' },
-    street1:        { conform: 'street' },
-    street2:        { type: 'string' },
-    city:           { type: 'string' },
-    state:          { type: 'state' },
-    postalCode:     { type: 'string' },
-    country:        { type: 'string' },
-    poBox:          { type: 'string' },
-    zipCode:        { conform: 'postalCode' },
-    zip:            { conform: 'postalCode' },
-    addressType:    { type: 'string' },
-    membershipType: { type: 'string' },
-    membershipStart: { type: 'date' },
-    ensemble:       { type: 'string' },
-    division:       { type: 'string' }
+    firstName:           { type: 'string' },
+    middleName:         { type: 'string' },
+    lastName:           { type: 'string' },
+    suffix:              { type: 'string' },
+    aka:                { type: 'string' },
+    birthday:           { type: 'date' },
+    sex:                { type: 'string' },
+    height:             { type: 'height' },
+    weight:             { type: 'int' },
+    race:               { type: 'string' },
+    ethnicity:          { type: 'string' },
+    hair:               { type: 'string' },
+    eyes:               { type: 'string' },
+    email:              { type: 'string' },
+    emailAddress:       { conform: 'email' },
+    phonenumber:        { type: 'phone' },
+    street:             { type: 'string' },
+    street1:            { conform: 'street' },
+    street2:            { type: 'string' },
+    city:               { type: 'string' },
+    state:              { type: 'state' },
+    postalCode:         { type: 'string' },
+    country:            { type: 'string' },
+    poBox:              { type: 'string' },
+    zipCode:            { conform: 'postalCode' },
+    zip:                { conform: 'postalCode' },
+    addressType:        { type: 'string' },
+    membershipType:     { type: 'string' },
+    membershipStart:    { type: 'date' },
+    membershipEnd:      { conform: 'membershipExpires' },
+    membershipEnds:     { conform: 'membershipExpires' },
+    membershipExpires:  { type: 'date' },
+    ensemble:           { type: 'string' },
+    division:           { type: 'string' }
 }
 
 const validateValue = (value, fieldName) => {
+    // console.log("validating value:", value, fieldName)
     switch (fieldSet[fieldName].type) {
         case 'string':
+            if (value === null) return ""
             if (fieldName === 'email') {
                 let emailtext = ''
                 if (value.text) {
@@ -50,7 +55,7 @@ const validateValue = (value, fieldName) => {
                 }
                 return emailtext;
             }
-            return value === null ? "" : value.toString();
+            return value.toString();
 
         case 'phone':
             return value === null ? "" : value.toString().replace(/[^0-9]*/gm, '');
@@ -169,6 +174,7 @@ export const readXlsx = async (fileData) => {
                                 break;
                             case 'membershipType':
                             case 'membershipStart':
+                            case 'membershipExpires':
                                 member.membership[fieldName] = validatedValue;
                                 break;
                             case 'ensemble':

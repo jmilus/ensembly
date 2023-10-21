@@ -35,9 +35,11 @@ export function FilterButtons(props) {
 }
 
 const FilterContainer = (props) => {
-    const { id, filterTag, search, filters = [], columns, rows="min-content", style, debug, children } = props;
-    const [filterParams, setFilterParams] = useState({})
+    const { id, filterTag, search, filters = [], defaultFilter = {}, columns, rows="min-content", style, debug, children } = props;
+    const [filterParams, setFilterParams] = useState(defaultFilter)
     const [searchString, setSearchString] = useState("")
+
+    let tagCount = 0;
 
     if (debug) console.log(props)
 
@@ -75,7 +77,8 @@ const FilterContainer = (props) => {
             filterParams[filter.name].forEach(param => {
                 console.log({param})
                 if (typeof param === 'string') {
-                    if (child.props[filter.filterProp] === param) anyMatch = true;
+                    console.log("comparing", child.props[filter.filterProp], param)
+                    if (child.props[filter.filterProp] != null && child.props[filter.filterProp].includes(param)) anyMatch = true;
                 } else {
                     const filterFunction = Object.values(param)[0]
                     const childProp = child.props[filter.filterProp]
@@ -103,6 +106,7 @@ const FilterContainer = (props) => {
             if (!child.props) return child
             //
             if (child.props.tag === filterTag) {
+                tagCount++;
                 const includeChild = filterChild(child);
                 if (includeChild) return child;
                 return null;
@@ -136,13 +140,15 @@ const FilterContainer = (props) => {
 
     return (
         <div className="filter-container" style={style}>
-            <div className="filters">
-                {search &&
-                    searchBox
-                }
-                {filterButtons}
-                {filters.length > 0 ? clearButton : null}
-            </div>
+            {tagCount > 1 &&
+                <div className="filters">
+                    {search &&
+                        searchBox
+                    }
+                    {filterButtons}
+                    {filters.length > 0 ? clearButton : null}
+                </div>
+            }
             <div className="filter-container-content" style={{ ["--grid-columns"]: columns.count, ["--min-width"]: columns.width, gridAutoRows: rows }}>
                 { filteredChildren }
             </div>

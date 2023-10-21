@@ -17,7 +17,7 @@
     height: 100%;
     width: 100%;
     background: hsla(184, 37%, 15%, 0.5);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(5px);
 }
 
 .modal-wrapper {
