@@ -5,38 +5,9 @@ import { createPortal } from 'react-dom';
 
 import { Text } from './Vcontrols/';
 
-export function FilterButtons(props) {
-    const { id, buttons, filterValues = [], filterAction } = props;
-
-    return (
-        <div className="filter-buttons-set">
-            {
-                buttons.map((button, b) => {
-                    let filterName = typeof button != 'string' ? Object.keys(button)[0] : button
-                    let filterChecked = typeof button != 'string' ? filterValues.some(o => Object.keys(o)[0] === filterName) : filterValues.includes(filterName);
-
-                    return (
-                        <div key={b} id={`${id}-filter`} className={`filter-button tab-button ${filterChecked ? "active" : ""}`} >
-                            <label htmlFor={`${id}-${filterName}`} className="filter-label">
-                                <input
-                                    id={`${id}-${filterName}`}
-                                    type="checkbox"
-                                    checked={filterChecked}
-                                    onChange={() => filterAction(button)} 
-                                />
-                                {filterName}
-                            </label>
-                        </div>
-                    ) 
-                })
-            }
-        </div>
-    )
-}
-
 const FilterContainer = (props) => {
     const { id, filterTag, search, filters = [], defaultFilter = {}, columns, rows="min-content", style, debug, children } = props;
-    const [filterParams, setFilterParams] = useState(defaultFilter)
+    const [activeFilterSets, setActiveFilterSets] = useState(defaultFilter)
     const [searchString, setSearchString] = useState("")
 
     let tagCount = 0;
@@ -44,51 +15,60 @@ const FilterContainer = (props) => {
     if (debug) console.log(props)
 
     const clearAll = () => {
-        setFilterParams({})
+        setActiveFilterSets({})
         setSearchString("")
     }
 
-    const handleFilters = (key, mode, value) => {
-        let tempParams = { ...filterParams }
-        let param = tempParams[key] || []
+    const toggleFilter = (filterSetName, mode, filterObject) => {
+        console.log({filterObject})
+        const filterKey = Object.keys(filterObject)[0]
+        let tempFilterSets = { ...activeFilterSets }
+        let filterSet = tempFilterSets[filterSetName] || {}
         if (mode === "exclusive") {
-            param = [value]
+            filterSet = [filterObject]
         } else {
-            const valueIndex = param.findIndex(p => p === value)
-            if (valueIndex >= 0) {
-                param.splice(valueIndex, 1);
+            if (filterSet[filterKey]) {
+                delete filterSet[filterKey]
             } else {
-                param.push(value)
+                filterSet = { ...filterSet, ...filterObject }
             }
         }
 
-        tempParams[key] = param
-        setFilterParams(tempParams);
+        if (Object.keys(filterSet).length === 0) {
+            delete tempFilterSets[filterSetName]
+        } else {
+            tempFilterSets[filterSetName] = filterSet
+        }
+        setActiveFilterSets(tempFilterSets);
+    }
+
+    const filterWithButtons = (child) => {
+        return Object.keys(activeFilterSets).every(filterSetName => {
+            const filterSet = activeFilterSets[filterSetName];
+            console.log({ filterSet })
+            return Object.keys(filterSet).some(filterCaption => {
+                const filterFunction = filterSet[filterCaption]
+                console.log({ filterCaption }, { filterFunction })
+                if (child.props[filterSetName] != null) {
+                    console.log("comparing", filterSetName, child.props[filterSetName], filterFunction)
+                    if (typeof filterFunction != 'object') return child.props[filterSetName] === filterFunction;
+                    return filterFunction(child.props[filterSetName]) // run the element's filterProp through the filter button's filter function
+                }
+                return false;
+            })
+        })
     }
 
     const filterChild = (child) => {
-        // console.log(child)
-        //filter buttons
-        let includeChild = true;
-        includeChild = filters.every(filter => {
-            if (!filterParams[filter.name]) return true;
-
-            let anyMatch = filterParams[filter.name].length === 0;
-            filterParams[filter.name].forEach(param => {
-                console.log({param})
-                if (typeof param === 'string') {
-                    console.log("comparing", child.props[filter.filterProp], param)
-                    if (child.props[filter.filterProp] != null && child.props[filter.filterProp].includes(param)) anyMatch = true;
-                } else {
-                    const filterFunction = Object.values(param)[0]
-                    const childProp = child.props[filter.filterProp]
-                    anyMatch = filterFunction(childProp)
-                }
-            })
-            return anyMatch;
-        })
+        console.log(child)
+        if (!child.props.filterTag || child.props.filterTag != filterTag) return true;
         
-        //filter search
+        let includeChild = true;
+        // filter buttons
+        console.log({ activeFilterSets })
+        includeChild = filterWithButtons(child)
+            
+        // search string
         if (includeChild && search && searchString.length > 0) {
             // console.log(child.props, searchString)
             includeChild = child.props[search?.searchProp].toLowerCase().includes(searchString.toLowerCase());
@@ -98,14 +78,12 @@ const FilterContainer = (props) => {
     }
 
     const handleChildren = (childrenToHandle) => {
-        // console.log(childrenToHandle)
-        // console.log("handling children ***********************")
         return React.Children.map(childrenToHandle, child => {
             // console.log("**** handling child:", child)
             if (child === null) return null;
             if (!child.props) return child
             //
-            if (child.props.tag === filterTag) {
+            if (child.props.filterTag === filterTag) {
                 tagCount++;
                 const includeChild = filterChild(child);
                 if (includeChild) return child;
@@ -122,8 +100,30 @@ const FilterContainer = (props) => {
 
     const filteredChildren = handleChildren(children)
 
-    const filterButtons = filters.map((filter, f) => {
-        return <FilterButtons key={f} id={filter.name} buttons={filter.buttons} filterValues={filterParams[filter.name]} filterAction={(v) => handleFilters(filter.name, filter.mode, v)} />
+    const allFilterButtons = filters.map((filter, f) => {
+        return (
+            <div key={f} className="filter-buttons-set">
+                {
+                    filter.buttons.map((filterObject, o) => {
+                        const filterCaption = Object.keys(filterObject)[0];
+                        const isChecked = activeFilterSets[filter.name] ? Object.keys(activeFilterSets[filter.name]).includes(filterCaption) : false;
+                        return (
+                            <div key={`${f}-${o}`} id={`${id}-filter`} className={`filter-button tab-button ${isChecked ? "active" : ""}`} >
+                                <label htmlFor={`${id}-${filterCaption}`} className="filter-label">
+                                    <input
+                                        id={`${id}-${filterCaption}`}
+                                        type="checkbox"
+                                        checked={isChecked}
+                                        onChange={() => toggleFilter(filter.name, filter.mode, filterObject)} 
+                                    />
+                                    {filterCaption}
+                                </label>
+                            </div>
+                        ) 
+                    })
+                }
+            </div>
+        )
     })
 
     const clearButton = 
@@ -145,7 +145,7 @@ const FilterContainer = (props) => {
                     {search &&
                         searchBox
                     }
-                    {filterButtons}
+                    {allFilterButtons}
                     {filters.length > 0 ? clearButton : null}
                 </div>
             }

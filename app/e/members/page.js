@@ -8,10 +8,14 @@ import SecurityWrapper from 'components/SecurityWrapper';
 import SubNav from 'components/SubNav';
 import FilterContainer from 'components/FilterContainer';
 import ItemCard from 'components/ItemCard';
+import { getBioOptions } from '@/api/members/bio/route';
 
 const MembersPage = async () => {
 
     const members = await getAllMembers();
+    const { sex } = await getBioOptions(['sex']);
+
+    // console.log({ sex })
 
     const navButtons = [
         <ModalButton
@@ -60,16 +64,16 @@ const MembersPage = async () => {
                             columns={{count: "auto-fill", width: "201px"}}
                             search={{ label: "Search Members", searchProp: "name" }}
                             filters={[
-                                { name: "sex", filterProp: "sex", buttons: ["male", "female", "unspecified"] }
+                                { name: "sex", filterProp: "sex", buttons: sex.map(s => { return { [s.type]: s.id } }) }
                             ]}
                         >
                             {
                                 members.map((member, i) => {
-                                    console.log({ member })
+                                    // console.log({ member })
                                     return (
                                         <ItemCard
                                             key={i}
-                                            tag="member"
+                                            filterTag="member"
                                             name={member.aka}
                                             caption={member.aka}
                                             cardLinkTo={`/e/members/${member.id}`}

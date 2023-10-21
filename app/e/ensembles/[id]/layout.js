@@ -55,7 +55,7 @@ export default async function EnsembleRecordLayout(context) {
                     <Text id="lineup-name" name="name" label="Lineup Name" isRequired />
                 </Form>
                 <section className="modal-buttons">
-                    <button name="submit" form="duplicate-lineup-form">Duplicate</button>
+                    <button name="submit" className="fit" form="duplicate-lineup-form">Duplicate</button>
                 </section>
             </ModalButton>
         ],
@@ -73,7 +73,7 @@ export default async function EnsembleRecordLayout(context) {
                     </section>
                 </Form>
                 <section className="modal-buttons">
-                    <button name="submit" form="create-root-division-form">Create</button>
+                    <button name="submit" className="fit" form="create-root-division-form">Create</button>
                 </section>
             </ModalButton>
         ]

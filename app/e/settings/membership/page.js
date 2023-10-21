@@ -75,7 +75,7 @@ export default async function MembershipSettingsPage(context) {
                                     <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={ensembles} value={ensembles.filter(e => type.ensembles.includes(e.id))} isRequired />
                                 </Form>
                                 <section className="modal-buttons">
-                                    <button name="submit" form="membership-type-form">Save</button>
+                                    <button name="submit" className="fit" form="membership-type-form">Save</button>
                                 </section>
                             </ModalButton>
                         </ItemCard>

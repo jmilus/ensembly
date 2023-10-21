@@ -35,7 +35,7 @@ const MemberPage = async (context) => {
         })
     }).flat()
 
-    console.log({statuses})
+    console.log({bioOptions})
 
     return (
         <>
@@ -124,10 +124,10 @@ const MemberPage = async (context) => {
                         <FilterContainer
                             id="membership-filter"
                             filterTag="membership"
-                            defaultFilter={{['membership-status']: ["Active"]}}
+                            defaultFilter={{ membershipStatus: { Active: "Active" } }}
                             columns={{ count: 1, width: "1fr" }}
                             filters={[
-                                {name: "membership-status", filterProp: "status", buttons: membershipStatus.map(ms => ms.type)}
+                                {name: "membershipStatus", buttons: membershipStatus.map(ms => {return {[ms.type]: ms.type}})}
                             ]}
                         >
                             {
@@ -142,7 +142,7 @@ const MemberPage = async (context) => {
                                     const modalTitle = <><section><span style={{ color: "var(--color-c2)", marginRight: "10px" }}>{membership.type.name}</span><span>{membership.ensemble.name}</span></section>
                                         <section style={{ fontSize: "0.65em", display: "flex", alignItems: "center" }}>
                                             <span style={{ color: "var(--color-c2)", marginRight: "10px" }}>Member Since</span>
-                                            <span >{CALENDAR.straightDate(membership.membership_start).toLocaleDateString()}</span>
+                                            <span >{membership.membership_start ? CALENDAR.straightDate(membership.membership_start).toLocaleDateString() : ""}</span>
                                         </section>
                                     </>
                                     //
@@ -152,8 +152,8 @@ const MemberPage = async (context) => {
                                         <ItemCard
                                             key={i}
                                             caption={membership.ensemble.name}
-                                            tag="membership"
-                                            status={membership.status}
+                                            filterTag="membership"
+                                            membershipStatus={membership.status}
                                             style={{borderLeftWidth: "15px", borderLeftColor: `hsl(${membershipStatus.find(ms => ms.type === membership.status).color})`}}
                                         >
                                             <ModalButton
