@@ -6,38 +6,39 @@ import { createPortal } from 'react-dom';
 import { Text } from './Vcontrols/';
 
 const FilterContainer = (props) => {
-    const { id, filterTag, search, filters = [], defaultFilter = {}, columns, rows="min-content", style, debug, children } = props;
+    const { id, filterTag, search, filters = [], defaultFilter = {}, minimum=1, columns, rows="min-content", style, debug, children } = props;
     const [activeFilterSets, setActiveFilterSets] = useState(defaultFilter)
     const [searchString, setSearchString] = useState("")
 
     let tagCount = 0;
 
     if (debug) console.log(props)
+    console.log({activeFilterSets})
 
     const clearAll = () => {
         setActiveFilterSets({})
         setSearchString("")
     }
 
-    const toggleFilter = (filterSetName, mode, filterObject) => {
-        console.log({filterObject})
-        const filterKey = Object.keys(filterObject)[0]
+    const toggleFilter = (filter, filterParam) => {
+        console.log({ filter }, { filterParam })
         let tempFilterSets = { ...activeFilterSets }
-        let filterSet = tempFilterSets[filterSetName] || {}
-        if (mode === "exclusive") {
-            filterSet = [filterObject]
+        let filterSet = tempFilterSets[filter.name] || { filterParams: {} }
+        if (filter.mode === "exclusive") {
+            // filterSet = [{...filterObject, filterBy: filterBy}]
         } else {
-            if (filterSet[filterKey]) {
-                delete filterSet[filterKey]
+            if (filterSet.filterParams[filterParam.caption] != undefined) {
+                delete filterSet.filterParams[filterParam.caption]
             } else {
-                filterSet = { ...filterSet, ...filterObject }
+                filterSet.filterBy = filter.filterBy;
+                filterSet.filterParams[filterParam.caption] = {...filterParam};
             }
         }
 
-        if (Object.keys(filterSet).length === 0) {
-            delete tempFilterSets[filterSetName]
+        if (tempFilterSets[filter.name] && Object.keys(tempFilterSets[filter.name].filterParams).length === 0) {
+            delete tempFilterSets[filter.name]
         } else {
-            tempFilterSets[filterSetName] = filterSet
+            tempFilterSets[filter.name] = filterSet
         }
         setActiveFilterSets(tempFilterSets);
     }
@@ -46,13 +47,21 @@ const FilterContainer = (props) => {
         return Object.keys(activeFilterSets).every(filterSetName => {
             const filterSet = activeFilterSets[filterSetName];
             console.log({ filterSet })
-            return Object.keys(filterSet).some(filterCaption => {
-                const filterFunction = filterSet[filterCaption]
-                console.log({ filterCaption }, { filterFunction })
-                if (child.props[filterSetName] != null) {
-                    console.log("comparing", filterSetName, child.props[filterSetName], filterFunction)
-                    if (typeof filterFunction != 'object') return child.props[filterSetName] === filterFunction;
-                    return filterFunction(child.props[filterSetName]) // run the element's filterProp through the filter button's filter function
+            return Object.keys(filterSet.filterParams).some(filterParamKey => {
+                console.log({filterParamKey})
+                if (child.props[filterSet.filterBy] != null) {
+                    const filterValue = filterSet.filterParams[filterParamKey].value || filterSet.filterParams[filterParamKey].caption
+                    console.log({filterValue})
+                    switch (typeof filterValue) {
+                        case 'string':
+                            return child.props[filterSet.filterBy].includes(filterValue);
+                        case 'number':
+                            return child.props[filterSet.filterBy] === filterValue;
+                        case 'object':
+                            return filterValue(child.props[filterSet.filterBy]);
+                        default:
+                            return true;
+                    }
                 }
                 return false;
             })
@@ -60,12 +69,10 @@ const FilterContainer = (props) => {
     }
 
     const filterChild = (child) => {
-        console.log(child)
         if (!child.props.filterTag || child.props.filterTag != filterTag) return true;
         
         let includeChild = true;
         // filter buttons
-        console.log({ activeFilterSets })
         includeChild = filterWithButtons(child)
             
         // search string
@@ -105,18 +112,19 @@ const FilterContainer = (props) => {
             <div key={f} className="filter-buttons-set">
                 {
                     filter.buttons.map((filterObject, o) => {
-                        const filterCaption = Object.keys(filterObject)[0];
-                        const isChecked = activeFilterSets[filter.name] ? Object.keys(activeFilterSets[filter.name]).includes(filterCaption) : false;
+                        console.log({filterObject}, {activeFilterSets})
+                        const { caption, value } = filterObject;
+                        const isChecked = activeFilterSets[filter.name] ? Object.keys(activeFilterSets[filter.name].filterParams).includes(caption) : false;
                         return (
                             <div key={`${f}-${o}`} id={`${id}-filter`} className={`filter-button tab-button ${isChecked ? "active" : ""}`} >
-                                <label htmlFor={`${id}-${filterCaption}`} className="filter-label">
+                                <label htmlFor={`${id}-${caption}`} className="filter-label">
                                     <input
-                                        id={`${id}-${filterCaption}`}
+                                        id={`${id}-${caption}`}
                                         type="checkbox"
                                         checked={isChecked}
-                                        onChange={() => toggleFilter(filter.name, filter.mode, filterObject)} 
+                                        onChange={() => toggleFilter(filter, filterObject)} 
                                     />
-                                    {filterCaption}
+                                    {caption}
                                 </label>
                             </div>
                         ) 
@@ -140,7 +148,7 @@ const FilterContainer = (props) => {
 
     return (
         <div className="filter-container" style={style}>
-            {tagCount > 1 &&
+            {tagCount > minimum &&
                 <div className="filters">
                     {search &&
                         searchBox

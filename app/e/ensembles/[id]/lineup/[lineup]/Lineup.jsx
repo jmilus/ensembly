@@ -98,7 +98,7 @@ const LineupManager = ({ initialProps }) => { // .name
 
     const isAssignedToLineup = (membership) => {
         if (Object.values(assignments).length === 0) return false;
-        return Object.values(assignments).find(assignment => assignment.EnsembleMembership.id === membership.id)
+        return Object.values(assignments).some(assignment => assignment.EnsembleMembership.id === membership.id)
     }
 
     const getDropTypes = (captype) => {
@@ -118,26 +118,24 @@ const LineupManager = ({ initialProps }) => { // .name
                         id="roster"
                         filterTag="member"
                         columns={{count: 1, width:"1fr"}}
-                        search={{ label: "member", searchProp: "name" }}
+                        search={{ label: "member", searchProp: "caption" }}
                         filters={[
-                            { name: "assigned", filterProp: "assigned", buttons: [{ unassigned: (prop) => !prop }, { assigned: (prop) => prop }] },
-                            { name: "capacity", filterProp: "capacity", buttons: capacities.map(cap => cap.type) },
-                            { name: "membershipType", filterProp: "subtitle", buttons: membershipTypes.map(memt => memt.name) }
+                            { name: "assigned", filterBy: "assigned", buttons: [{ unassigned: false }, { assigned: true }] },
+                            { name: "membership-capacity", filterBy: "capacity", buttons: capacities.map(cap => { return {[cap.type]: cap.type}}) },
+                            { name: "membership-type", filterBy: "subtitle", buttons: membershipTypes.map(memt => { return {[memt.name]: memt.name}}) }
                         ]}
                     >
                         <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} />
                         {
                             roster.map((membership, m) => {
-                                // console.log({membership})
+                                console.log({membership})
                                 return (
                                     <ItemCard
                                         key={m}
-                                        tag="member"
-                                        name={membership.Member.aka}
+                                        filterTag="member"
                                         caption={membership.Member.aka}
                                         subtitle={membership.type.name}
                                         dropItem={membership}
-                                        cardType={membership.type.name}
                                         assigned={isAssignedToLineup(membership)}
                                         capacity={membership.type.capacity}
                                     />
@@ -183,7 +181,7 @@ const LineupManager = ({ initialProps }) => { // .name
                 <FilterContainer
                     id={`lineup-filter`}
                     filterTag="member"
-                    search={{ label: "Search Assignees", searchProp: "name" }}
+                    search={{ label: "Search Assignees", searchProp: "caption" }}
                     columns={{ count: 1, width: "1fr" }}
                     rows="auto"
                 >
@@ -217,8 +215,7 @@ const LineupManager = ({ initialProps }) => { // .name
                                                                     return (
                                                                         <ItemCard
                                                                             key={m}
-                                                                            tag="member"
-                                                                            name={assignment.EnsembleMembership.Member.aka}
+                                                                            filterTag="member"
                                                                             caption={assignment.EnsembleMembership.Member.aka}
                                                                             subtitle={currentDivision.name}
                                                                             dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}

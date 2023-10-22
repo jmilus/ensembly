@@ -61,11 +61,12 @@ const MembersPage = async () => {
                         <FilterContainer
                             id="members-filter"
                             filterTag="member"
-                            columns={{count: "auto-fill", width: "201px"}}
+                            columns={{ count: "auto-fill", width: "201px" }}
                             search={{ label: "Search Members", searchProp: "name" }}
                             filters={[
-                                { name: "sex", filterProp: "sex", buttons: sex.map(s => { return { [s.type]: s.id } }) }
+                                { name: "sex", filterBy: "sex", buttons: sex.map(s => { return { caption: s.type, value: s.id } }) }
                             ]}
+                            minimum={5}
                         >
                             {
                                 members.map((member, i) => {

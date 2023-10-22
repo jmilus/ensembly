@@ -44,9 +44,9 @@ const EnsemblesLayout = async (props) => {
                             id="ensembles-filter"
                             filterTag="ensemble"
                             columns={{ count: "auto-fill", width: "201px" }}
-                            search={{ label: "Search Ensembles", searchProp: "name" }}
+                            search={{ label: "Search Ensembles", searchProp: "caption" }}
                             filters={[
-                                { name: "type", filterProp: "type", buttons: ensembleTypes.map(et => et.name)}
+                                { name: "ensemble-type", filterBy: "subtitle", buttons: ensembleTypes.map(et => { return {caption: et.type} }) }
                             ]}
                         >
                             {
@@ -56,8 +56,8 @@ const EnsemblesLayout = async (props) => {
                                         <ItemCard
                                             key={i}
                                             caption={ensemble.name}
-                                            tag="ensemble"
-                                            name={ensemble.name}
+                                            subtitle={ensemble.type.type}
+                                            filterTag="ensemble"
                                             cardLinkTo={`/e/ensembles/${ensemble.id}/general`}
                                         />
                                     )

@@ -36,7 +36,7 @@ export default async function MembershipSettingsPage(context) {
                             itemIcon={<i>verified</i>}
                             style={{ ['--hero-size']: "75px" }}
                             cardBodyStyle={{ width: "75%" }}
-                            tag="membership"
+                            filterTag="membership"
                             name={type.name}
                             // name={type.name}
                             // subtitle="membership type"

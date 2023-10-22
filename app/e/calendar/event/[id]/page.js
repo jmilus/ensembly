@@ -104,7 +104,7 @@ const EventPage = async (context) => {
                                         id="assigned-members-filter"
                                         filterTag="assignee"
                                         columns={{ c: 3, w: "200px" }}
-                                        search={{ label: "Search", searchProp: "name" }}
+                                        search={{ label: "Search", searchProp: "caption" }}
                                         Vstyle={{width: "750px"}}
                                     >
                                         {
@@ -112,7 +112,7 @@ const EventPage = async (context) => {
                                                 return (
                                                     <ItemCard
                                                         key={m}
-                                                        tag="assignee"
+                                                        filterTag="assignee"
                                                         caption={assignment.membership.Member.aka}
                                                         subtitle={assignment.division.name}
                                                     />
@@ -150,7 +150,7 @@ const EventPage = async (context) => {
                                                         const { Member } = assignment.membership;
                                                         return (
                                                             <Form key={m} id={`${Member.id}-attendance-form`} APIURL={`/api/calendar/event/${event.id}/take-attendance/${Member.id}`} auto debug>
-                                                                <div className="attendance-row" tag="attendee" name={Member.aka}>
+                                                                <div className="attendance-row" filterTag="attendee" name={Member.aka}>
                                                                     <div className="attendance-name">{Member.aka}</div>
                                                                     <Radio id={Member.id} name="status" value={attendance[Member.id]?.status || 1} type="slider" options={AttendanceStatus} /> {/*debug={Member.id === '0f7f9f27-7588-4d9f-91d5-9ad54dbef507'} /> */}
                                                                 </div>

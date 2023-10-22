@@ -291,7 +291,7 @@ const EventModelPage = async (context) => {
                                 id="assigned-members-filter"
                                 filterTag="assignee"
                                 columns={{ c: 3, w: "200px" }}
-                                search={{ label: "Search", searchProp: "name" }}
+                                search={{ label: "Search", searchProp: "caption" }}
                                 Vstyle={{width: "750px"}}
                             >
                                 {
@@ -299,7 +299,7 @@ const EventModelPage = async (context) => {
                                         return (
                                             <ItemCard
                                                 key={m}
-                                                tag="assignee"
+                                                filterTag="assignee"
                                                 caption={assignment.membership.Member.aka}
                                                 subtitle={assignment.division.name}
                                             />

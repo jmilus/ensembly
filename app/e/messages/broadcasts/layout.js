@@ -20,9 +20,9 @@ const BroadcastsPage = async (context) => {
                     id="broadcasts-filter"
                     filterTag="broadcast"
                     columns={{ count: 1, width: "1fr" }}
-                    search={{ label: "Search Broadcasts", searchProp: "subject" }}
+                    search={{ label: "Search Broadcasts", searchProp: "caption" }}
                     filters={[
-                        {name: "status", filterProp: "broadcastStatus", buttons: ["draft", "published"]}
+                        {name: "status", filterBy: "broadcastStatus", buttons: [{caption: "draft"}, {caption: "published"}]}
                     ]}
                     debug
                 >
@@ -36,7 +36,7 @@ const BroadcastsPage = async (context) => {
                                     subtitle={`${bc.status === "DRAFT" ? "Edited: " : "Sent: "}${new Date(bc.status_date).toLocaleString()}`}
                                     cardLinkTo={`/e/messages/broadcasts/${bc.id}`}
                                     style={bc.status === "DRAFT" ? { color:  "hsl(var(--color-s))" } : { color: "hsl(var(--color-p))", background: "hsl(var(--color-s))" }}
-                                    tag="broadcast"
+                                    filterTag="broadcast"
                                     broadcastStatus={bc.status.toLowerCase()}
                                     highlightWhenSelectedId={bc.id}
                                 ></ItemCard>

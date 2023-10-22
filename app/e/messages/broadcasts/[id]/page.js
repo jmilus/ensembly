@@ -44,7 +44,7 @@ const BroadcastDetailsPage = async (context) => {
                             <span>To:</span>
                             {
                                 broadcast.to_address.map((contact, c) => {
-                                    return <div key={c} tag="contact" email={contact}>{contact}</div>
+                                    return <div key={c} filterTag="contact" email={contact}>{contact}</div>
                                 })
                             }
                             {broadcast.cc_address.length > 0 &&
@@ -54,7 +54,7 @@ const BroadcastDetailsPage = async (context) => {
                                     broadcast.cc_address.map((contact, c) => {
                                         // console.log("validate:", contact, validateEmail(contact))
                                         // if (!validateEmail(contact)) return;
-                                        return <div key={c} tag="contact" email={contact}>{contact}</div>
+                                        return <div key={c} filterTag="contact" email={contact}>{contact}</div>
                                     })
                                     }
                                 </>
@@ -65,7 +65,7 @@ const BroadcastDetailsPage = async (context) => {
                                     {
                                     broadcast.bcc_address.map((contact, c) => {
                                         // if (!validateEmail(contact)) return;
-                                        return <div key={c} tag="contact" email={contact}>{contact}</div>
+                                        return <div key={c} filterTag="contact" email={contact}>{contact}</div>
                                     })
                                     }
                                 </>
@@ -141,7 +141,7 @@ const BroadcastDetailsPage = async (context) => {
 
                                 <ItemCard
                                     cardType="MODULE"
-                                    tag="module"
+                                    filterTag="module"
                                     module="basic"
                                     dropItem={{ name: "Basic", type: "standard_paragraph" }}
                                     itemIcon={<i style={{ fontSize: "3em", color: "var(--color-p)", cursor: "inherit" }}>view_headline</i>}

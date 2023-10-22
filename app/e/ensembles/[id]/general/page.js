@@ -13,20 +13,21 @@ export default async function EnsembleGeneralPage({params}) {
         <FilterContainer
             id="general-members"
             filterTag="member"
-            search={{ label: "Search Members", searchProp: "name" }}
+            search={{ label: "Search Members", searchProp: "caption" }}
             columns={{ count: 1, width: "1fr" }}
             rows="min-content"
             style={{width: "300px"}}
         >
             {
                 memberships.map((membership, m) => {
+                    console.log({membership})
                     const member = membership.Member;
                     return (
                         <ItemCard
                             key={m}
-                            tag="member"
-                            name={member.aka}
+                            filterTag="member"
                             caption={member.aka}
+                            subtitle={membership.type.name}
                             type="mini"
                         />
                     )

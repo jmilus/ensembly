@@ -74,7 +74,7 @@ const NewBroadcastPage = async () => {
 
                                 <ItemCard
                                     cardType="MODULE"
-                                    tag="module"
+                                    filterTag="module"
                                     module="basic"
                                     dropItem={{ name: "Basic", type: "standard_paragraph" }}
                                     itemIcon={<i style={{ fontSize: "3em", color: "var(--color-p)", cursor: "inherit" }}>view_headline</i>}

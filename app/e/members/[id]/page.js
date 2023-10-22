@@ -124,10 +124,10 @@ const MemberPage = async (context) => {
                         <FilterContainer
                             id="membership-filter"
                             filterTag="membership"
-                            defaultFilter={{ membershipStatus: { Active: "Active" } }}
+                            defaultFilter={{ ["membership-status"]: { filterBy: "membershipStatus", filterParams: { Active: { caption: "Active" } } } }}
                             columns={{ count: 1, width: "1fr" }}
                             filters={[
-                                {name: "membershipStatus", buttons: membershipStatus.map(ms => {return {[ms.type]: ms.type}})}
+                                { name: "membership-status", filterBy: "membershipStatus", buttons: membershipStatus.map(ms => { return { caption: ms.type } }) }
                             ]}
                         >
                             {

@@ -170,7 +170,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
                         <span>To:</span>
                         {
                             allMemberEmails.map((contact, c) => {
-                                return <CheckBox key={c} email={contact} label={contact} value={toList.includes(contact)} extraAction={(v) => toggleMembersAsContact([contact], v)} />
+                                return <CheckBox key={c} filterTag="contact" email={contact} label={contact} value={toList.includes(contact)} extraAction={(v) => toggleMembersAsContact([contact], v)} />
                             })
                         }
                         {ccList.length > 0 &&
@@ -180,7 +180,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
                                 ccList.map((contact, c) => {
                                     console.log("validate:", contact, validateEmail(contact))
                                     if (!validateEmail(contact)) return;
-                                    return <CheckBox key={c} email={contact} label={contact} value={true} extraAction={() => setCcList(ccList.filter(cc => cc != contact))} />
+                                    return <CheckBox key={c} filterTag="contact" email={contact} label={contact} value={true} extraAction={() => setCcList(ccList.filter(cc => cc != contact))} />
                                 })
                                 }
                             </>
@@ -191,7 +191,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
                                 {
                                 bccList.map((contact, c) => {
                                     if (!validateEmail(contact)) return;
-                                    return <CheckBox key={c} email={contact} label={contact} value={true} extraAction={() => setBccList(bccList.filter(bcc => bcc != contact))} />
+                                    return <CheckBox key={c} filterTag="contact" email={contact} label={contact} value={true} extraAction={() => setBccList(bccList.filter(bcc => bcc != contact))} />
                                 })
                                 }
                             </>
