@@ -13,28 +13,28 @@ function useStatus() {
 
     const vanish = () => {
         transitionTimer.current = null;
-        setBlipState(null)
+        setBlipState({})
     }
 
-    const unsaved = (caption, saveAction) => {
+    const unsaved = ({caption, saveFunction, payload, followPath}) => {
         console.log("data is unsaved")
         
-        setBlipState({ mode: "unsaved", action: saveAction, caption, path })
+        setBlipState({ mode: "unsaved", saveFunction, payload, caption, prevpath: path, followPath })
     }
 
-    const saving = (caption) => {
+    const saving = ({caption}) => {
         console.log("now saving...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         setBlipState({ mode: "saving", caption })
     }
 
-    const loading = (caption) => {
+    const loading = ({caption}) => {
         console.log("loading data...")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         setBlipState({ mode: "loading", caption })
     }
 
-    const saved = (caption) => {
+    const saved = ({caption}) => {
         console.log("Data saved!")
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         setBlipState({ mode: "saved", caption })
@@ -42,7 +42,7 @@ function useStatus() {
         transitionTimer.current = setTimeout(() => vanish(), 4000)
     }
 
-    const error = (caption, error) => {
+    const error = ({caption, error}) => {
         console.error(error)
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         setBlipState({ mode: "error", caption })

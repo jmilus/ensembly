@@ -19,12 +19,11 @@ const BroadcastsPage = async (context) => {
                 <FilterContainer
                     id="broadcasts-filter"
                     filterTag="broadcast"
-                    columns={{ count: 1, width: "1fr" }}
+                    // columns={{ count: 1, width: "1fr" }}
                     search={{ label: "Search Broadcasts", searchProp: "caption" }}
                     filters={[
-                        {name: "status", filterBy: "broadcastStatus", buttons: [{caption: "draft"}, {caption: "published"}]}
+                        {name: "status", mode: "exclusive", filterBy: "broadcastStatus", buttons: [{caption: "draft"}, {caption: "published"}]}
                     ]}
-                    debug
                 >
                     {
                         broadcastsList.map((bc, b) => {

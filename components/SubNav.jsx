@@ -13,11 +13,11 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
     const supabase = createClientComponentClient();
     const [showMenu, setShowMenu] = useState(false);
     const userIconRef = useRef();
-    const { parameters } = useContext(GlobalContext)
+    const { parameters: { profile } } = useContext(GlobalContext)
     const router = useRouter();
     const path = usePathname();
 
-    const { profile } = parameters;
+    // const { profile } = parameters;
 
     let locations = [...navNodes]
     locations.sort(function(a, b) {
@@ -49,7 +49,6 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
     const currentRoute = navNodes.find(nn => locations[0].caption === nn.caption)
     // console.log({navNodes},{currentRoute})
     const routeCaption = currentRoute?.caption.toLowerCase() || ""
-    console.log({routeCaption})
         
     return (
         <div className="nav-wrapper">

@@ -24,7 +24,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
         {
             
         } else {
-            saveStatus.unsaved(undefined, {to_address: toList, cc_address: ccList, bcc_address: bccList})
+            saveStatus.unsaved({payload: {to_address: toList, cc_address: ccList, bcc_address: bccList}})
         }
     }, [toList, ccList, bccList])
 
@@ -129,7 +129,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
                 <Collapser
                     key={i}
                     button={contactCollapserButton}
-                    nodeHeight="20px"
+                    nodeHeight={contactNodeHeight}
                     hideDeadEnds
                     startCollapsed={groupChecked === "none"}
                 >
@@ -165,7 +165,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
                         filterTag="contact"
                         search={{ label: "contact", searchProp: "email" }}
                         columns={{ count: 1, width: "1fr" }}
-                        rows="auto"
+                        rows="min-content"
                     >
                         <span>To:</span>
                         {

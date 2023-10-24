@@ -1,6 +1,7 @@
 'use client'
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import _ from 'lodash'
 
 import { useState, useRef, useEffect, useContext } from 'react';
 import { BlipContext } from 'components/BlipContext';
@@ -12,10 +13,13 @@ const StatusBlip = () => {
     const [timeToDie, setTimeToDie] = useState(null)
     const tickdown = useRef(null)
     const path = usePathname();
+    const router = useRouter();
+    
+    const { mode, caption, saveFunction, payload, followPath, error, prevpath } = blipState;
 
     const dismissBlip = () => {
         if (timeToDie != null) setTimeToDie(null)
-        setBlipState(null)
+        setBlipState({})
     }
 
     const tickdownTimer = (seconds) => {
@@ -30,8 +34,7 @@ const StatusBlip = () => {
     }
 
     useEffect(() => {
-        console.log("StatusBlip is rendering", path)
-        if (blipState?.path && blipState?.path != path) {
+        if (prevpath && prevpath != path) {
             tickdownTimer(5)
         }
     }, [path])
@@ -42,55 +45,61 @@ const StatusBlip = () => {
         let timeout = "";
 
         let clickAction;
-        switch (typeof blipState?.action) {
-            case 'function':
-                clickAction = blipState?.action;
-                break;
-            case 'object':
-                console.log("save path:", path.replace('/e/', '/api/'))
-                clickAction = () => {
-                    setBlipState({ mode: "saving" })
-                    fetch(path.replace('/e/', '/api/'), {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(action)
+        if (saveFunction) {
+            clickAction = saveFunction;
+        } else if (payload) {
+            clickAction = () => {
+                setBlipState({ mode: "saving" })
+                fetch(path.replace('/e/', '/api/'), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                    .then(response => response.json())
+                    .then(res => {
+                        console.log({ res })
+                        if (res.error) throw res.error;
+                        if (followPath) {
+                            let newPath = followPath;
+                            if (followPath.includes("$slug$")) {
+                                newPath = newPath.replace("$slug$", res.id);
+                            }
+                            
+                            router.push(newPath)
+                        }
+                        setBlipState({ mode: "saved" })
+
                     })
-                        .then(response => response.json())
-                        .then(res => {
-                            setBlipState({ mode: "saved" })
-                        })
-                        .catch((err, message) => {
-                            setBlipState({ mode: "error", error: { title: "Save Error", message } })
-                        })
-                }
-            default:
-                break;
+                    .catch(error => {
+                        setBlipState({ mode: "error", error: { title: "Save Error", error } })
+                    })
+            }
         }
 
-        switch (blipState?.mode) {
+        switch (mode) {
             case "unsaved":
-                myCaption = blipState?.caption || "Click to Save";
+                myCaption = caption || "Click to Save";
                 timeout = timeToDie === 0 ? " fade" : "";
                 dismiss = true;
                 break;
             case "saving":
-                myCaption = blipState?.caption || "Saving...";
+                myCaption = caption || "Saving...";
                 break;
             case "loading":
-                myCaption = blipState?.caption || "Loading...";
+                myCaption = caption || "Loading...";
                 break;
             case "saved":
-                myCaption = blipState?.caption || "Saved!";
+                myCaption = caption || "Saved!";
                 break;
             case "error":
-                myCaption = blipState?.caption || "Error";
+                myCaption = caption || "Error";
                 dismiss = true;
-                // clickAction = () => openModal(error);
+                console.error(error)
                 break;
             default:
                 return null;
         }
-        return <div className={`status-blip-body ${blipState?.mode}${timeout}`}>
+        return <div className={`status-blip-body ${mode}${timeout}`}>
             <div className="blip-caption" onClick={clickAction}>{myCaption}</div>
             {timeToDie != null ?
                 <div className="blip-timer">
@@ -103,8 +112,9 @@ const StatusBlip = () => {
         </div>
     }
 
+    if (_.isEmpty(blipState)) return null;
+
     const icon = blipIcon()
-    if (blipState === null) return null;
     return (
         <div className="status-blip">
             {icon}

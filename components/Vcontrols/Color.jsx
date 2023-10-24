@@ -7,7 +7,7 @@ import { HEXtoRGB, contrastColors } from '../../utils';
 // import './Vstyling.css'
 
 const Color = (props) => {
-    const { id, name, label, value, defaultColor="#000000", extraAction, format, limit, style, icon, isRequired=false, children, pattern, clear, readonly, debug } = props;
+    const { id, name, value, defaultColor="#000000", extraAction, style, classes, icon, debug } = props;
     const [controlValue, setControlValue] = useState(value || defaultColor);
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const Color = (props) => {
     let contrastColor = controlValue === 'transparent' ? 'black' : contrastColors([r, g, b]) ? 'black' : 'white';
 
     return (
-        <div id={`color-${id}`} className={`color-swatch-base`} style={{...style, backgroundColor: controlValue}}>
+        <div id={`color-${id}`} className={`color-swatch-base ${classes}`} style={{...style, backgroundColor: controlValue}}>
             <span style={{color: contrastColor}}>
                 {icon}
             </span>

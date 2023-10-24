@@ -85,7 +85,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
             return;
         }
         
-        status.saving()
+        status.saving({})
         
         let submitResult;
         if (json) {
@@ -110,12 +110,12 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
 
         console.log({ submitResult });
         if (!submitResult) {
-            status.error("response failure");
+            status.error({caption: "response failure"});
             return;
         }
 
         if (submitResult instanceof Error) {
-            status.error(undefined, submitResult)
+            status.error({error: submitResult})
         } else {
             if (followUp) followUp(submitResult);
             if (followPath) {
@@ -126,7 +126,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
                 
                 router.push(newPath)
             }
-            status.saved();
+            status.saved({});
         }
         
     }

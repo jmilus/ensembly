@@ -164,10 +164,6 @@ const BroadcastDetailsPage = async (context) => {
                 <Button name="duplicate" caption={<><i>content_copy</i><span>Duplicate</span></>} APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="POST" followPath={`$slug$`} statusCaptions={{ saved: "Duplicated!" }} buttonClass='fit' />
                 <Button name="delete" caption={<><i>delete_forever</i><span>Delete Draft</span></>} APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="DELETE" followPath={`/e/messages/broadcasts/`} statusCaptions={{ saving: "Deleting...", saved: "Broadcast Deleted." }} buttonClass='fit angry' />
                 <Button name="send" caption={<><i>send</i><span>Send Broadcast</span></>} APIURL={`/api/messages/broadcasts/send`} METHOD="POST" payload={broadcast.id} followPath={`/e/messages/broadcasts/${broadcast.id}`} statusCaptions={{saving: "Sending...", saved: "Sent!"}} buttonClass='fit happy' style={{ marginLeft: "auto" }} />
-                {/* <button className="fit" onClick={() => duplicateBroadcast()}><i>content_copy</i><span>Duplicate</span></button> */}
-                {/* <button className="fit" onClick={saveDraft}><i>save</i><span>Save Draft</span></button> */}
-                {/* <button className="fit angry" onClick={() => deleteBroadcast()}><i>delete_forever</i><span>Delete Draft</span></button>
-                <button className="fit happy" style={{ marginLeft: "auto" }} onClick={() => sendBroadcast()}><i>send</i><span>Send Broadcast</span></button> */}
             </section>
         </article>
         

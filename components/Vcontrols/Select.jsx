@@ -31,7 +31,7 @@ const Select = (props) => {
     const { dispatch } = useContext(GlobalContext);
 
     const handleDropDownSelection = (input) => {
-
+        console.log("selected:", input)
         const selectControl = document.getElementById(id)
         const inputEvent = new Event('change', { bubbles: true });
         selectControl.dispatchEvent(inputEvent);
@@ -87,8 +87,10 @@ const Select = (props) => {
 
     return (
         <>
-            <div ref={selectRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${label ? "" : " unlabeled"}${hero ? " hero" : ""}${controlValue ? "" : " empty"}`} style={style}>
-                <label htmlFor={id} className="label">{label}</label>
+            <div ref={selectRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${hero ? " hero" : ""}${controlValue ? "" : " empty"}`} style={style}>
+                {label != undefined &&
+                    <label htmlFor={id} className="label">{label}</label>
+                }
                 <select
                     id={id}
                     name={name}

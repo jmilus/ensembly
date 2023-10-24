@@ -19,7 +19,7 @@ const Broadcast = ({ body=[], subject="", status }) => {
         {
             
         } else {
-            saveStatus.unsaved(undefined, {body: broadcastContent, subject: broadcastSubject})
+            saveStatus.unsaved({payload: {body: broadcastContent, subject: broadcastSubject}, followPath: `/e/messages/broadcasts/$slug$`})
         }
     }, [broadcastContent, broadcastSubject])
 
@@ -74,7 +74,7 @@ const Broadcast = ({ body=[], subject="", status }) => {
         }
         // 
         return (
-            <div key={`${index}-${module.key}`} className={`module-wrapper`} style={{ zIndex: count - index }}>
+            <div key={`${index}-${module.key}`} className={`module-wrapper`} >
                 <DropContainer
                     key={count - index}
                     caption=""
@@ -102,7 +102,7 @@ const Broadcast = ({ body=[], subject="", status }) => {
     return (
         <article>
             <Text id="broadcast-subject" name="subject" label="Subject" value={broadcastSubject} extraAction={(v) => setBroadcastSubject(v)} style={{ fontSize: "18px" }} />
-            <article className="broadcast-drafter" style={{ flex: 1 }}>
+            <article id="broadcast-drafter" style={{ flex: 1 }}>
                 {
                     broadcastContent.map((module, x) => {
                         // console.log("module", module.key, x);

@@ -28,12 +28,8 @@ const LineupManager = ({ initialProps }) => { // .name
     const roster = ensemble.EnsembleMembership;
     const status = useStatus();
 
-    // console.log("View Lineup initialProps:", { initialProps })
-    // console.log(assignments);
-    // status.unsaved();
-
     const saveAssignments = () => {
-        status.saving();
+        status.saving({});
         const saveResult = fetch(`/api/ensembles/${ensemble.id}/lineup/${lineup.id}/assignments`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
@@ -44,12 +40,12 @@ const LineupManager = ({ initialProps }) => { // .name
         })
             .then(response => response.json())
             .then(record => {
-                status.saved()
+                status.saved({})
                 // console.log(record)
                 return record;
             })
             .catch((err) => {
-                status.error('Failed to update lineup assignment', err)
+                status.error({error:'Failed to update lineup assignment'})
                 // console.error('failed to update lineup assignment:', err);
                 return err;
             })
@@ -58,7 +54,7 @@ const LineupManager = ({ initialProps }) => { // .name
     }
 
     useEffect(() => {
-        if(!saved) status.unsaved(undefined, saveAssignments)
+        if(!saved) status.unsaved({saveFunction: saveAssignments})
     }, [assignments, deletedAssignments])
 
     const handleDrop = async (payload) => {

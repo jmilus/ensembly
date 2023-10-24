@@ -11,8 +11,8 @@ section>form {
     color: gray;
     transition: all 0.2s ease-out;
     margin: 0 0 1px 5px;
-    position: absolute;
     top: 2px;
+    height:1em;
 }
 
 .empty > .label {
@@ -23,7 +23,7 @@ section>form {
     display: flex;
     flex-direction: column;
     margin: 0;
-    padding-top: 1em;
+    /* padding-top: 1em; */
     position: relative;
 }
 .input-control-base.checkbox {
@@ -173,7 +173,7 @@ select:-internal-list-box {
 .input-control-base > .collection-container {
     width: 100%;
     border-style: solid;
-    border-color: var(--gray3);
+    border-color: hsl(var(--edge-color));
     border-width: 0 0 1px 0;
     outline: none;
     font-size: 1em;
@@ -638,10 +638,17 @@ i.dot.selected {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 0 2px inset var(--gray2);
-    border: 1px solid var(--color-moss);
+    box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
+    border: 1px solid hsl(var(--edge-color));
     min-width: 32px;
     min-height: 32px;
+    transition: all 0.2s ease;
+}
+.color-swatch-base:hover {
+    box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
+}
+.color-swatch-base:hover:active {
+    box-shadow: 0 0 0 20px inset hsl(var(--edge-color));
 }
 
 .color-input {
@@ -680,8 +687,13 @@ i.dot.selected {
     box-shadow: 0 5px 10px -5px var(--gray4);
     max-height: 300px;
     overflow:scroll;
+    z-index: 1000;
 }
 #popup-backing {
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    left: 0;
     height: 100%;
     width: 100%;
 }

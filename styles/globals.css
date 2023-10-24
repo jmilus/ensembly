@@ -52,6 +52,7 @@ body {
   --gray6: hsl(var(--grayx) 40%);
   --gray7: hsl(var(--grayx) 25%);
   --gray8: hsl(var(--grayx) 10%);
+  --gray9: hsl(var(--grayx) 0%);
 
   --mintx: 150 32%;
 
@@ -135,6 +136,7 @@ ol > ol > ol > ol {
 section {
   display: flex;
   flex-wrap: wrap;
+  overflow: hidden;
 }
 
 section.center {
@@ -195,22 +197,19 @@ button {
   font-family: inherit;
   color: hsl(var(--edge-color));
   background: hsl(var(--edge-color) / 0.1);
-  /* border-width: 0px;
-  border-color: hsl(var(--edge-color));
-  border-style: solid; */
   border: none;
   padding: 0;
   cursor: pointer;
   white-space: nowrap;
   height: fit-content;
-  /* border: 1px solid hsl(var(--edge-color)); */
-  box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
+  border: 1px solid hsl(var(--edge-color));
+  box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
   transition: box-shadow 0.1s ease;
   border-radius: 5px;
 }
 
 button:hover {
-  box-shadow: 0 0 0 2px inset hsl(var(--edge-color));
+  box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
 }
 button:active {
   box-shadow: 0 0 20px 20px inset hsl(var(--edge-color));
@@ -355,33 +354,42 @@ label:has(input) {
 }
 
 
-.button-chain button {
+.button-chain button,
+.button-chain .button {
   margin: 0;
   border-radius: 0;
 }
 
+.button-chain.row button,
+.button-chain.row .button {
+  border-width: 1px 0.5px;
+}
 .button-chain.row > button:first-child,
-.button-chain.row > *:first-child > button {
-  border-left: 1px solid hsl( var(--edge-color));
+.button-chain.row > *:first-child > button,
+.button-chain.row > .button:first-child {
+  border-left-width: 1px;
   border-top-left-radius: 5px;
   /* border-top-right-radius: 0px; */
   /* border-bottom-right-radius: 0px; */
   border-bottom-left-radius: 5px;
 }
 .button-chain.row > button:last-child,
-.button-chain.row > *:last-child > button {
+.button-chain.row > *:last-child > button,
+.button-chain.row > .button:last-child {
+  border-right-width: 1px;
   /* border-top-left-radius: 0px; */
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   /* border-bottom-left-radius: 0px; */
 }
 
-.button-chain.row button{
-  border-left: none;
+.button-chain.column button,
+.button-chain.column .button {
+  border-width: 0.5px 1px;
 }
-
 .button-chain.column > button:first-child,
-.button-chain.column> *:first-child > button {
+.button-chain.column> *:first-child > button,
+.button-chain.column > .button:first-child {
   border-top-width: 1px;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -389,17 +397,15 @@ label:has(input) {
   /* border-bottom-left-radius: 0px; */
 }
 .button-chain.column > button:last-child,
-.button-chain.column > *:last-child > button {
+.button-chain.column > *:last-child > button,
+.button-chain.column > .button:last-child {
   border-bottom-width: 1px;
   /* border-top-left-radius: 0px; */
   /* border-top-right-radius: 0px; */
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
 }
-.button-chain.column button {
-  border-top-width: 0.5px;
-  border-bottom-width: 0.5px;
-}
+
 
 
 /************************* NAVBAR *************************/
@@ -777,7 +783,7 @@ fieldset.buttons > legend {
   --grid-columns: 1;
   --min-width: 1fr;
   grid-template-columns: repeat(var(--grid-columns), minmax(var(--min-width), 1fr));
-  grid-template-rows: "none";
+  grid-template-rows: none;
   overflow-y: scroll;
 }
 
@@ -1200,16 +1206,29 @@ fieldset.buttons > legend {
   /* overflow-y: scroll; */
 }
 
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  background: var(--mint4);
+  /* border: 1px solid var(--gray2); */
+  border-radius: 5px;
+  padding: 5px;
+  overflow: hidden;
+  --edge-color: var(--mintx) 70%;
+}
+
 .rich-text-style-controls {
   display: flex;
-  margin: 0 0 5px 5px;
+}
+.rich-text-style-controls + .rich-text-style-controls {
+  margin-left: 5px;
 }
 
 .style-toggle-button {
 
 }
 .style-toggle-button.on {
-  background: var(--gray5);
+  background: var(--mint5);
   color: white;
   box-shadow: none;
   outline-style: none;
@@ -1221,7 +1240,8 @@ fieldset.buttons > legend {
   width: 32px;
 }
 
-.rich-text-style-controls.inline > .style-toggle-button {
+.rich-text-style-controls > .style-toggle-button > i {
+  color: hsl(var(--color-s));
 }
 
 .composer-container {
@@ -1265,7 +1285,7 @@ fieldset.buttons > legend {
   bottom: 0px;
 }
 
-.broadcast-drafter {
+#broadcast-drafter {
   overflow-y: scroll;
   background: var(--gray1);
   border: 1px solid var(--gray3);
@@ -1302,6 +1322,7 @@ fieldset.buttons > legend {
 
 .module-wrapper {
   position: relative;
+  z-index: 1;
 }
 
 .module-menu {
@@ -1412,9 +1433,9 @@ fieldset.buttons > legend {
   display: flex;
   border-radius:3px;
   border-style: solid;
-  border-color: var(--mint5);
+  border-color: var(--color-c2);
   border-width: 0;
-  background: var(--mint2);
+  background: hsl(var(--color-h2)/0.05);
   height: var(--node-height);
   margin-top: 1px;
   border-width: 0.5px;
@@ -1426,10 +1447,10 @@ fieldset.buttons > legend {
   font-size: 1.5em;
 }
 .collapser-node > i.all {
-  color: var(--mint6);
+  color: hsl(var(--color-p));
 }
 .collapser-node > i.some {
-  color: var(--mint5);
+  color: hsl(var(--color-h3)/0.5);
 }
 
 .collapser-node:not(.terminus) {

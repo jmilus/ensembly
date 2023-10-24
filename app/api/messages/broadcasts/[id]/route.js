@@ -44,6 +44,7 @@ export async function POST(request, { params }) {
     return NextResponse.json(res)
 }
 
+// #######
 
 export const updateOneBroadcast = async (props) => {
     const supabase = createServerComponentClient({ cookies });
@@ -54,7 +55,7 @@ export const updateOneBroadcast = async (props) => {
     const { data: broadcast, error } = await supabase
         .from("Broadcast")
         .upsert({
-            id: id === "new" ? undefined : id,
+            id: id === "new-broadcast" ? undefined : id,
             subject,
             body,
             to_address,
@@ -63,20 +64,22 @@ export const updateOneBroadcast = async (props) => {
             status
         })
         .select()
+        .single()
     
     if (error) {
         console.error("save one Broadcast error:", error);
-        return new Error(error);
+        return new Error(error.message);
     }
 
-    console.log("saved broadcase:", broadcast);
-    return broadcast[0];
+    console.log("saved broadcast:", broadcast);
+    return broadcast;
 }
 
 export async function PUT(request, { params }) {
     const req = await request.json();
-    const res = await updateOneBroadcast({...req, id: params.id})
-    return NextResponse.json({ res })
+    const res = await updateOneBroadcast({ ...req, id: params.id })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }
 
 //###########

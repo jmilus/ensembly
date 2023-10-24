@@ -6,6 +6,7 @@ import { Slate, Editable, ReactEditor, withReact, useSlateSelector, useFocused }
 import { withHistory } from 'slate-history';
 
 import { Color, Select } from './Vcontrols';
+import PopupMenu from './PopupMenu';
 
 const emptyInitialValue = [
     {
@@ -57,6 +58,8 @@ const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
 const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
     const [styleState, setStyleState] = useState(initialStyles)
+    const [showToolbar, setShowToolbar] = useState({});
+    const composerRef = useRef()
     const editor = useMemo(() => withReact(withHistory(createEditor())), [])
     //
     const renderElement = useCallback(props => <Element {...props} editor={editor} />, [])
@@ -64,14 +67,12 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
     
     const slateValue = initialValue ? JSON.parse(initialValue) : emptyInitialValue;
 
-    // console.log(moduleOptions);
-
     const StyleButton = ({ caption, styleProp, styleFunction, on }) => {
 
         const handleMouseDown = (e) => {
             e.preventDefault()
             console.log(`setting focus to`)
-            ReactEditor.focus(editor)
+            // ReactEditor.focus(editor)
             styleFunction()
         }
         return <button className={`style-toggle-button${on ? " on" : ""}`} onMouseDown={handleMouseDown}>{caption}</button>
@@ -120,6 +121,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
 
     const Commands = {
         isInlineStyleActive(type) {
+            console.log("toggling inline style:", type)
             const [match] = Editor.nodes(
                 editor,
                 {
@@ -260,10 +262,8 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
     const onKeyDown = (e) => {
         // console.log(e)
         const { selection } = editor;
-        const currentNode = Editor.node(editor, selection?.anchor.path);
-        if (!currentNode) return;
-
-        console.log({ currentNode })
+        console.log({editor})
+        
 
         if (e.ctrlKey) {
             switch (e.key) {
@@ -295,6 +295,10 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
             }
 
         } else {
+            const currentNode = Editor.node(editor, editor.selection);
+            if (!currentNode) return;
+
+            console.log({ currentNode })
             
             switch (e.key) {
                 case 'Enter':
@@ -348,7 +352,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
 
     const onChange = (value) => {
             const isAstChange = editor.operations.some(
-              op => 'set_selection' !== op.type
+              op => op.type !== 'set_selection'
             )
             if (isAstChange) {
                 // console.log("content changed")
@@ -360,14 +364,89 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
             }
     }
 
+    const toolbar = <section id={`toolbar-${id}`} className="composer-toolbar">
+        <div className="rich-text-style-controls">
+            <Select id={`text-style-${id}`} value={styleState.type} options={TEXT_STYLES} extraAction={(v) => Commands.setTextStyle(v)} specialSize="compact" debug />
+        </div>
+        <div className="rich-text-style-controls">
+            <Select id={`text-size-${id}`} value={styleState.size === undefined ? 14 : styleState.size} options={TEXT_SIZES} extraAction={(v) => Commands.setTextSize(v)} specialSize="compact" />
+        </div>
+        <div className="rich-text-style-controls button-chain row">
+            <Color id='text-color' classes="button" icon={<i>format_color_text</i>} extraAction={(v) => Commands.setTextColor(v)} />
+            <Color id='hilite-color' classes="button" icon={<i>format_color_fill</i>} defaultColor="transparent" extraAction={(v) => Commands.setHiLiteColor(v)}  />
+        </div>
+        <div className="rich-text-style-controls button-chain row">
+            {
+                BUTTONS_INLINE_STYLES.map((button, b) => {
+                    return (
+                        <StyleButton
+                            key={b}
+                            caption={button.caption}
+                            styleProp={button.style}
+                            styleFunction={() => Commands.toggleInlineStyle(button.style)}
+                            on={styleState[button.style]}
+                        />
+                    )
+                })
+            }
+        </div>
+        <div className="rich-text-style-controls button-chain row">
+            {
+                BUTTONS_ALIGNMENT_STYLES.map((button, b) => {
+                    return (
+                        <StyleButton
+                            key={b}
+                            caption={button.caption}
+                            styleProp={button.style}
+                            styleFunction={() => Commands.toggleAlignmentStyle(button.style)}
+                            on={styleState.align === button.style}
+                        />
+                    )
+                })
+            }
+        </div>
+        <div className="rich-text-style-controls button-chain row">
+            <StyleButton
+                caption={<i>format_list_numbered</i>}
+                styleProp={'numbered-list'}
+                styleFunction={() => toggleBlock('numbered-list')}
+                on={isBlockActive(
+                    editor,
+                    'numbered-list',
+                    TEXT_ALIGN_TYPES.includes('numbered-list') ? 'align' : 'type'
+                )}
+            />
+            <StyleButton
+                caption={<i>format_list_bulleted</i>}
+                styleProp={'bulleted-list'}
+                styleFunction={() => toggleBlock('bulleted-list')}
+                on={isBlockActive(
+                    editor,
+                    'bulleted-list',
+                    TEXT_ALIGN_TYPES.includes('bulleted-list') ? 'align' : 'type'
+                )}
+            />
+        </div>
+        <div style={{ flex: 1 }}></div>
+        
+    </section>
+
+    const handleSlateClick = (e) => {
+        console.log({showToolbar})
+        if (_.isEmpty(showToolbar)) {
+            setShowToolbar({ x: e.clientX, y: e.clientY })
+        }
+        
+    }
+
     return (
         <Slate
             editor={editor}
             value={slateValue || emptyInitialValue}
             onChange={onChange}
             >
-            <div className="composer-container" style={style}>
-                <div className="composer-textbox">
+            <div ref={composerRef} className="composer-container" >
+                <div className="composer-textbox" >
                     <Editable
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
@@ -377,76 +456,19 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
                         style={{ padding: "0 15px" }}
                         readOnly={readOnly || false}
                         // onChange={onChange}
+                        // onBlur={(e) => checkBlur(e)}
+                        onMouseUp={(e) => handleSlateClick(e)}
                     />
-                    <div className="toolbar-wrapper">
-                        <section>
-                            <div className="">
-                                <Select id={`text-style-${id}`} value={styleState.type} options={TEXT_STYLES} extraAction={(v) => Commands.setTextStyle(v)} specialSize="compact" />
-                            </div>
-                            <div className="">
-                                <Select id={`text-size-${id}`} value={styleState.size === undefined ? 14 : styleState.size} options={TEXT_SIZES} extraAction={(v) => Commands.setTextSize(v)} specialSize="compact" />
-                            </div>
-                            <div className="rich-text-style-controls button-chain row">
-                                <Color id='text-color' icon={<i>format_color_text</i>} extraAction={(v) => Commands.setTextColor(v)} />
-                                <Color id='hilite-color' icon={<i>format_color_fill</i>} defaultColor="transparent" extraAction={(v) => Commands.setHiLiteColor(v)}  />
-                            </div>
-                            <div className="rich-text-style-controls button-chain row">
-                                {
-                                    BUTTONS_INLINE_STYLES.map((button, b) => {
-                                        return (
-                                            <StyleButton
-                                                key={b}
-                                                caption={button.caption}
-                                                styleProp={button.style}
-                                                styleFunction={() => Commands.toggleInlineStyle(button.style)}
-                                                on={styleState[button.style]}
-                                            />
-                                        )
-                                    })
-                                }
-                            </div>
-                            <div className="rich-text-style-controls button-chain row">
-                                {
-                                    BUTTONS_ALIGNMENT_STYLES.map((button, b) => {
-                                        return (
-                                            <StyleButton
-                                                key={b}
-                                                caption={button.caption}
-                                                styleProp={button.style}
-                                                styleFunction={() => Commands.toggleAlignmentStyle(button.style)}
-                                                on={styleState.align === button.style}
-                                            />
-                                        )
-                                    })
-                                }
-                            </div>
-                            <div className="rich-text-style-controls button-chain row">
-                                <StyleButton
-                                    caption={<i>format_list_numbered</i>}
-                                    styleProp={'numbered-list'}
-                                    styleFunction={() => toggleBlock('numbered-list')}
-                                    on={isBlockActive(
-                                        editor,
-                                        'numbered-list',
-                                        TEXT_ALIGN_TYPES.includes('numbered-list') ? 'align' : 'type'
-                                    )}
-                                />
-                                <StyleButton
-                                    caption={<i>format_list_bulleted</i>}
-                                    styleProp={'bulleted-list'}
-                                    styleFunction={() => toggleBlock('bulleted-list')}
-                                    on={isBlockActive(
-                                        editor,
-                                        'bulleted-list',
-                                        TEXT_ALIGN_TYPES.includes('bulleted-list') ? 'align' : 'type'
-                                    )}
-                                />
-                            </div>
-                            <div style={{ flex: 1 }}></div>
-                            
-                        </section>
-                    </div>
                 </div>
+                {_.isEmpty(showToolbar) === false &&
+                    <PopupMenu
+                        parentRef={composerRef}
+                        position={showToolbar}
+                        hideMe={() => setShowToolbar(false)}
+                    >
+                        {toolbar}
+                    </PopupMenu>
+                }
             </div>
         </Slate>
     )

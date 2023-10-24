@@ -69,7 +69,7 @@ const NewBroadcastPage = async () => {
                                 filterTag="module"
                                 search={{ label: "module", searchProp: "module" }}
                                 columns={{ count: 1, width: "1fr" }}
-                                rows="auto"
+                                rows="min-content"
                             >
 
                                 <ItemCard
