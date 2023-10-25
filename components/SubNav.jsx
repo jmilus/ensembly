@@ -17,7 +17,7 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
     const router = useRouter();
     const path = usePathname();
 
-    // const { profile } = parameters;
+    console.log({profile})
 
     let locations = [...navNodes]
     locations.sort(function(a, b) {
@@ -38,6 +38,7 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
         </button>
         {showMenu && 
             <PopupMenu
+                id={`subnav-popup`}
                 parentRef={userIconRef}
                 hideMe={() => setShowMenu(false)}
             >

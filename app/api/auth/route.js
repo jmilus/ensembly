@@ -10,17 +10,18 @@ export async function getMemberUserProfile(member) {
     // console.log("getProfile ids:", { member }, { user })
     const { data: { session } } = await supabase.auth.getSession()
 
-    if (!session) return { user: null, member: null, permissions: null, role: null };
+    if (!session) return { user: null, email: "", member: {}, memberId: null, roles: []};
 
     let query = supabase
         .from('Profile')
         .select(`
             user,
             email,
-            member,
-            Member (*),
+            memberId:member,
+            member:Member (*),
             roles
         `)
+        .maybeSingle()
 
     if (member) {
         query = query.eq('member', member)
@@ -32,21 +33,17 @@ export async function getMemberUserProfile(member) {
 
     if (error) {
         console.error("fetch a very specific member user error:", error)
-        return;
+        return new Error(`failed to fetch member user profile: ${error}`);
     }
     
-    // console.log({ profile });
+    console.log({ profile });
 
-    return {
-        user: profile[0].user,
-        email: profile[0].email,
-        member: profile[0].Member,
-        roles: profile[0].roles
-    };
+    return profile || { user: null, email: "", member: {}, memberId: null, roles: []};
 }
 
 export async function GET(request) {
     const req = await request.json();
     const res = await getMemberUserProfile(req)
-    return NextResponse.json({ res })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }

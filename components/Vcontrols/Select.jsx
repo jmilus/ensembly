@@ -71,15 +71,9 @@ const Select = (props) => {
     }
 
     const clonedChildren = handleChildren();
-    
-    const handleBlur = (e) => {
-        // console.log(e.relatedTarget);
-
-        if(e.relatedTarget) dispatch({route: "dropdown", payload: null})
-    }
 
     const showDropDown = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         if (readonly) return null;
         
         setShowPopup(true)
@@ -97,7 +91,6 @@ const Select = (props) => {
                     value={controlOptions[controlValue]?.value || ""}
                     onChange={() => null}
                     onFocus={showDropDown}
-                    onBlur={handleBlur}
                     autoComplete="do-not-autofill"
                     required={isRequired}
                     readOnly={readonly}
@@ -114,6 +107,7 @@ const Select = (props) => {
             </div>
             {showPopup && 
                 <PopupMenu
+                    id={`${id}-popup`}
                     parentRef={selectRef}
                     hideMe={() => setShowPopup(false)}
                 >

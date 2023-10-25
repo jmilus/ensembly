@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState, useCallback, forwardRef, useMemo } 
 import { createEditor, Editor, Element as SlateElement, Transforms, Text, Path, Node } from 'slate'
 import { Slate, Editable, ReactEditor, withReact, useSlateSelector, useFocused } from 'slate-react'
 import { withHistory } from 'slate-history';
+import _ from 'lodash'
 
 import { Color, Select } from './Vcontrols';
 import PopupMenu from './PopupMenu';
@@ -366,7 +367,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
 
     const toolbar = <section id={`toolbar-${id}`} className="composer-toolbar">
         <div className="rich-text-style-controls">
-            <Select id={`text-style-${id}`} value={styleState.type} options={TEXT_STYLES} extraAction={(v) => Commands.setTextStyle(v)} specialSize="compact" debug />
+            <Select id={`text-style-${id}`} value={styleState.type} options={TEXT_STYLES} extraAction={(v) => Commands.setTextStyle(v)} specialSize="compact" />
         </div>
         <div className="rich-text-style-controls">
             <Select id={`text-size-${id}`} value={styleState.size === undefined ? 14 : styleState.size} options={TEXT_SIZES} extraAction={(v) => Commands.setTextSize(v)} specialSize="compact" />
@@ -434,7 +435,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
     const handleSlateClick = (e) => {
         console.log({showToolbar})
         if (_.isEmpty(showToolbar)) {
-            setShowToolbar({ x: e.clientX, y: e.clientY })
+            setShowToolbar({ x: e.clientX + 20, y: e.clientY + 20 })
         }
         
     }
@@ -462,9 +463,11 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
                 </div>
                 {_.isEmpty(showToolbar) === false &&
                     <PopupMenu
+                        id={`composer-${id}-popup`}
                         parentRef={composerRef}
                         position={showToolbar}
                         hideMe={() => setShowToolbar(false)}
+                        persistParent
                     >
                         {toolbar}
                     </PopupMenu>

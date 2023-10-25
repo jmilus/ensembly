@@ -15,7 +15,8 @@ section>form {
     height:1em;
 }
 
-.empty > .label {
+.text-box.empty > .label,
+.select-box.empty > .label {
     color: transparent;
 }
 
