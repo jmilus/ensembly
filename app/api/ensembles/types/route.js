@@ -21,5 +21,6 @@ export const getAllEnsembleTypes = async () => {
 
 export async function GET() {
     const res = await getAllEnsembleTypes()
-    return NextResponse.json({ res })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }

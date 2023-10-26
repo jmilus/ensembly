@@ -22,9 +22,9 @@ export const getAllDivisions = async (nested=true) => {
     return divisions;
 }
 
-export async function GET(request, {params}) {
-    const ensembleId = params.id
+export async function GET(request) {
     const req = await request.json()
     const res = await getAllDivisions(req)
-    return NextResponse.json({ res })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }
