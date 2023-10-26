@@ -110,6 +110,7 @@ const Select = (props) => {
                     id={`${id}-popup`}
                     parentRef={selectRef}
                     hideMe={() => setShowPopup(false)}
+                    matchParentWidth={true}
                 >
                     {
                         Object.keys(controlOptions).map((key, o) => {

@@ -5,7 +5,7 @@ import { cookies, headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function getMemberUserProfile(member) {
-    console.log("getMemberUserProfile member:",{member})
+    // console.log("getMemberUserProfile member:",{member})
     const supabase = createServerComponentClient({ cookies });
     // console.log("getProfile ids:", { member }, { user })
     const { data: { session } } = await supabase.auth.getSession()
@@ -36,7 +36,7 @@ export async function getMemberUserProfile(member) {
         return new Error(`failed to fetch member user profile: ${error}`);
     }
     
-    console.log({ profile });
+    // console.log({ profile });
 
     return profile || { user: null, email: "", member: {}, memberId: null, roles: []};
 }

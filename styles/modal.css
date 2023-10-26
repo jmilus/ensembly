@@ -10,6 +10,7 @@
     display: flex;
     --normal-border: linear-gradient(45deg, var(--color-c3), var(--color-c2), var(--color-c1));
     --error-border: linear-gradient(45deg, var(--color-f), var(--color-f), var(--color-f));
+    --edge-color: var(--color-h2);
 }
 
 .modal-backdrop {
@@ -77,6 +78,7 @@
     flex-direction: column;
     overflow: hidden;
     padding: 10px;
+    background: var(--gray2);
 }
 .modal-wrapper.error .modal-body {
     background: hsl(0, 0%, 30%);
@@ -111,7 +113,7 @@
 .modal-buttons {
     display: flex;
     padding: 15px;
-    background: var(--gray2);
+    background: var(--gray3);
     justify-content: flex-end;
 }
 

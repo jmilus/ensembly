@@ -212,13 +212,9 @@ const EventModelPage = async (context) => {
                             buttonClass="fit"
                         >
                             <Form id="new-event-modal-form" APIURL={`/api/calendar/event/model/${model.id}`} METHOD="POST" auxData={{exception: true}} >
-                                <section className="modal-fields">
-                                    <Text id="newEventName" name="eventName" placeholder={model.name} label="Event Name" value="" limit="64" />
-                                </section>
-                                <section className="modal-fields">
-                                    <Select id="newEventType" name="typeId" label="Event Type" value={model.type.id} options={eventTypes} isRequired />
-                                </section>
-                                <section className="modal-fields">
+                                <Text id="newEventName" name="eventName" placeholder={model.name} label="Event Name" value="" limit="64" />
+                                <Select id="newEventType" name="typeId" label="Event Type" value={model.type.id} options={eventTypes} isRequired />
+                                <section className="inputs">
                                     <DateTime id="newEventStart" name="eventStartDate" label="Event Start" value="" includeTime isRequired >
                                         <DateTime id="newEventEnd" name="eventEndDate" label="Event End" value="" includeTime isRequired />
                                     </DateTime>
@@ -234,13 +230,9 @@ const EventModelPage = async (context) => {
                             buttonClass="fit"
                         >
                             <Form id="new-supporting-event-form" METHOD="POST" APIURL="/api/calendar/event/model" auxData={{ parent: model.id }}>
-                                <section className="modal-fields">
-                                    <Text id="newModelName" name="modelName" label="Model Name" value="" limit="64" isRequired />
-                                </section>
-                                <section className="modal-fields">
-                                    <Select id="newEventType" name="type" label="Event Type" value="" options={eventTypes} isRequired />
-                                </section>
-                                <section className="modal-fields">
+                                <Text id="newModelName" name="modelName" label="Model Name" value="" limit="64" isRequired />
+                                <Select id="newEventType" name="type" label="Event Type" value="" options={eventTypes} isRequired />
+                                <section className="inputs">
                                     <DateTime id="newEventStart" name="modelStartDate" label="Event Start" value="" includeTime isRequired >
                                         <DateTime id="newEventEnd" name="modelEndDate" label="Event End" value="" includeTime isRequired />
                                     </DateTime>
@@ -256,15 +248,13 @@ const EventModelPage = async (context) => {
                             buttonClass="fit"
                         >
                             <Form id="event-recurrence" METHOD="PUT" debug >
-                                <section className="modal-fields" style={{width:"600px"}}>
+                                <section className="inputs" style={{width:"600px"}}>
                                     <Number id="recurrence-interval" name="interval" label="Every" value={model.interval || 1} style={{maxWidth: "75px"}} isRequired />
                                     <Select id="recurrence-period" name="period" label="Period" value={model.period || 1} options={[{ id: 1, caption: "Week" }, { id: 2, caption: "Month" }]} isRequired style={{maxWidth:"100px"}} >
                                         <Collection id="recurrence-occurrence" name="occurrence" label="Occurrence" value={occurrenceValues} options={occurrenceOptionsSet} filterKey="period" isRequired debug />
                                     </Select>
                                 </section>
-                                <section className="modal-fields">
-                                    <DateOnly id="recurrence-end-date" name="recurrenceEndDate" label="End Recurrence" value={recEndDate || minStartdate} min={minStartdate} isRequired />
-                                </section>
+                                <DateOnly id="recurrence-end-date" name="recurrenceEndDate" label="End Recurrence" value={recEndDate || minStartdate} min={minStartdate} isRequired />
                             </Form>
                             <section className="modal-buttons">
                                 <button name="submit" className="fit" form="event-recurrence">Save</button>

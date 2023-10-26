@@ -149,7 +149,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
             <Select id="maillist-preset-select" label="Maillists" options={["Standard Group", "Board", "Save As New"]} extraAction={(v) => console.log("preset selected:", v)} />
             <TabControl >
                 <Tab tabName="To">
-                    <article>
+                    <article className="scroll">
                         {contactCollapsers}
                     </article>
                 </Tab>

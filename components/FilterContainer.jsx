@@ -44,10 +44,12 @@ const FilterContainer = (props) => {
             const filterSet = activeFilterSets[filterSetName];
             return Object.keys(filterSet.filterParams).some(filterParamKey => {
                 if (child.props[filterSet.filterBy] != null) {
-                    const filterValue = filterSet.filterParams[filterParamKey].value || filterSet.filterParams[filterParamKey].caption
+                    console.log({ filterSet })
+                    const filterValue = filterSet.filterParams[filterParamKey].value != undefined ? filterSet.filterParams[filterParamKey].value : filterSet.filterParams[filterParamKey].caption
                     switch (typeof filterValue) {
                         case 'string':
                             return child.props[filterSet.filterBy].includes(filterValue);
+                        case 'boolean':
                         case 'number':
                             return child.props[filterSet.filterBy] === filterValue;
                         case 'object':
@@ -106,19 +108,18 @@ const FilterContainer = (props) => {
                 {
                     filter.buttons.map((filterObject, o) => {
                         const { caption, value } = filterObject;
+                        console.log(activeFilterSets[filter.name])
                         const isChecked = activeFilterSets[filter.name] ? Object.keys(activeFilterSets[filter.name].filterParams).includes(caption) : false;
                         return (
-                            <div key={`${f}-${o}`} id={`${id}-filter`} className={`filter-button tab-button ${isChecked ? "active" : ""}`} >
-                                <label htmlFor={`${id}-${caption}`} className="filter-label">
-                                    <input
-                                        id={`${id}-${caption}`}
-                                        type="checkbox"
-                                        checked={isChecked}
-                                        onChange={() => toggleFilter(filter, filterObject)} 
-                                    />
-                                    {caption}
-                                </label>
-                            </div>
+                            <label key={`${f}-${o}`} id={`${id}-filter`} htmlFor={`${id}-${caption}`} className={`filter-button tab-button ${isChecked ? "active" : ""}`}>
+                                <input
+                                    id={`${id}-${caption}`}
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => toggleFilter(filter, filterObject)} 
+                                />
+                                {caption}
+                            </label>
                         ) 
                     })
                 }

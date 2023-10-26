@@ -33,7 +33,7 @@ const BroadcastDetailsPage = async (context) => {
                         </div>
                     </fieldset>
                     <fieldset id="broadcast-recipients-read-only" className="tall" style={{ width: "300px", maxWidth: "300px", marginLeft: "10px" }}>
-                        <legend>Addressees</legend>
+                        <legend>Recipients</legend>
                         <FilterContainer
                             id="cc-filter"
                             filterTag="contact"

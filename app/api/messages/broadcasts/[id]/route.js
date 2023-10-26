@@ -71,7 +71,7 @@ export const updateOneBroadcast = async (props) => {
         return new Error(error.message);
     }
 
-    console.log("saved broadcast:", broadcast);
+    // console.log("saved broadcast:", broadcast);
     return broadcast;
 }
 

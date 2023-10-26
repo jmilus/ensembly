@@ -75,9 +75,11 @@ export default async function EnsembleSettingsPage({ params }) {
                     {division.name}
                     <span style={{ fontStyle: "italic", color: "var(--mint6)", marginLeft: "10px" }}>{capacities.find(cap => cap.id === division.capacity).type} | {division.taxonomy}</span>
                 </span>
-                {createDivModal}
-                {updateDivModal}
-                {deleteDivModal}
+                <section className="inputs">
+                    {createDivModal}
+                    {updateDivModal}
+                    {deleteDivModal}
+                </section>
             </div>
 
             if (division.children) {
@@ -114,13 +116,31 @@ export default async function EnsembleSettingsPage({ params }) {
             <fieldset style={{flex: 1}}>
                 <legend>
                 </legend>
-                <Form id="ensemble-settings-form" APIURL="" auto style={{flex: 0}}>
+                <Form id="ensemble-settings-form" APIURL={`/api/ensembles/${ensemble.id}`} auto style={{flex: 0}}>
                     <Text id="ensemble-name" name="name" label="Ensemble Name" value={ensemble.name} isRequired />
 
                 </Form>
             </fieldset>
-            <fieldset style={{flex:1}}>
+            <fieldset style={{flex:1, display: "flex", flexDirection: "column", height: "100%"}}>
                 <legend>Divisions</legend>
+                <section className="button-tray">
+                    <ModalButton
+                        modalButton={<><i>library_add</i><span>Create New Division</span></>}
+                        buttonClass="fit"
+                        title="Create Root-Level Division"
+                    >
+                        <Form id="create-root-division-form" APIURL={`/api/ensembles/${ensemble.id}/division/create-division`} METHOD="POST">
+                            <section className="inputs">
+                                <Text id="division-name" name="name" label="Division Name" isRequired />
+                                <Text id="division-taxonomy" name="taxonomy" label="Taxonomy" />
+                                <Select id="division-capacity" name="capacity" label="Capacity" options={capacities} isRequired />
+                            </section>
+                        </Form>
+                        <section className="modal-buttons">
+                            <button name="submit" className="fit" form="create-root-division-form">Create</button>
+                        </section>
+                    </ModalButton>
+                </section>
                 <article className="scroll">
                     {
                         generateNestedDivs(divisions)

@@ -186,14 +186,14 @@ const MemberPage = async (context) => {
                                                                             {
                                                                                 lineup.assignments.map((assignment, a) => {
                                                                                     return (
-                                                                                        <section key={a} >
+                                                                                        <section key={a} className="inputs">
                                                                                             <Form id={`${l}-${a}-update-assignment-form`} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} auto>
                                                                                                 <section className="inputs">
                                                                                                     <Select id={`${l}-${a}-division-select`} label="Division" name="new_division" value={assignment.divId} options={divisionOptions[membership.ensemble.id]} isRequired/>
                                                                                                     <Text id={`${l}-${a}-title-text`} label="Title" name="title" value={assignment.title} />
                                                                                                 </section>
                                                                                             </Form>
-                                                                                            <Button name="delete-assignment-button" caption={<i>delete</i>} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} METHOD="DELETE" style={{ alignSelf: "end", marginBottom: "0.75em", ['--edge-color']: "var(--color-h3)", ['--text-active']: "0 100% 50%"}} />
+                                                                                            <Button name="delete-assignment-button" caption={<i>delete</i>} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} METHOD="DELETE" style={{ alignSelf: "center", ['--edge-color']: "var(--color-h3)", ['--text-active']: "0 100% 50%"}} />
                                                                                         </section>
                                                                                     )
                                                                                 })

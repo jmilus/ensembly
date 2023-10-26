@@ -6,11 +6,9 @@ import { Form, File, Text, Select } from 'components/Vcontrols';
 import SubNav from 'components/SubNav';
 
 import { getOneEnsemble } from '@/api/ensembles/[id]/route';
-import { getAllMembershipCapacities } from '@/api/membership/capacity/route';
 
 export default async function EnsembleRecordLayout(context) {
     const ensemble = await getOneEnsemble(context.params.id)
-    const capacities = await getAllMembershipCapacities();
     const navNodes = [
         { caption: "General", route: `/e/ensembles/${ensemble.id}/general` },
         { caption: "Schedule", route: `/e/ensembles/${ensemble.id}/schedule` },
@@ -59,24 +57,6 @@ export default async function EnsembleRecordLayout(context) {
                 </section>
             </ModalButton>
         ],
-        settings: [
-            <ModalButton
-                modalButton={<><i>library_add</i><span>Create New Division</span></>}
-                buttonClass="fit"
-                title="Create Root-Level Division"
-            >
-                <Form id="create-root-division-form" APIURL={`/api/ensembles/${ensemble.id}/division/create-division`} METHOD="POST">
-                    <section className="inputs">
-                        <Text id="division-name" name="name" label="Division Name" isRequired />
-                        <Text id="division-taxonomy" name="taxonomy" label="Taxonomy" />
-                        <Select id="division-capacity" name="capacity" label="Capacity" options={capacities} isRequired />
-                    </section>
-                </Form>
-                <section className="modal-buttons">
-                    <button name="submit" className="fit" form="create-root-division-form">Create</button>
-                </section>
-            </ModalButton>
-        ]
     }
         
     return (

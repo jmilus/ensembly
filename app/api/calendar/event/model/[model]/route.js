@@ -27,19 +27,21 @@ export const getOneEventModel = async (id) => {
             address:Address (*)
         `)
         .eq('id', id)
+        .single()
     
     if (error) {
         console.error("fetch one eventModel error:", error);
         return new Error(error)
     }
 
-    return eventModel[0];
+    return eventModel;
 }
 
 export async function GET(request, { params }) {
     const req = await request.json()
-    const res = await getOneEventModel({...req, model: params.model})
-    return NextResponse.json({ res })
+    const res = await getOneEventModel({ ...req, model: params.model })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }
 
 // #######
@@ -55,7 +57,7 @@ export const updateOneEventModel = async (data) => {
         if (value !== undefined) {
             
             if (key === "modelStartDate" || key === "modelEndDate") {
-                updateObj[key] = new Date(value);
+                updateObj[key] = new Date(value).toISOString();
             } else if (key === "occurrence") {
                 updateObj[key] = Array.isArray(value) ? value : [value]
             } else {
@@ -96,23 +98,26 @@ export const createEvent = async (data) => {
     const { model, eventStartDate, eventEndDate, eventName, type, exception=false } = data;
     const supabase = createServerComponentClient({ cookies });
 
-    const { data: newEvent, error } = await supabase.from('Event').insert({
-        anchorDate: new Date(eventStartDate).toLocaleDateString(),
-        eventStartDate: new Date(eventStartDate),
-        eventEndDate: new Date(eventEndDate),
-        name: eventName || null,
-        type: type,
-        exception,
-        model: model
-    })
+    const { data: newEvent, error } = await supabase
+        .from('Event')
+        .insert({
+            anchorDate: new Date(eventStartDate).toLocaleDateString(),
+            eventStartDate: new Date(eventStartDate).toISOString(),
+            eventEndDate: new Date(eventEndDate).toISOString(),
+            name: eventName || null,
+            type: type,
+            exception,
+            model: model
+        })
+        .select().single()
 
     if (error) {
         console.error("create one event error:", error);
         return new Error(error)
     }
-    console.log("created one event:", newEvent)
+    // console.log("created one event:", newEvent)
 
-    return true;
+    return newEvent;
 
 }
 
@@ -120,6 +125,7 @@ export async function POST(request, { params }) {
     console.log("POST:", params)
     const _req = await request.formData();
     const req = extractFields(_req);
-    const res = await createEvent({...req, model: params.model})
+    const res = await createEvent({ ...req, model: params.model })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
     return NextResponse.json({res})
 }

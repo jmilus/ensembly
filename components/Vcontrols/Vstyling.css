@@ -12,18 +12,19 @@ section>form {
     transition: all 0.2s ease-out;
     margin: 0 0 1px 5px;
     top: 2px;
-    height:1em;
+    height:1.1em;
 }
 
 .text-box.empty > .label,
-.select-box.empty > .label {
+.select-box.empty > .label,
+.collection-box.empty > .label {
     color: transparent;
 }
 
 .input-control-base {
     display: flex;
     flex-direction: column;
-    margin: 0;
+    /* margin: 0; */
     /* padding-top: 1em; */
     position: relative;
 }
@@ -45,13 +46,18 @@ section.spaced > * + * {
     margin-left: 10px;
 }
 
-.input-control-base input:focus-visible,
-.input-control-base select:focus-visible,
-.input-control-base textarea:focus-visible {
-    border-color: var(--gray3);
+.input-control-base > input:focus-visible,
+.input-control-base > select:focus-visible,
+.input-control-base > textarea:focus-visible {
+    border-color: var(--gray0);
+    background-color: var(--gray0);
+}
+.input-control-base > select:focus-visible {
+    border-bottom-color: var(--gray2);
 }
 
-.input-control-base.select-box > select {
+.input-control-base.select-box > select,
+.input-control-base.file-box > label {
     border-width: 1px;
     border-radius: 4px;
 }
@@ -69,8 +75,8 @@ select {
     appearance: none;
     padding-right: 40px !important;
     background-image:
-        linear-gradient(45deg, transparent 50%, var(--mint3) 50%),
-        linear-gradient(135deg, var(--mint3) 50%, transparent 50%);
+        linear-gradient(45deg, transparent 50%, hsl(var(--edge-color)/0.5) 50%),
+        linear-gradient(135deg, hsl(var(--edge-color)/0.5) 50%, transparent 50%);
     background-position:
         calc(100% - 18px) calc(1em + 3px),
         calc(100% - 10px) calc(1em + 3px);
@@ -81,8 +87,8 @@ select {
 }
 select:hover {
     background-image:
-        linear-gradient(45deg, transparent 50%, var(--mint4) 50%),
-        linear-gradient(135deg, var(--mint4) 50%, transparent 50%);
+        linear-gradient(45deg, transparent 50%, hsl(var(--edge-color)) 50%),
+        linear-gradient(135deg, hsl(var(--edge-color)) 50%, transparent 50%);
     background-position:
         calc(100% - 18px) calc(1em + 3px),
         calc(100% - 10px) calc(1em + 3px);
@@ -91,10 +97,10 @@ select:hover {
         8px 8px;
     background-repeat: no-repeat;
 }
-select:focus {
+select:focus-visible {
     background-image:
-        linear-gradient(135deg, transparent 50%, var(--mint4) 50%),
-        linear-gradient(45deg, var(--mint4) 50%, transparent 50%);
+        linear-gradient(135deg, transparent 50%, hsl(var(--edge-color)/0.25) 50%),
+        linear-gradient(45deg, hsl(var(--edge-color)/0.25) 50%, transparent 50%);
     background-position:
         calc(100% - 18px) calc(1em + 3px),
         calc(100% - 10px) calc(1em + 3px);
@@ -171,7 +177,8 @@ select:-internal-list-box {
 .input-control-base > input,
 .input-control-base > select,
 .input-control-base > textarea,
-.input-control-base > .collection-container {
+.input-control-base > .collection-container,
+.input-control-base > .file-container {
     width: 100%;
     border-style: solid;
     border-color: hsl(var(--edge-color));
@@ -179,7 +186,9 @@ select:-internal-list-box {
     outline: none;
     font-size: 1em;
     padding: 10px 15px;
-    background-color: hsl(0 0% 100% / 0.25);
+    background-color: hsl(0 0% 100% / 0.5);
+    box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
+    transition: all 0.2s ease;
 }
 
 .input-control-base input::placeholder,
@@ -187,10 +196,12 @@ select:-internal-list-box {
     font-size: 0.9em;
 }
 
-.input-control-base:hover input:not(:focus-visible):not([readonly]),
-.input-control-base:hover select:not(:focus-visible):not([readonly]),
-.input-control-base:hover textarea:not(:focus-visible):not([readonly]) {
-    border-color: var(--gray4);
+.input-control-base:not(.hero):hover > input:not(:focus-visible):not([readonly]),
+.input-control-base:not(.hero):hover > select:not(:focus-visible):not([readonly]),
+.input-control-base:not(.hero):hover > textarea:not(:focus-visible):not([readonly]),
+.input-control-base:not(.hero):hover > .collection-container:not(:focus-visible):not([readonly]),
+.input-control-base:not(.hero):hover > .file-container:not(:focus-visible):not([readonly]) {
+    box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
     background-color: hsl(0 0% 100% / 0.5);
 }
 
@@ -353,6 +364,7 @@ select:-internal-list-box {
 .input-control-base.hero > input {
     padding: 0;
 }
+
 .input-control-base.hero > select {
     padding: 0;
 }
@@ -370,6 +382,10 @@ select:-internal-list-box {
 
 .input-control-base.hero > label {
     display: none;
+}
+
+.hero > input:hover {
+    padding: 0 10px;
 }
 
 .hero > input::placeholder {
@@ -391,20 +407,17 @@ select:-internal-list-box {
     height: auto;
     padding: 7px;
     background-position:
-        calc(100% - 11px) 0.95em,
-        calc(100% - 5px) 0.95em,
-        calc(100% - 23px) 0.5em;
+        calc(100% - 12px) 0.95em,
+        calc(100% - 6px) 0.95em;
     background-size:
         6px 6px,
-        6px 6px,
-        1px 1.25em;
+        6px 6px;
 }
 
 .compact select:focus {
     background-position:
-        calc(100% - 5px) 0.85em,
-        calc(100% - 11px) 0.85em,
-        calc(100% - 23px) 0.5em;
+        calc(100% - 12px) 0.85em,
+        calc(100% - 6px) 0.85em;
     outline: 0;
 }
 
@@ -479,13 +492,13 @@ i.dot.selected {
     cursor: pointer;
     user-select: none;
 }
-.file-box label:hover {
-    background: var(--mint3);
-    border-color: var(--mint5);
+/* .file-box label:hover {
+    background: hsl(var(--edge-color)/0.2);
+    border-color: hsl(var(--edge-color));
 }
 .file-box label:hover:active {
     border-color: var(--color-c2);
-}
+} */
 
 .file-box i {
     margin-right: 10px;
@@ -697,4 +710,8 @@ i.dot.selected {
     left: 0;
     height: 100%;
     width: 100%;
+}
+
+form > * {
+    margin-bottom: 10px;
 }

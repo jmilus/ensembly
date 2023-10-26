@@ -1212,16 +1212,16 @@ fieldset.buttons > legend {
   background: var(--mint4);
   /* border: 1px solid var(--gray2); */
   border-radius: 5px;
-  padding: 5px;
+  padding: 2.5px 5px; /* in conjunction with child margins, allows for flex-wrap line spacing */
   overflow: hidden;
   --edge-color: var(--mintx) 70%;
+}
+.composer-toolbar > * {
+  margin: 2.5px 5px 2.5px 0;
 }
 
 .rich-text-style-controls {
   display: flex;
-}
-.rich-text-style-controls + .rich-text-style-controls {
-  margin-left: 5px;
 }
 
 .style-toggle-button {
@@ -1437,14 +1437,18 @@ fieldset.buttons > legend {
   border-width: 0;
   background: hsl(var(--color-h2)/0.05);
   height: var(--node-height);
+  min-height: var(--node-height);
   margin-top: 1px;
   border-width: 0.5px;
   overflow: hidden;
   transition: height 0.2s ease;
+  align-items: center;
 }
 .collapser-node > i {
-  color: var(--gray5);
   font-size: 1.5em;
+}
+.collapser-node > i.expander {
+  color: var(--color-c2);
 }
 .collapser-node > i.all {
   color: hsl(var(--color-p));
@@ -1452,8 +1456,11 @@ fieldset.buttons > legend {
 .collapser-node > i.some {
   color: hsl(var(--color-h3)/0.5);
 }
+.collapser-node > i.none {
+  color: var(--gray3);
+}
 
-.collapser-node:not(.terminus) {
+.collapser-node:not(.terminus) .expander {
   cursor: ns-resize;
 }
 

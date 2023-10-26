@@ -429,7 +429,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
             />
         </div>
         <div style={{ flex: 1 }}></div>
-        
+        <button onClick={() => setShowToolbar(false)} style={{padding: "5px"}}><i>close</i></button>
     </section>
 
     const handleSlateClick = (e) => {
@@ -468,6 +468,7 @@ const Composer = ({id, initialValue, contentOutput, readOnly, style}) => {
                         position={showToolbar}
                         hideMe={() => setShowToolbar(false)}
                         persistParent
+                        matchParentWidth={false}
                     >
                         {toolbar}
                     </PopupMenu>

@@ -116,9 +116,9 @@ const LineupManager = ({ initialProps }) => { // .name
                         columns={{count: 1, width:"1fr"}}
                         search={{ label: "member", searchProp: "caption" }}
                         filters={[
-                            { name: "assigned", filterBy: "assigned", buttons: [{ unassigned: false }, { assigned: true }] },
-                            { name: "membership-capacity", filterBy: "capacity", buttons: capacities.map(cap => { return {[cap.type]: cap.type}}) },
-                            { name: "membership-type", filterBy: "subtitle", buttons: membershipTypes.map(memt => { return {[memt.name]: memt.name}}) }
+                            { name: "assigned", filterBy: "assigned", buttons: [{ caption: "unassigned", value: false }, { caption: "assigned", value: true }] },
+                            { name: "membership-capacity", filterBy: "capacity", buttons: capacities.map(cap => { return { caption: cap.type, value: cap.type }}) },
+                            { name: "membership-type", filterBy: "subtitle", buttons: membershipTypes.map(memt => { return { caption: memt.name, value: memt.name }}) }
                         ]}
                     >
                         <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} />
