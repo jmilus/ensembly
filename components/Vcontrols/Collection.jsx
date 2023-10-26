@@ -17,7 +17,6 @@ const Collection = (props) => {
 
     useEffect(() => {
         setSearchStr("")
-        if(extraAction) extraAction(controlValues)
     }, [controlValues])
 
     let controlOptions = packageOptions(options, value)
@@ -28,6 +27,7 @@ const Collection = (props) => {
         const inputEvent = new Event('change', { bubbles: true });
         collectorRef.current.dispatchEvent(inputEvent);
         setShowPopup(false)
+        if(extraAction) extraAction(input)
         setControlValues(input)
     }
 

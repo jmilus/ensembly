@@ -7,11 +7,11 @@ import { HEXtoRGB, contrastColors } from '../../utils';
 // import './Vstyling.css'
 
 const Color = (props) => {
-    const { id, name, value, defaultColor="#000000", extraAction, style, classes, icon, debug } = props;
-    const [controlValue, setControlValue] = useState(value || defaultColor);
+    const { id, name, value="#000000", extraAction, style, classes, icon, debug } = props;
+    const [controlValue, setControlValue] = useState(value);
 
     useEffect(() => {
-        setControlValue(value || defaultColor)
+        setControlValue(value)
     }, [value])
 
     if(debug) console.log(id, controlValue, HEXtoRGB(controlValue, true))

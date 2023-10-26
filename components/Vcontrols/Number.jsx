@@ -13,10 +13,6 @@ const Number = (props) => {
 
     if (debug) console.log(name, { props }, { controlValue });
 
-    useEffect(() => {
-        if (extraAction) extraAction(controlValue);
-    }, [controlValue])
-
     const handleControlValueChange = (input) => {
         const rawNumber = input.replace(/[^0-9]*/gm, '');
         let finalValue;
@@ -38,7 +34,7 @@ const Number = (props) => {
                 finalValue = rawNumber;
                 break;
         }
-
+        if (extraAction) extraAction(finalValue);
         setControlValue(finalValue);
     }
 

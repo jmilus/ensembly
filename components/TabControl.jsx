@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export const Tab = ({ tabName, direction, hidePage, tabStyle, children }) => {
@@ -14,13 +14,10 @@ const TabControl = ({ id, type="normal", onChange, startTab, style, children }) 
     const [activeTab, setActiveTab] = useState(startTab || 0);
     const router = useRouter();
 
-    useEffect(() => {
-        if (onChange) onChange(activeTab);
-    }, [activeTab])
-
     const tabClick = (tabIndex, tabLoad, href) => {
         if (tabLoad) tabLoad();
         if (href) router.push(href);
+        if (onChange) onChange(tabIndex);
         setActiveTab(tabIndex);
     }
 

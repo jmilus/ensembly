@@ -96,7 +96,7 @@ export default async function EnsembleSettingsPage({ params }) {
                 )
             }
                 
-            return <div className="collapser-node terminus" style={{['--node-height']: "40px"}}>{collapserButton}</div>
+            return <div key={d} className="collapser-node terminus" style={{['--node-height']: "40px"}}>{collapserButton}</div>
             // return (
             //     <ItemCard
             //         key={d}

@@ -19,7 +19,6 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
     // const path = pathname.slice(0, pathname.includes("/$") ? pathname.indexOf("/$") : pathname.length)
 
     useEffect(() => {
-        const thisForm = document.getElementById(id);
         const inputs = thisForm.getElementsByTagName('input')
         Object.values(inputs).forEach(input => {
             // console.log(input.name, input.readOnly);

@@ -22,6 +22,7 @@ export default async function MemberProfilePageLayout(context) {
         navNodes.push({ caption: "Account", route: `/e/members/${context.params.id}/account` })
         navButtons.account = [
             <ModalButton
+                key="change-password"
                 modalButton="Change Password"
                 buttonClass="fit"
                 title="Change Password"
@@ -43,6 +44,7 @@ export default async function MemberProfilePageLayout(context) {
     if (memberUser === null && memberEmail) {
         navButtons.profile = [
             <Button
+                key="make-user"
                 name="create-user"
                 caption={<><i>account_circle</i><span>Make User</span></>}
                 APIURL="/api/users"

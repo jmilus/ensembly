@@ -24,6 +24,7 @@ export default async function SettingsLayout(params) {
     const navButtons = {
         membership: [
             <ModalButton
+                key="create-type"
                 modalButton={<span>Create Membership Type</span>}
                 buttonClass="fit"
                 title="Create Membership Type"
