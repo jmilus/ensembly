@@ -22,6 +22,11 @@ alter table "public"."Division" add constraint "Division_capacity_fkey" FOREIGN 
 
 alter table "public"."Division" validate constraint "Division_capacity_fkey";
 
+update "public"."Member" set "eyes" = (select "type" from "EyeColor" e where e."id" = "Member".eyes::smallint);
+update "public"."Member" set "hair" = (select "type" from "HairColor" h where h."id" = "Member".hair::smallint);
+update "public"."Member" set "race" = (select "type" from "Race" r where r."id" = "Member".race::smallint);
+update "public"."Member" set "sex" = (select "type" from "Sex" s where s."id" = "Member".sex::smallint);
+
 alter table "public"."Member" add constraint "Member_eyes_fkey" FOREIGN KEY (eyes) REFERENCES "EyeColor"(type) not valid;
 
 alter table "public"."Member" validate constraint "Member_eyes_fkey";
