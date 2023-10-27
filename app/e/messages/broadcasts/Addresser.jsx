@@ -108,7 +108,7 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
                 <i className={`${groupChecked}`} onClick={() => toggleGroupAsContacts(item, groupChecked)}>
                     {eCheckIcon}
                 </i>
-                <span className="expander" style={{flex:1}}>{item.name}</span>
+                <span className="expander" style={{flex:1, overflow: "hidden", textOverflow:"ellipsis", whiteSpace: "nowrap", width: "0px"}}>{item.name}</span>
             </>
             let divMembers;
             let divChildren;
