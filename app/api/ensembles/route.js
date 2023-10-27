@@ -11,7 +11,7 @@ export async function getManyEnsembles() {
         .from('Ensemble')
         .select(`
             *,
-            type (*)
+            ensemble_type:type (*)
         `)
     
     if (error) {

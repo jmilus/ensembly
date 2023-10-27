@@ -26,7 +26,7 @@ export const getManyLineups = async (ensemble) => {
 export async function GET(request) {
     const req = await request.json()
     const res = await getManyLineups(req)
-    return NextResponse.json({ res })
+    return NextResponse.json(res)
 }
 
 //#####

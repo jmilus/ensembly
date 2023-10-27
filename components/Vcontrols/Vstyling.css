@@ -35,11 +35,10 @@ section>form {
 .empty > input[required],
 .empty > select[required],
 .empty > .collection-container.required {
-    border-color: transparent;
-    background-image: linear-gradient(90deg, var(--color-o), var(--color-f));
+    background-image: linear-gradient(45deg, var(--color-o), var(--color-f));
     background-repeat: no-repeat;
-    background-size: 100% 1px;
-    background-position: bottom;
+    background-size: 2px 100%;
+    background-position: left;
 }
 
 section.spaced > * + * {

@@ -20,15 +20,15 @@ const FilterContainer = (props) => {
     }
 
     const toggleFilter = (filter, filterParam) => {
-        // console.log({ filter }, { filterParam })
+        console.log({ filter }, { filterParam })
         let tempFilterSets = filter.mode === "exclusive" ? {} : { ...activeFilterSets }
         let filterSet = tempFilterSets[filter.name] || { filterParams: {} }
         
         if (filterSet.filterParams[filterParam.caption] != undefined) {
             delete filterSet.filterParams[filterParam.caption]
         } else {
-            filterSet.filterBy = filter.filterBy;
-            filterSet.filterParams[filterParam.caption] = {...filterParam};
+            filterSet = { ...filter, filterParams: _.isEmpty(filterSet.filterParams) ? { } : {...filterSet.filterParams} }
+            filterSet.filterParams[filterParam.caption] = { ...filterParam };
         }
         
         if (tempFilterSets[filter.name] && Object.keys(tempFilterSets[filter.name].filterParams).length === 0) {
@@ -48,6 +48,7 @@ const FilterContainer = (props) => {
                     const filterValue = filterSet.filterParams[filterParamKey].value != undefined ? filterSet.filterParams[filterParamKey].value : filterSet.filterParams[filterParamKey].caption
                     switch (typeof filterValue) {
                         case 'string':
+                            if (filterSet.exactMatch) return child.props[filterSet.filterBy] === filterValue;
                             return child.props[filterSet.filterBy].includes(filterValue);
                         case 'boolean':
                         case 'number':
@@ -139,7 +140,7 @@ const FilterContainer = (props) => {
     
     if (searchContainer && search) createPortal(searchBox, searchContainer)
 
-    const styleColumns = columns ? { ["--grid-columns"]: columns.count, ["--min-width"]: columns.width } : {}
+    const styleColumns = { ["--grid-columns"]: columns ? columns.count : 1, ["--min-width"]: columns ? columns.width : "1fr" }
 
     return (
         <div className="filter-container" style={style}>

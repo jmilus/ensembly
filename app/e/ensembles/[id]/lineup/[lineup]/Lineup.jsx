@@ -8,9 +8,8 @@ import FilterContainer from 'components/FilterContainer';
 import TabControl, { Tab } from 'components/TabControl';
 
 import useStatus from 'hooks/useStatus';
-import { createPortal } from 'react-dom';
 
-const LineupManager = ({ initialProps }) => { // .name
+const LineupManager = ({ initialProps }) => { //
     // console.log({ initialProps })
     const { ensemble, lineup, capacities, membershipTypes, divisions } = initialProps;
 
@@ -110,10 +109,10 @@ const LineupManager = ({ initialProps }) => { // .name
             <div style={{position: "absolute", width: "300px", height: "100%", right: showRoster ? "0px" : "-300px", transition: "all 0.2s ease"}}>
                 <div id="popout-tab-button" onClick={() => setShowRoster(!showRoster)}><i>groups</i></div>
                 <article style={{ boxShadow: "-1px -1px 1px var(--gray4)", padding: "10px", backgroundImage: "linear-gradient(var(--gray2), var(--gray3))" }}>
+                    
                     <FilterContainer
                         id="roster"
                         filterTag="member"
-                        columns={{count: 1, width:"1fr"}}
                         search={{ label: "member", searchProp: "caption" }}
                         filters={[
                             { name: "assigned", filterBy: "assigned", buttons: [{ caption: "unassigned", value: false }, { caption: "assigned", value: true }] },
@@ -121,10 +120,10 @@ const LineupManager = ({ initialProps }) => { // .name
                             { name: "membership-type", filterBy: "subtitle", buttons: membershipTypes.map(memt => { return { caption: memt.name, value: memt.name }}) }
                         ]}
                     >
-                        <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} />
+                        <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} dropStyles={{baseStyles: {position: "sticky", top: "0px"}}} />
                         {
                             roster.map((membership, m) => {
-                                console.log({membership})
+                                // console.log({membership})
                                 return (
                                     <ItemCard
                                         key={m}
@@ -132,6 +131,7 @@ const LineupManager = ({ initialProps }) => { // .name
                                         caption={membership.Member.aka}
                                         subtitle={membership.type.name}
                                         dropItem={membership}
+                                        cardType={membership.type.name}
                                         assigned={isAssignedToLineup(membership)}
                                         capacity={membership.type.capacity}
                                     />
@@ -148,7 +148,7 @@ const LineupManager = ({ initialProps }) => { // .name
         const divKids = Array.isArray(divisionChildren) ? divisionChildren : Object.values(divisionChildren);
         return divKids.map((item, d) => {
             let dropDivisions = [];
-            if (item.capacity != cap.id) return null;
+            if (item.capacity != cap.type) return null;
             if (item.children) {
                 dropDivisions = renderDrops(item.children, cap)
             }
@@ -178,7 +178,6 @@ const LineupManager = ({ initialProps }) => { // .name
                     id={`lineup-filter`}
                     filterTag="member"
                     search={{ label: "Search Assignees", searchProp: "caption" }}
-                    columns={{ count: 1, width: "1fr" }}
                     rows="auto"
                 >
                     <TabControl>
@@ -191,7 +190,7 @@ const LineupManager = ({ initialProps }) => { // .name
                                             divisions.map((div, d) => {
                                                 // console.log({div})
                                                 let dropDivisions = [];
-                                                if (div.capacity != capacity.id) return null;
+                                                if (div.capacity != capacity.type) return null;
                                                 if (div.children) {
                                                     dropDivisions = renderDrops(div.children, capacity)
                                                 }

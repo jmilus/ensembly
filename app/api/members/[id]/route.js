@@ -16,8 +16,8 @@ export const getOneMember = async (memberId) => {
             Address ( * ),
             EnsembleMembership ( 
                 *,
-                type:membership_type (*),
-                ensemble ( *, type (*)),
+                membership_type (*),
+                ensemble ( *, ensemble_type:type (*)),
                 assignments:LineupAssignment(
                     title,
                     Lineup (id, is_primary, name),
@@ -60,13 +60,13 @@ export const updateOneMember = async (memberData) => {
             aka: aka,
             suffix: suffix,
             birthday: birthday ? new Date(birthday) : undefined,
-            sex: sex ? parseInt(sex) : undefined,
+            sex: sex != '' ? sex : undefined,
             height: height ? parseInt(height) : undefined,
             weight: weight ? parseInt(weight) : undefined,
-            race: race ? parseInt(race) : undefined,
-            ethnicity: ethnicity,
-            hair: hair ? parseInt(hair) : undefined,
-            eyes: eyes ? parseInt(eyes) : undefined
+            race: race != '' ? race : undefined,
+            ethnicity,
+            hair: hair != '' ? hair : undefined,
+            eyes: eyes != '' ? eyes : undefined
         })
         .eq('id', id)
         .select()

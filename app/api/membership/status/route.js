@@ -14,7 +14,7 @@ export const getAllMembershipStatus = async () => {
         console.error("fetch all membership status error:", error);
         return new Error(error);
     }
-    console.log("fetched all membership status:", data)
+    // console.log("fetched all membership status:", data)
 
     return data;
 }

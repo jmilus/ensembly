@@ -14,11 +14,10 @@ import { getAllMembershipStatus } from '@/api/membership/status/route';
 import FilterContainer from 'components/FilterContainer';
 import CALENDAR from 'utils/calendarUtils';
 
-const MemberPage = async (context) => {
+const MemberPage = async (context) => { // type
     const member = await getOneMember(context.params.id)
     const ensembleList = await getManyEnsembles();
     const membershipTypes = await getAllMembershipTypes();
-    const statuses = await getAllMembershipStatus();
     const membershipStatus = await getAllMembershipStatus()
 
     const divisionOptions = {}
@@ -35,7 +34,7 @@ const MemberPage = async (context) => {
         })
     }).flat()
 
-    console.log({bioOptions})
+    // console.log({bioOptions})
 
     return (
         <>
@@ -139,7 +138,7 @@ const MemberPage = async (context) => {
                                         lineupList[assignment.Lineup.id].assignments.push({title: assignment.title, divId: assignment.Division.id, divName: assignment.Division.name})
                                     })
                                     // const divisionOptions = await getManyDivisions(membership.ensemble.id)
-                                    const modalTitle = <><section><span style={{ color: "var(--color-c2)", marginRight: "10px" }}>{membership.type.name}</span><span>{membership.ensemble.name}</span></section>
+                                    const modalTitle = <><section><span style={{ color: "var(--color-c2)", marginRight: "10px" }}>{membership.membership_type.name}</span><span>{membership.ensemble.name}</span></section>
                                         <section style={{ fontSize: "0.65em", display: "flex", alignItems: "center" }}>
                                             <span style={{ color: "var(--color-c2)", marginRight: "10px" }}>Member Since</span>
                                             <span >{membership.membership_start ? CALENDAR.straightDate(membership.membership_start).toLocaleDateString() : ""}</span>
@@ -165,7 +164,7 @@ const MemberPage = async (context) => {
                                                     <Form id="membership-details-form" APIURL={`/api/membership/${membership.id}`} auto >
                                                         <section className="inputs" >
                                                             <article style={{flex: 1}}>
-                                                                <Select id="membership-status-select" label="Membership Status" name="status" value={membership.status} options={statuses.map(s => {return {...s, value: s.type} })} debug/>
+                                                                <Select id="membership-status-select" label="Membership Status" name="status" value={membership.status} options={membershipStatus.map(s => {return {...s, value: s.type} })} debug/>
                                                                 <DateOnly id="membership-expiration-date" label="Membership Expires" name="membership_expires" value={membership.membership_expires} />
                                                             </article>
                                                             <Text id="status-note" label="Status Note" name="status_note" value={membership.status_note} limit={1000} style={{ flex: 2 }} />

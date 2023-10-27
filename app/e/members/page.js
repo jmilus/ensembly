@@ -64,7 +64,7 @@ const MembersPage = async () => {
                             columns={{ count: "auto-fill", width: "201px" }}
                             search={{ label: "Search Members", searchProp: "name" }}
                             filters={[
-                                { name: "sex", filterBy: "sex", buttons: sex.map(s => { return { caption: s.type, value: s.id } }) }
+                                { name: "sex", filterBy: "sex", exactMatch: true, buttons: sex.map(s => { return { caption: s.type } }) }
                             ]}
                             minimum={5}
                         >

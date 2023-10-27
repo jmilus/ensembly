@@ -73,7 +73,7 @@ export default async function EnsembleSettingsPage({ params }) {
             const collapserButton = <div style={{flex: 1, display: "flex", margin: "auto 10px"}}>
                 <span className="expander" style={{ flex: 1 }}>
                     {division.name}
-                    <span style={{ fontStyle: "italic", color: "var(--mint6)", marginLeft: "10px" }}>{capacities.find(cap => cap.id === division.capacity).type} | {division.taxonomy}</span>
+                    <span style={{ fontStyle: "italic", color: "var(--mint6)", marginLeft: "10px" }}>{capacities.find(cap => cap.type === division.capacity).type} | {division.taxonomy}</span>
                 </span>
                 <section className="inputs">
                     {createDivModal}

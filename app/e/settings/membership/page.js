@@ -19,6 +19,7 @@ export default async function MembershipSettingsPage(context) {
         { id: 3, type: "Year" }
     ]
 
+    console.log({ ensembles })
     return (
         <FilterContainer
             id="memberships-filter"
@@ -72,7 +73,7 @@ export default async function MembershipSettingsPage(context) {
                                         <Select id="memberhsip-term-period" name="term_period" label="" options={termPeriod} value={type.term_period} style={{ flex: 5 }} isRequired />
                                     </section>
                                     <Collection id="membership-capacities" name="capacity" label="Capacities" options={capacities.map(cap => cap.type)} value={type.capacity} isRequired />
-                                    <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={ensembles} value={ensembles.filter(e => type.ensembles.includes(e.id))} isRequired />
+                                    <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={ensembles} value={ensembles.filter(e => type.ensembles.includes(e.id))} isRequired debug/>
                                 </Form>
                                 <section className="modal-buttons">
                                     <button name="submit" className="fit" form="membership-type-form">Save</button>

@@ -56,7 +56,7 @@ const EnsemblesLayout = async (props) => {
                                         <ItemCard
                                             key={i}
                                             caption={ensemble.name}
-                                            subtitle={ensemble.type.type}
+                                            subtitle={ensemble.ensemble_type.type}
                                             filterTag="ensemble"
                                             cardLinkTo={`/e/ensembles/${ensemble.id}/general`}
                                         />

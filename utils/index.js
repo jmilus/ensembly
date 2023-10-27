@@ -18,7 +18,7 @@ export const packageOptions = (obj) => {
                 } else {
                     if (!o.id) return {}
                     if (o.type && !o.name && !o.caption && !o.value) {
-                        newObj[o.id] = { ...o, value: o.id, caption: o.type }
+                        newObj[o.type] = { ...o, value: o.type, caption: o.type }
                     } else {
                         let optionValue = o.value ? o.value : o.id;
                         let optionName = o.caption ? o.caption : o.name ? o.name : optionValue;

@@ -13,7 +13,7 @@ const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subt
         item: dropItem,
         end(item, monitor) {
             const dropResult = monitor.getDropResult()
-            console.log(dropResult);
+            // console.log(dropResult);
         },
         collect: monitor => ({
             isDragging: !!monitor.isDragging(),
