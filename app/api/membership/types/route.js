@@ -55,13 +55,14 @@ export const updateOneMembershipType = async (typeData) => {
             ensembles: Array.isArray(ensembles) ? ensembles : [ensembles]
         })
         .select()
+        .single()
     
     if (error) {
         console.error("upsert membership type error:", error);
         return new Error(error);
     }
 
-    console.log("upsert membership type data:", type[0])
+    console.log("upsert membership type data:", type)
 
     return type;
 }

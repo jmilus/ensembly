@@ -11,9 +11,9 @@ export default async function SettingsLayout(params) {
     const capacities = await getAllMembershipCapacities()
     const ensembles = await getManyEnsembles()
     const termPeriod = [
-        { id: 1, type: "Week" },
-        { id: 2, type: "Month" },
-        { id: 3, type: "Year" }
+        { id: 1, caption: "Week" },
+        { id: 2, caption: "Month" },
+        { id: 3, caption: "Year" }
     ]
     const navNodes = [
         { caption: "General", route: '/e/settings/general' },
@@ -39,7 +39,7 @@ export default async function SettingsLayout(params) {
                     <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={ensembles} isRequired />
                 </Form>
                 <section className="modal-buttons">
-                    <button name="submit" form="membership-type-form">Create</button>
+                    <button name="submit" className="fit" form="membership-type-form">Create</button>
                 </section>
             </ModalButton>
         ]

@@ -14,12 +14,13 @@ export default async function MembershipSettingsPage(context) {
     const capacities = await getAllMembershipCapacities()
     const ensembles = await getManyEnsembles()
     const termPeriod = [
-        { id: 1, type: "Week" },
-        { id: 2, type: "Month" },
-        { id: 3, type: "Year" }
+        { id: 1, caption: "Week" },
+        { id: 2, caption: "Month" },
+        { id: 3, caption: "Year" }
     ]
 
     console.log({ ensembles })
+    console.log({ membershipTypes })
     return (
         <FilterContainer
             id="memberships-filter"
@@ -46,7 +47,7 @@ export default async function MembershipSettingsPage(context) {
                                 <span style={{fontSize: "2em"}}>{type.name}</span>
                                 <section>
                                     <span style={{color: "var(--mint6)", marginRight:"10px"}}>Membership Term:</span>
-                                    <span>{`${type.term_length} ${termPeriod.find(period => period.id === type.term_period).type}s`}</span>
+                                    <span>{`${type.term_length} ${termPeriod.find(period => period.id === type.term_period).caption}s`}</span>
                                 </section>
                                 <section>
                                     <span style={{color: "var(--mint6)", marginRight:"10px"}}>Capacities:</span>
