@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { createPortal } from "react-dom";
 
-const PopupMenu = ({ id, parentRef, hideMe, position, matchParentWidth=false, direction="down", children }) => {
+const PopupMenu = ({ id, parentRef, hideMe, position, matchParentWidth=false, direction="down", style, children }) => {
     const menuRef = useRef();
     const [cutoffs, setCutoffs] = useState({})
 
@@ -74,7 +74,7 @@ const PopupMenu = ({ id, parentRef, hideMe, position, matchParentWidth=false, di
 
     return createPortal(
         <>
-            <div ref={menuRef} className="popup-children" style={popupPosition}>
+            <div ref={menuRef} className="popup-children" style={{...style, ...popupPosition}}>
                 {children}
             </div>
             {/* {hideMe && 

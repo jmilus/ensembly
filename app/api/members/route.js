@@ -27,7 +27,7 @@ export async function GET(request) {
 
 
 export const createMember = async (memberData) => {
-    const { firstName, middleName, lastName, suffix, aka, birthday, sex, height, weight, race, ethnicity, hair, eyes, email, phonenumber, street, street2, city, state, postalCode, country, poBox } = memberData;
+    const { firstName, middleName, lastName, suffix, aka, birthday, sex, height, weight, race, ethnicity, hair, eyes } = memberData;
     const supabase = createServerComponentClient({ cookies });
 
     const myAka = aka ? aka : `${firstName} ${lastName}`;

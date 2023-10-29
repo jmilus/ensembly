@@ -34,19 +34,6 @@ export default async function EnsembleRecordLayout(context) {
         ],
         lineup: [
             <ModalButton
-                key="create-lineup"
-                modalButton={<><i>add_circle</i><span>Create Lineup</span></>}
-                buttonClass="fit"
-                title="Create New Lineup"
-            >
-                <Form id="new-lineup-form" APIURL={`/api/ensembles/${ensemble.id}/lineup`} METHOD="POST" followPath={`/e/ensembles/${ensemble.id}/lineup/$slug$`} debug>
-                    <Text id="lineup-name" name="name" label="Lineup Name" isRequired />
-                </Form>
-                <section className="modal-buttons">
-                    <button name="submit" className="fit" form="new-lineup-form">Create</button>
-                </section>
-            </ModalButton>,
-            <ModalButton
                 key="duplicate-lineup"
                 modalButton={<><i>library_add</i><span>Duplicate Lineup</span></>}
                 buttonClass="fit"

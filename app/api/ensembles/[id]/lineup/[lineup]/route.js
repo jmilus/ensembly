@@ -106,3 +106,32 @@ export async function POST(request, { params }) {
     const res = await duplicateOneLineup({...req, id: params.lineup})
     return NextResponse.json({ res })
 }
+
+// #########
+
+export const deleteOneLineup = async (data) => {
+    const { id } = data;
+    const supabase = createServerComponentClient({ cookies });
+
+    console.log("deleting lineup:", data)
+
+    const { data: lineupId, error } = await supabase
+        .from('Lineup')
+        .delete()
+        .eq('id', id)
+    
+    if (error) {
+        console.error("lineup deletion error", error)
+        return new Error(error)
+    }
+
+    // console.log("duplicated lineup:", lineupId)
+    return { id: lineupId };
+}
+
+// insert (duplicate)
+export async function DELETE(request, { params }) {
+    const res = await deleteOneLineup({ id: params.lineup })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
+}

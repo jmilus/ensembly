@@ -68,22 +68,24 @@ const MembersPage = async () => {
                             ]}
                             minimum={5}
                         >
-                            {
-                                members.map((member, i) => {
-                                    // console.log({ member })
-                                    return (
-                                        <ItemCard
-                                            key={i}
-                                            filterTag="member"
-                                            name={member.aka}
-                                            caption={member.aka}
-                                            cardLinkTo={`/e/members/${member.id}`}
-                                            type="profile"
-                                            sex={member.sex}
-                                        />
-                                    )
-                                })
-                            }
+                            <article className="scroll grid" style={{ ['--min-width']: "201px" }}>
+                                {
+                                    members.map((member, i) => {
+                                        // console.log({ member })
+                                        return (
+                                            <ItemCard
+                                                key={i}
+                                                filterTag="member"
+                                                name={member.aka}
+                                                caption={member.aka}
+                                                cardLinkTo={`/e/members/${member.id}`}
+                                                type="profile"
+                                                sex={member.sex}
+                                            />
+                                        )
+                                    })
+                                }
+                            </article>
                         </FilterContainer>
                     </div>
                 </div>

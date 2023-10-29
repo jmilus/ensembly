@@ -63,16 +63,16 @@ const LineupManager = ({ initialProps }) => { //
         const membership = {...source};
         const division = {...target};
 
-        const newAssignments = {...assignments}
+        const newAssignments = { ...assignments }
 
         if (membership.assignmentId) {
             const { assignmentId } = membership;
 
             if (division.id === "remove") {
-                if (newAssignments[assignmentId].Division) {
-                    setDeletedAssignments({ ...deletedAssignments, [assignmentId]: assignments[assignmentId]});
-                }
-                delete newAssignments[assignmentId]
+                // if (newAssignments[assignmentId].Division) {
+                //     setDeletedAssignments({ ...deletedAssignments, [assignmentId]: assignments[assignmentId]});
+                // }
+                // delete newAssignments[assignmentId]
             } else {
                 newAssignments[assignmentId] = deletedAssignments[assignmentId] ? deletedAssignments[assignmentId] :{ ...newAssignments[assignmentId], newDivision: division }
             }
@@ -87,6 +87,17 @@ const LineupManager = ({ initialProps }) => { //
             newAssignments[newId] = { EnsembleMembership: { ...membership }, newDivision: division}
         }
 
+        setAssignments(newAssignments)
+        setSaved(false);
+    }
+
+    const removeAssignment = (assignmentId) => {
+        console.log({assignmentId})
+        const newAssignments = { ...assignments }
+        if (newAssignments[assignmentId].Division) {
+            setDeletedAssignments({ ...deletedAssignments, [assignmentId]: assignments[assignmentId]});
+        }
+        delete newAssignments[assignmentId]
         setAssignments(newAssignments)
         setSaved(false);
     }
@@ -107,9 +118,8 @@ const LineupManager = ({ initialProps }) => { //
     const memberRosterBox = 
         <div className="full-roster" style={{display: "flex", position: "absolute", marginLeft: "20px", height: "calc(100% -60px)", top: "60px", right: "0px", height: "calc(100% - 60px)",zIndex: 100, width: showRoster ? "250px" : "0px", transition: "all 0.2s ease" }}>
             <div style={{position: "absolute", width: "300px", height: "100%", right: showRoster ? "0px" : "-300px", transition: "all 0.2s ease"}}>
-                <div id="popout-tab-button" onClick={() => setShowRoster(!showRoster)}><i>groups</i></div>
                 <article style={{ boxShadow: "-1px -1px 1px var(--gray4)", padding: "10px", backgroundImage: "linear-gradient(var(--gray2), var(--gray3))" }}>
-                    
+                    <div id="popout-tab-button" onClick={() => setShowRoster(!showRoster)}><i>groups</i></div>
                     <FilterContainer
                         id="roster"
                         filterTag="member"
@@ -120,29 +130,30 @@ const LineupManager = ({ initialProps }) => { //
                             { name: "membership-type", filterBy: "subtitle", buttons: membershipTypes.map(memt => { return { caption: memt.name, value: memt.name }}) }
                         ]}
                     >
-                        <DropContainer caption="Remove Assignment" value={{id: "remove"}} dropAction={handleDrop} acceptTypes={membershipTypes.map(type => type.name).flat()} dropStyles={{baseStyles: {position: "sticky", top: "0px"}}} />
-                        {
-                            roster.map((membership, m) => {
-                                // console.log({membership})
-                                return (
-                                    <ItemCard
-                                        key={m}
-                                        filterTag="member"
-                                        caption={membership.Member.aka}
-                                        subtitle={membership.type.name}
-                                        dropItem={membership}
-                                        cardType={membership.type.name}
-                                        assigned={isAssignedToLineup(membership)}
-                                        capacity={membership.type.capacity}
-                                    />
-                                )
-                            })
-                        }
+                        <article className="scroll column" >
+                            {
+                                roster.map((membership, m) => {
+                                    // console.log({membership})
+                                    return (
+                                        <ItemCard
+                                            key={m}
+                                            filterTag="member"
+                                            caption={membership.Member.aka}
+                                            subtitle={membership.type.name}
+                                            dropItem={membership}
+                                            cardType={membership.type.name}
+                                            assigned={isAssignedToLineup(membership)}
+                                            capacity={membership.type.capacity}
+                                        />
+                                    )
+                                })
+                            }
+                        </article>
                     </FilterContainer>
-
                 </article>
             </div>
         </div > 
+    
     
     const renderDrops = (divisionChildren, cap) => {
         const divKids = Array.isArray(divisionChildren) ? divisionChildren : Object.values(divisionChildren);
@@ -201,24 +212,28 @@ const LineupManager = ({ initialProps }) => { //
                                                         <DropContainer key={div.id} caption={div.name} value={div} dropAction={handleDrop} acceptTypes={dropTypes} >
                                                             { dropDivisions }
                                                         </DropContainer>
-                                                        {
-                                                            Object.keys(assignments).map((assignmentId, m) => {
-                                                                const assignment = assignments[assignmentId];
-                                                                const currentDivision = assignment.newDivision ? assignment.newDivision : assignment.Division;
-                                                                const isDescendant = checkDescendants(div, currentDivision.id)
-                                                                if (isDescendant)
-                                                                    return (
-                                                                        <ItemCard
-                                                                            key={m}
-                                                                            filterTag="member"
-                                                                            caption={assignment.EnsembleMembership.Member.aka}
-                                                                            subtitle={currentDivision.name}
-                                                                            dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
-                                                                            cardType={assignment.EnsembleMembership.type.name}
-                                                                        />
-                                                                    )
-                                                            })
-                                                        }
+                                                        <article className="scroll column" >
+                                                            {
+                                                                Object.keys(assignments).map((assignmentId, m) => {
+                                                                    const assignment = assignments[assignmentId];
+                                                                    const currentDivision = assignment.newDivision ? assignment.newDivision : assignment.Division;
+                                                                    const isDescendant = checkDescendants(div, currentDivision.id)
+                                                                    if (isDescendant)
+                                                                        return (
+                                                                            <ItemCard
+                                                                                key={m}
+                                                                                filterTag="member"
+                                                                                caption={assignment.EnsembleMembership.Member.aka}
+                                                                                subtitle={currentDivision.name}
+                                                                                dropItem={{ ...assignment.EnsembleMembership, assignmentId: assignmentId }}
+                                                                                cardType={assignment.EnsembleMembership.type.name}
+                                                                            >
+                                                                                <button style={{marginLeft: "auto", ['--edge-color']: "0 90% 50%", ['--icon1']: "'remove_circle_outline'", ['--icon2']: "'remove_circle'"}} onClick={() => removeAssignment(assignmentId)}><i className="switch"></i></button>
+                                                                            </ItemCard>
+                                                                        )
+                                                                })
+                                                            }
+                                                        </article>
                                                     </fieldset>
                                                 )
                                             })

@@ -93,9 +93,9 @@ export async function PUT(request, { params }) {
 
 // #####
 
-export const createEvent = async (data) => {
+export const createModelEvent = async (data) => {
     console.log("new event data:", { data })
-    const { model, eventStartDate, eventEndDate, eventName, type, exception=false } = data;
+    const { model, eventStartDate, eventEndDate, eventName, exception=false } = data;
     const supabase = createServerComponentClient({ cookies });
 
     const { data: newEvent, error } = await supabase
@@ -105,7 +105,6 @@ export const createEvent = async (data) => {
             eventStartDate: new Date(eventStartDate).toISOString(),
             eventEndDate: new Date(eventEndDate).toISOString(),
             name: eventName || null,
-            type: type,
             exception,
             model: model
         })
@@ -125,7 +124,7 @@ export async function POST(request, { params }) {
     console.log("POST:", params)
     const _req = await request.formData();
     const req = extractFields(_req);
-    const res = await createEvent({ ...req, model: params.model })
+    const res = await createModelEvent({ ...req, model: params.model })
     if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
     return NextResponse.json({res})
 }

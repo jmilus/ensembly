@@ -36,6 +36,18 @@
     padding: 5px;
     background-image: linear-gradient(45deg, var(--color-c3), var(--color-c2), var(--color-c1))
 }
+.modal-wrapper.warning {
+    width: 500px;
+    background-image: linear-gradient(45deg, hsl(20 90% 20%), hsl(30 90% 50%), hsl(40 90% 50%))
+}
+
+.modal-wrapper.warning .modal-body {
+    background: hsl(var(--color-s) / 0.9);
+    color: white;
+}
+.modal-wrapper.warning .modal-footer {
+    background: hsl(var(--color-s) / 0.8);
+}
 
 .modal-wrapper.min {
     min-width: unset;
@@ -58,6 +70,10 @@
     border-bottom-color: lightgray;
 }
 
+.warning .modal-header {
+    color: hsl(40 90% 50%);
+}
+
 .modal-container {
     display: flex;
     flex-direction: column;
@@ -68,8 +84,8 @@
 }
 
 .modal-message {
-    margin: 10px;
-    max-width: 30em;
+    padding: 10px 50px;
+    font-size: 1.25em;
 }
 
 .modal-body {
@@ -125,9 +141,6 @@
     /* color: var(--text1); */
     --edge-color: var(--color-p);
 }
-/* .modal-buttons > button[name="submit"]:hover {
-    box-shadow: 0 0 0 2px inset white;
-} */
 
 .modal-alert-message {
     padding: 10px;

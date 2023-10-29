@@ -43,26 +43,27 @@ const EnsemblesLayout = async (props) => {
                         <FilterContainer
                             id="ensembles-filter"
                             filterTag="ensemble"
-                            columns={{ count: "auto-fill", width: "201px" }}
                             search={{ label: "Search Ensembles", searchProp: "caption" }}
                             filters={[
                                 { name: "ensemble-type", filterBy: "subtitle", buttons: ensembleTypes.map(et => { return {caption: et.type} }) }
                             ]}
                         >
-                            {
-                                ensembles.map((ensemble, i) => {
-                                    console.log({ensemble})
-                                    return (
-                                        <ItemCard
-                                            key={i}
-                                            caption={ensemble.name}
-                                            subtitle={ensemble.ensemble_type.type}
-                                            filterTag="ensemble"
-                                            cardLinkTo={`/e/ensembles/${ensemble.id}/general`}
-                                        />
-                                    )
-                                })
-                            }
+                            <article className="scroll grid" style={{['--min-width']: "201px"}}>
+                                {
+                                    ensembles.map((ensemble, i) => {
+                                        console.log({ensemble})
+                                        return (
+                                            <ItemCard
+                                                key={i}
+                                                caption={ensemble.name}
+                                                subtitle={ensemble.ensemble_type.type}
+                                                filterTag="ensemble"
+                                                cardLinkTo={`/e/ensembles/${ensemble.id}/general`}
+                                            />
+                                        )
+                                    })
+                                }
+                            </article>
                         </FilterContainer>
                     </div>
                 </div>

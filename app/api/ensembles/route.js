@@ -13,6 +13,7 @@ export async function getManyEnsembles() {
             *,
             ensemble_type:type (*)
         `)
+        .order('created_at', { ascending: true })
     
     if (error) {
         console.error("fetch all ensembles error:", error);
@@ -25,7 +26,7 @@ export async function getManyEnsembles() {
 
 export async function GET() {
     const res = await getManyEnsembles()
-    return NextResponse.json({ res })
+    return NextResponse.json(res)
 }
 
 //##############
@@ -44,6 +45,7 @@ export const createEnsemble = async (data) => {
             }
         ])
         .select()
+        .single()
     
     if (error) {
         console.error("create ensemble error:", error)
@@ -51,12 +53,12 @@ export const createEnsemble = async (data) => {
     }
     
     console.log("created ensemble:", {ensemble})
-    return ensemble[0];
+    return ensemble;
 }
 
 export async function POST(request) {
     const _req = await request.formData()
     const req = extractFields(_req);
     const res = await createEnsemble(extractFields(req))
-    return NextResponse.json({ res })
+    return NextResponse.json(res)
 }

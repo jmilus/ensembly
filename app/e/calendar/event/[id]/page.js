@@ -71,7 +71,7 @@ const EventPage = async (context) => {
                         <fieldset>
                             <legend>Event Address</legend>
                             {event.address &&
-                                <Button id="delete-event-button" caption="Revert to Model Address" buttonClass="fit" payload={{address: null}}/>
+                                <Button id="delete-event-button" buttonClass="fit" payload={{address: null}}>Revert to Model Address</Button>
                             }
                             <Form id="event-location" APIURL={`/api/address/${event.address?.id || "new"}`} auxData={{event: event.id}} auto>
                                 <Text id="street1" name="street" label="Street" value={thisEventAddress?.street || ""} />

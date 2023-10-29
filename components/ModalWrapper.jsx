@@ -27,7 +27,8 @@ const ModalWrapper = ({ title, classes="", children, closeModal, dismiss=undefin
     }
 
     const handleFormSubmit = (e) => {
-        if (e.nativeEvent.submitter?.name === "submit") {
+        if (e.nativeEvent.submitter?.name === "submit" || e.nativeEvent.submitter?.name === "close_modal") {
+            // console.log("closing modal")
             closeModal();
         }
     }

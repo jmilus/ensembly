@@ -19,13 +19,17 @@ export const getMemberEmails = async ({member, type}) => {
 
     const { data, error } = await query;
     
-    if (error) console.error("fetch email error:", error);
+    if (error) {
+        console.error("fetch email error:", error);
+        return new Error(`fetch email error: ${error}`)
+    }
 
     return data;
 }
 
 export async function GET(request, { params }) {
     const req = await request.json();
-    const res = await getMemberEmails({...req, member: params.id});
+    const res = await getMemberEmails({ ...req, member: params.id });
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
     return NextResponse.json(res)
 }

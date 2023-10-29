@@ -4,7 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import useStatus from '../../hooks/useStatus';
 
 const Button = (props) => {
-    const { name, caption, APIURL, METHOD, payload, json, followPath, statusCaptions = {}, buttonClass, style, debug } = props;
+    const { name, APIURL, METHOD, payload, json, followPath, statusCaptions = {}, buttonClass, style, children, debug } = props;
 
     if (debug) console.log({ props })
     const router = useRouter();
@@ -60,7 +60,7 @@ const Button = (props) => {
     }
 
     return (
-        <button name={name} className={buttonClass} style={style} onClick={executeAPI}>{caption}</button>
+        <button name={name} className={buttonClass} style={style} onClick={executeAPI}>{children}</button>
     )
 }
 

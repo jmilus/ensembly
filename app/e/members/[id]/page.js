@@ -13,6 +13,7 @@ import { getManyDivisions } from '@/api/ensembles/[id]/division/route';
 import { getAllMembershipStatus } from '@/api/membership/status/route';
 import FilterContainer from 'components/FilterContainer';
 import CALENDAR from 'utils/calendarUtils';
+import ConfirmButton from 'components/ConfirmButton';
 
 const MemberPage = async (context) => { // type
     const member = await getOneMember(context.params.id)
@@ -159,6 +160,7 @@ const MemberPage = async (context) => { // type
                                                 modalButton={<><i className="naked">feed</i></>}
                                                 title={modalTitle}
                                                 dismiss="Close"
+                                                buttonStyle={{marginLeft: "auto"}}
                                             >
                                                 <article style={{ width: "750px" }}>
                                                     <Form id="membership-details-form" APIURL={`/api/membership/${membership.id}`} auto >
@@ -185,14 +187,27 @@ const MemberPage = async (context) => { // type
                                                                             {
                                                                                 lineup.assignments.map((assignment, a) => {
                                                                                     return (
-                                                                                        <section key={a} className="inputs">
+                                                                                        <section key={a} className="inputs" style={{alignItems: "center"}}>
                                                                                             <Form id={`${l}-${a}-update-assignment-form`} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} auto>
                                                                                                 <section className="inputs">
                                                                                                     <Select id={`${l}-${a}-division-select`} label="Division" name="new_division" value={assignment.divId} options={divisionOptions[membership.ensemble.id]} isRequired/>
                                                                                                     <Text id={`${l}-${a}-title-text`} label="Title" name="title" value={assignment.title} />
                                                                                                 </section>
                                                                                             </Form>
-                                                                                            <Button name="delete-assignment-button" caption={<i>delete</i>} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} METHOD="DELETE" style={{ alignSelf: "center", ['--edge-color']: "var(--color-h3)", ['--text-active']: "0 100% 50%"}} />
+                                                                                            <ConfirmButton
+                                                                                                button={<i class="switch" style={{['--icon1']:"'delete_outline'", ['--icon2']:"'delete'" }}></i>}
+                                                                                                style={{ ['--edge-color']: "0 90% 50%" }}
+                                                                                                popupStyle={{background: "var(--gray2)", borderRadius: "5px"}}
+                                                                                            >
+                                                                                                <Button
+                                                                                                    name="delete-assignment-button"
+                                                                                                    APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`}
+                                                                                                    METHOD="DELETE"
+                                                                                                    buttonClass="fit"
+                                                                                                    style={{ ['--edge-color']: "0 90% 50%", height: "1.5em", padding: "0 5px" }}
+                                                                                                >Delete</Button>
+                                                                                            </ConfirmButton>
+                                                                                            
                                                                                         </section>
                                                                                     )
                                                                                 })

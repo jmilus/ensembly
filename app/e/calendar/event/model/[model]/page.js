@@ -106,13 +106,12 @@ const EventModelPage = async (context) => {
 
     const parentLineups = parentModel ? listModelLineups(parentModel) : [];
     const applyParentLineupsButton = <Button
-        caption={<><i>move_down</i><span>Apply Parent Lineups</span></>}
         buttonClass="fit"
         APIURL={`/api/calendar/event/model/${model.id}/lineups`}
         METHOD="POST"
         payload={parentLineups}
         json
-    />;
+    ><i>move_down</i><span>Apply Parent Lineups</span></Button>;
 
     if (parentModel) { 
         eventNodes.push(
@@ -213,7 +212,7 @@ const EventModelPage = async (context) => {
                         >
                             <Form id="new-event-modal-form" APIURL={`/api/calendar/event/model/${model.id}`} METHOD="POST" auxData={{exception: true}} >
                                 <Text id="newEventName" name="eventName" placeholder={model.name} label="Event Name" value="" limit="64" />
-                                <Select id="newEventType" name="typeId" label="Event Type" value={model.type.id} options={eventTypes} isRequired />
+                                {/* <Select id="newEventType" name="typeId" label="Event Type" value={model.type.id} options={eventTypes} isRequired /> */}
                                 <section className="inputs">
                                     <DateTime id="newEventStart" name="eventStartDate" label="Event Start" value="" includeTime isRequired >
                                         <DateTime id="newEventEnd" name="eventEndDate" label="Event End" value="" includeTime isRequired />

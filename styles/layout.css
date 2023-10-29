@@ -36,6 +36,8 @@
     z-index: 100;
     backdrop-filter: blur(5px);
     background: hsla(0, 0%, 98%, 0.75);
+    min-height: 90px;
+    align-items: center;
 }
 
 #page { /* page-details */

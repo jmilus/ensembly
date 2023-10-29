@@ -16,6 +16,7 @@ export const getOneEnsemble = async (id) => {
         `)
         .eq('id', id)
         .neq('EnsembleMembership.status', "Inactive")
+        .single()
 
     if (error) {
         console.error("get ensemble error:", error);
@@ -23,8 +24,16 @@ export const getOneEnsemble = async (id) => {
     }
 
     // console.log("getOneEnsemble:", ensemble);
-    return ensemble[0];
+    return ensemble;
 }
+
+// fetch
+export async function GET({ params }) {
+    const res = await getOneEnsemble(params.id)
+    return NextResponse.json({ res })
+}
+
+// ###############
 
 export const updateOneEnsemble = async (ensembleData) => {
     const { id, name, type, logoUrl } = ensembleData;
@@ -41,6 +50,7 @@ export const updateOneEnsemble = async (ensembleData) => {
         })
         .eq('id', id)
         .select()
+        .single()
     
     if (error) {
         console.error("update ensemble error:", error);
@@ -49,13 +59,7 @@ export const updateOneEnsemble = async (ensembleData) => {
 
     // console.log("update ensemble data:", ensemble)
 
-    return ensemble[0];
-}
-
-// fetch
-export async function GET({ params }) {
-    const res = await getOneEnsemble(params.id)
-    return NextResponse.json({ res })
+    return ensemble;
 }
 
 // update
@@ -65,3 +69,5 @@ export async function PUT(request, { params }) {
     const res = await updateOneEnsemble({...req, id: params.id})
     return NextResponse.json({ res })
 }
+
+// ###############

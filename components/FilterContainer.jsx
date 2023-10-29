@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { Text } from './Vcontrols/';
 
 const FilterContainer = (props) => {
-    const { id, filterTag, search, filters = [], defaultFilter = {}, minimum=1, columns, rows="min-content", style, debug, children } = props;
+    const { id, filterTag, search, filters = [], defaultFilter = {}, minimum=1, style, debug, children } = props;
     const [activeFilterSets, setActiveFilterSets] = useState(defaultFilter)
     const [searchString, setSearchString] = useState("")
 
@@ -109,7 +109,7 @@ const FilterContainer = (props) => {
                 {
                     filter.buttons.map((filterObject, o) => {
                         const { caption, value } = filterObject;
-                        console.log(activeFilterSets[filter.name])
+                        // console.log(activeFilterSets[filter.name])
                         const isChecked = activeFilterSets[filter.name] ? Object.keys(activeFilterSets[filter.name].filterParams).includes(caption) : false;
                         return (
                             <label key={`${f}-${o}`} id={`${id}-filter`} htmlFor={`${id}-${caption}`} className={`filter-button tab-button ${isChecked ? "active" : ""}`}>
@@ -140,8 +140,6 @@ const FilterContainer = (props) => {
     
     if (searchContainer && search) createPortal(searchBox, searchContainer)
 
-    const styleColumns = { ["--grid-columns"]: columns ? columns.count : 1, ["--min-width"]: columns ? columns.width : "1fr" }
-
     return (
         <div className="filter-container" style={style}>
             {tagCount > minimum &&
@@ -153,7 +151,7 @@ const FilterContainer = (props) => {
                     {filters.length > 0 ? clearButton : null}
                 </div>
             }
-            <div className="filter-container-content" style={{ ...styleColumns, gridAutoRows: rows }}>
+            <div className="filter-container-content">
                 { filteredChildren }
             </div>
         </div>

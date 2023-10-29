@@ -74,7 +74,7 @@ const BroadcastDetailsPage = async (context) => {
                     </fieldset>
                 </section>
                 <section className="button-tray">
-                    <Button name="duplicate" caption={<><i>content_copy</i><span>Duplicate</span></>} APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="POST" followPath={`/e/messages/broadcasts/$slug$`} statusCaptions={{ saved: "Duplicated!" }} buttonClass='fit' />
+                    <Button name="duplicate" APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="POST" followPath={`/e/messages/broadcasts/$slug$`} statusCaptions={{ saved: "Duplicated!" }} buttonClass='fit'><i>content_copy</i><span>Duplicate</span></Button>
                 </section>
             </article>
         )
@@ -135,18 +135,18 @@ const BroadcastDetailsPage = async (context) => {
                                 id="module-filter"
                                 filterTag="module"
                                 search={{ label: "module", searchProp: "module" }}
-                                columns={{ count: 1, width: "1fr" }}
                                 rows="min-content"
                             >
-
-                                <ItemCard
-                                    cardType="MODULE"
-                                    filterTag="module"
-                                    module="basic"
-                                    dropItem={{ name: "Basic", type: "standard_paragraph" }}
-                                    itemIcon={<i style={{ fontSize: "3em", color: "var(--color-p)", cursor: "inherit" }}>view_headline</i>}
-                                    caption="Basic"
-                                />
+                                <article className="scroll column" style={{ ['--min-width']: "300px" }}>
+                                    <ItemCard
+                                        cardType="MODULE"
+                                        filterTag="module"
+                                        module="basic"
+                                        dropItem={{ name: "Basic", type: "standard_paragraph" }}
+                                        itemIcon={<i style={{ fontSize: "3em", color: "var(--color-p)", cursor: "inherit" }}>view_headline</i>}
+                                        caption="Basic"
+                                    />
+                                </article>
                             </FilterContainer>
                         </Tab>
                         <Tab tabName="Recipients">
@@ -161,9 +161,9 @@ const BroadcastDetailsPage = async (context) => {
                 </fieldset>
             </section>
             <section className="button-tray">
-                <Button name="duplicate" caption={<><i>content_copy</i><span>Duplicate</span></>} APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="POST" followPath={`$slug$`} statusCaptions={{ saved: "Duplicated!" }} buttonClass='fit' />
-                <Button name="delete" caption={<><i>delete_forever</i><span>Delete Draft</span></>} APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="DELETE" followPath={`/e/messages/broadcasts/`} statusCaptions={{ saving: "Deleting...", saved: "Broadcast Deleted." }} buttonClass='fit angry' />
-                <Button name="send" caption={<><i>send</i><span>Send Broadcast</span></>} APIURL={`/api/messages/broadcasts/send`} METHOD="POST" payload={broadcast.id} followPath={`/e/messages/broadcasts/${broadcast.id}`} statusCaptions={{saving: "Sending...", saved: "Sent!"}} buttonClass='fit happy' style={{ marginLeft: "auto" }} />
+                <Button name="duplicate" APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="POST" followPath={`$slug$`} statusCaptions={{ saved: "Duplicated!" }} buttonClass='fit' ><i>content_copy</i><span>Duplicate</span></Button>
+                <Button name="delete" APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="DELETE" followPath={`/e/messages/broadcasts/`} statusCaptions={{ saving: "Deleting...", saved: "Broadcast Deleted." }} buttonClass='fit angry' ><i>delete_forever</i><span>Delete Draft</span></Button>
+                <Button name="send" APIURL={`/api/messages/broadcasts/send`} METHOD="POST" payload={broadcast.id} followPath={`/e/messages/broadcasts/${broadcast.id}`} statusCaptions={{saving: "Sending...", saved: "Sent!"}} buttonClass='fit happy' style={{ marginLeft: "auto" }} ><i>send</i><span>Send Broadcast</span></Button>
             </section>
         </article>
         
