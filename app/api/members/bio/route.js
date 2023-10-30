@@ -6,7 +6,7 @@ const defaultOptions = ['sex', 'race', 'hair', 'eyes']
 
 export const getBioOptions = async (options=defaultOptions) => {
     const supabase = createServerComponentClient({ cookies });
-    console.log({options})
+    // console.log({options})
     
     const optionGetters = {
         sex: supabase.from('Sex').select('*'),

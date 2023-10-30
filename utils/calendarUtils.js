@@ -27,6 +27,11 @@ export const getTime = (input) => {
     return timeString.slice(0, firstColon + 3) + " " + timeString.slice(-2);
 }
 
+export const createNowDate = (input) => {
+    const array = input.split('-');
+    return new Date(array[0], parseInt(array[1]) - 1, array[2])
+}
+
 export const getDashedValue = (input, dateOnly) => {
     let dashThisDate = input
     if (input instanceof Date != true) dashThisDate = new Date(input)
@@ -53,8 +58,9 @@ export const getLastOfMonth = (input) => {
 }
 
 export const getCalendarView = (input, totalDays = 34) => {
-    const d = input ? new Date(input) : new Date();
-
+    const dateValues = input.split("-");
+    const d = new Date(dateValues[0], parseInt(dateValues[1])-1, dateValues[2])
+    console.log({ dateValues }, d.getDay())
     const startDate = new Date(d.setDate(d.getDate() - d.getDay()));
     const endDate = new Date(d.setDate(d.getDate() + totalDays));
 
@@ -72,13 +78,14 @@ export const compareDates = (firstDate, secondDate) => {
 const CALENDAR = {
     getTime,
     get24Time,
+    createNowDate,
     getDashedValue,
     getFirstOfMonth,
     getLastOfMonth,
     getCalendarView,
     compareDates,
     localizeDate,
-    straightDate
+    straightDate,
 }
 
 export default CALENDAR;

@@ -3,7 +3,7 @@ import 'server-only';
 import { getOneMember } from '@/api/members/[id]/route';
 import { getManyEnsembles } from '@/api/ensembles/route';
 import { getBioOptions } from '@/api/members/bio/route';
-import { getAllMembershipTypes } from '@/api/membership/types/route';
+import { getManyMembershipTypes } from '@/api/membership/types/route';
 
 import ProfilePhoto from 'components/ProfilePhoto';
 import ItemCard from 'components/ItemCard';
@@ -18,7 +18,7 @@ import ConfirmButton from 'components/ConfirmButton';
 const MemberPage = async (context) => { // type
     const member = await getOneMember(context.params.id)
     const ensembleList = await getManyEnsembles();
-    const membershipTypes = await getAllMembershipTypes();
+    const membershipTypes = await getManyMembershipTypes();
     const membershipStatus = await getAllMembershipStatus()
 
     const divisionOptions = {}
@@ -28,14 +28,19 @@ const MemberPage = async (context) => { // type
     
     const bioOptions = await getBioOptions();
 
-    const ensembleOptions = membershipTypes.map(mt => {
-        return mt.ensembles.map(ens => {
-            const matchingEnsemble = ensembleList.find(el => el.id === ens)
-            return {...matchingEnsemble, memType: mt.id}
-        })
-    }).flat()
+    console.log({membershipTypes})
 
-    // console.log({bioOptions})
+    const ensembleOptions = {}
+    ensembleList.map(ensemble => {
+        ensembleOptions[ensemble.id] = { ...ensemble, membershipTypes: [] }
+    })
+    membershipTypes.forEach(mt => {
+        mt.ensembles.forEach(ens => {
+            ensembleOptions[ens].membershipTypes.push(mt.id)
+        })
+    })
+
+    console.log({ensembleOptions})
 
     return (
         <>
@@ -110,9 +115,10 @@ const MemberPage = async (context) => { // type
                         buttonClass="fit"
                     >
                         <Form id="add-membership-form" METHOD="POST" APIURL={`/api/membership`} auxData={{ member: member.id }} >
+                            <DateOnly id="membership-start-date" name="membership_start" label="Membership Start" isRequired />
                             <section className="modal-fields inputs">
-                                <Select id="membershipType" name="membershipType" label="Type" options={membershipTypes} isRequired >
-                                    <Select id="ensembleName" name="ensemble" label="Ensemble" options={ensembleOptions} filterKey="memType" filter="ensemble" isRequired />
+                                <Select id="membershipType" name="membership_type" label="Type" options={membershipTypes} isRequired debug >
+                                    <Select id="ensembleName" name="ensemble" label="Ensemble" options={ensembleOptions} filterKey="membershipTypes" isRequired debug />
                                 </Select>
                             </section>
                         </Form>
@@ -205,7 +211,7 @@ const MemberPage = async (context) => { // type
                                                                                                     METHOD="DELETE"
                                                                                                     buttonClass="fit"
                                                                                                     style={{ ['--edge-color']: "0 90% 50%", height: "1.5em", padding: "0 5px" }}
-                                                                                                >Delete</Button>
+                                                                                                >Confirm Delete</Button>
                                                                                             </ConfirmButton>
                                                                                             
                                                                                         </section>

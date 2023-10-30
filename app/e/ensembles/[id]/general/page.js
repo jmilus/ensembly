@@ -5,11 +5,13 @@ import { getOneEnsemble } from '@/api/ensembles/[id]/route';
 import FilterContainer from 'components/FilterContainer';
 import ItemCard from 'components/ItemCard'
 import ModalButton from 'components/ModalButton';
-import { Form, Text, Button } from 'components/Vcontrols';
+import { Form, Text, Button, Select, DateOnly } from 'components/Vcontrols';
+import { getManyMembershipTypes } from '@/api/membership/types/route';
 
 export default async function EnsembleGeneralPage({params}) {
     const ensemble = await getOneEnsemble(params.id)
-    console.log({ensemble})
+    const membershipTypes = await getManyMembershipTypes(ensemble.id)
+
     const memberships = ensemble.EnsembleMembership.map(m => m);
     return (
         <>
@@ -17,6 +19,26 @@ export default async function EnsembleGeneralPage({params}) {
             <div id="page" >
                 <fieldset style={{ height: "100%" }}>
                     <legend>Members</legend>
+                    <ModalButton
+                        modalButton={<><i>person_add</i><span>New Member</span></>}
+                        buttonClass="fit"
+                        title="Create New Member"
+                        buttonStyle={{width: "100%"}}
+                    >
+                        <Form id="new-member-modal-form" APIURL={`/api/ensembles/${ensemble.id}`} METHOD="POST" followPath="/e/members/$slug$" >
+                            <section className="inputs">
+                                <Text id="newMemberFirstName" name="firstName" label="First Name" value="" isRequired />
+                                <Text id="newMemberLastName" name="lastName" label="Last Name" value="" isRequired />
+                            </section>
+                            <section className="inputs">
+                                <DateOnly id="new-member-membership-start" name="membership_start" label="Membership Start"  isRequired />
+                                <Select id="new-member-membership-type" name="membership_type" label="Membership Type" options={membershipTypes}  isRequired />
+                            </section>
+                        </Form>
+                        <section className="modal-buttons">
+                            <button name="submit" className="fit" form="new-member-modal-form">Create Member</button>
+                        </section>
+                    </ModalButton>
                     <FilterContainer
                         id="general-members"
                         filterTag="member"

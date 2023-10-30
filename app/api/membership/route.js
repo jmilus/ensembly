@@ -30,36 +30,39 @@ export async function GET({request}) {
 // ############################################
 
 export const createMembership = async (data) => {
-    const { member, ensemble, status="Active", statusDate, statusNote, membershipType } = data;
+    const { member, ensemble, status="Active", statusDate, statusNote, membership_start, membership_type } = data;
     const supabase = createServerComponentClient({ cookies });
     console.log({ data })
 
+    const membershipStatusDate = statusDate ? new Date(statusDate) : new Date()
+
     const { data: membership, error } = await supabase
         .from('EnsembleMembership')
-        .insert([
-            {
-                member,
-                ensemble,
-                status,
-                status_date: statusDate ? new Date(statusDate) : new Date(),
-                status_note: statusNote,
-                membership_type: membershipType
-            }
-        ])
+        .insert({
+            member,
+            ensemble,
+            status,
+            status_date: membershipStatusDate,
+            status_note: statusNote,
+            membership_start: membership_start,
+            membership_type: parseInt(membership_type)
+        })
         .select()
+        .single()
     
     if (error) {
         console.error("create membership error:", error)
-        return new Error(error);
+        return new Error(error.message);
     }
     
     console.log({membership})
-    return membership[0];
+    return membership;
 }
 
 export async function POST(request) {
     const _req = await request.formData()
     const req = extractFields(_req);
     const res = await createMembership(req)
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
     return NextResponse.json({ res })
 }

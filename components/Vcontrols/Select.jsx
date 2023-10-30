@@ -58,9 +58,13 @@ const Select = (props) => {
             const childFiltersArray = [...filtersArray, filterObj];
             //
             const newChildOptions = {}
-            Object.keys(child.props.options).forEach(key => {
-                const option = child.props.options[key]
+            const childOptions = packageOptions(child.props.options)
+            console.log("packaged:", {childOptions})
+            Object.keys(childOptions).forEach(key => {
+                const option = childOptions[key]
                 const exclude = childFiltersArray.every(filter => {
+                    console.log("filterFor:", filter.filterFor, typeof filter.filterFor, "option:", option[filter.filterBy], "includes:", option[filter.filterBy].includes(filter.filterFor))
+                    if(Array.isArray(option[filter.filterBy])) return !option[filter.filterBy].some(x => x == filter.filterFor)
                     return filter.filterFor != option[filter.filterBy];
                 })
                 if (!exclude) newChildOptions[key] = option;

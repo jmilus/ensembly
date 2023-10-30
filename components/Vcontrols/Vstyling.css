@@ -32,13 +32,27 @@ section>form {
     margin: 5px;
 }
 
-.empty > input[required],
-.empty > select[required],
-.empty > .collection-container.required {
+.input-control-base.empty:has([required]) input,
+.input-control-base.empty:has([required]) .collection-container {
     background-image: linear-gradient(45deg, var(--color-o), var(--color-f));
     background-repeat: no-repeat;
-    background-size: 2px 100%;
-    background-position: left;
+    background-size: 3px 100%;
+    background-position: bottom left;
+}
+.input-control-base.empty:has([required]) select {
+    background-image: 
+        linear-gradient(45deg, var(--color-o), var(--color-f)),
+        linear-gradient(45deg, transparent 50%, var(--color-f) 50%),
+        linear-gradient(135deg, var(--color-f) 50%, transparent 50%);
+    background-repeat: no-repeat;
+    background-size: 
+        3px 100%,
+        8px 8px,
+        8px 8px;
+    background-position:
+        bottom left,
+        calc(100% - 18px) calc(1em + 3px),
+        calc(100% - 10px) calc(1em + 3px);
 }
 
 section.spaced > * + * {

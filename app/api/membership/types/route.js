@@ -3,9 +3,8 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
-export const getAllMembershipTypes = async (ensembles) => {
+export const getManyMembershipTypes = async (ensembles) => {
     const supabase = createServerComponentClient({ cookies });
-
 
     let query = supabase
         .from('MembershipType')
@@ -31,8 +30,8 @@ export const getAllMembershipTypes = async (ensembles) => {
 
 export async function GET(request) {
     const req = await request.json()
-    console.log({req})
-    const res = await getAllMembershipTypes(req)
+    // console.log({req})
+    const res = await getManyMembershipTypes(req)
     return NextResponse.json({res})
 }
 

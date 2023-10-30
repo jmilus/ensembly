@@ -12,8 +12,6 @@ export default async function MemberProfilePageLayout(context) {
     const memberUser = await getMemberUser({ member: context.params.id });
     const memberEmail = await getMemberEmails({ member: context.params.id, type: "Primary" })
 
-    console.log({ memberUser }, { memberEmail })
-
     const navNodes = [
         { caption: "Profile", route: `/e/members/${context.params.id}` }
     ]
@@ -43,7 +41,7 @@ export default async function MemberProfilePageLayout(context) {
         ]
     }
 
-    if (memberUser === null && memberEmail.email.length > 0) {
+    if (memberUser === null && memberEmail?.email.length > 0) {
         navButtons.profile = [
             <Button
                 key="make-user"

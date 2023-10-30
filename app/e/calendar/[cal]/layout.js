@@ -85,9 +85,6 @@ const EventsPage = async (context) => {
                 <SubNav caption={monthName} root="calendar" buttons={navButtons} />
             </div>
             <div id="page-frame">
-                <section>
-                    
-                </section>
                 {context.children}
             </div>
         </div>

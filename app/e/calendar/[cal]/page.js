@@ -7,16 +7,14 @@ import Calendar from 'components/Calendar';
 import CALENDAR from 'utils/calendarUtils';
 
 const EventsPage = async (context) => {
-    console.log("EventsPage:", {context})
-    const events = await getManyEvents({ ...CALENDAR.getCalendarView(context.params.cal) });
-
-    const urlDate = context.params.cal.split("-")
-    const focusDay = new Date(urlDate[0], parseInt(urlDate[1]) - 1, urlDate[2]);
+    console.log("EventsPage:", { context })
+    const { startDate, endDate, totalDays } = CALENDAR.getCalendarView(context.params.cal)
+    const events = await getManyEvents({ startDate, endDate });
 
     return (
         <div id="page">
             <article>
-                <Calendar firstDay={focusDay} events={events} />
+                <Calendar startDate={CALENDAR.getDashedValue(startDate, true)} endDate={endDate} events={events} />
             </article>
         </div>
     )

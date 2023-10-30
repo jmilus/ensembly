@@ -42,13 +42,13 @@ export const createMember = async (memberData) => {
                 suffix: suffix ? suffix : "",
                 aka: myAka,
                 birthday,
-                sex: parseInt(sex),
+                sex: sex ? sex : undefined,
                 height: parseInt(height),
                 weight: parseInt(weight),
-                race: parseInt(race),
+                race: race ? race : undefined,
                 ethnicity,
-                hair: parseInt(hair),
-                eyes: parseInt(eyes)
+                hair: hair ? hair : undefined,
+                eyes: eyes ? eyes : undefined
             }
         ])
         .select()

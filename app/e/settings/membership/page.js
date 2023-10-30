@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { getAllMembershipTypes } from '@/api/membership/types/route';
+import { getManyMembershipTypes } from '@/api/membership/types/route';
 import { getAllMembershipCapacities } from '@/api/membership/capacity/route';
 
 import ItemCard from 'components/ItemCard';
@@ -10,7 +10,7 @@ import FilterContainer from 'components/FilterContainer';
 import { getManyEnsembles } from '@/api/ensembles/route';
 
 export default async function MembershipSettingsPage(context) {
-    const membershipTypes = await getAllMembershipTypes()
+    const membershipTypes = await getManyMembershipTypes()
     const capacities = await getAllMembershipCapacities()
     const ensembles = await getManyEnsembles()
     const termPeriod = [

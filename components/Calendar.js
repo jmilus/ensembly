@@ -8,15 +8,6 @@ import { CAL } from 'utils/constants';
 const NOW = new Date(Date.now());
 const TODAY = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate());
 
-export const getCalendarView = (input, totalDays = 34) => {
-    const d = input ? new Date(input) : new Date();
-
-    const startDate = new Date(d.setDate(d.getDate() - d.getDay()));
-    const endDate = new Date(d.setDate(d.getDate() + totalDays));
-
-    return { startDate, endDate, totalDays };
-}
-
 export const EventNode = ({ event, color, caption, showDate, style }) => {
     const isPast = new Date(event.eventStartDate) < TODAY;
     const eventTypeColor = isPast ? "lightgrey" : `hsl(${color})`;
@@ -29,19 +20,21 @@ export const EventNode = ({ event, color, caption, showDate, style }) => {
     )
 }
 
-const CalDay = ({ day, events = [], inMonth }) => {
-    const isToday = day.value.toLocaleDateString() === TODAY.toLocaleDateString();
-    const isPast = day.value < TODAY;
-    const isWeekend = day.value.getDay() === 0 || day.value.getDay() === 6 ? true : false;
+const CalDay = ({ day, inMonth }) => {
+    const { value, events } = day;
+    // console.log({ day })
+    const isToday = value.toLocaleDateString() === TODAY.toLocaleDateString();
+    const isPast = value < TODAY;
+    const isWeekend = value.getDay() === 0 || value.getDay() === 6 ? true : false;
 
-    const dayURL = CALENDAR.getDashedValue(CALENDAR.localizeDate(day.value), true)
+    const dayURL = CALENDAR.getDashedValue(CALENDAR.localizeDate(value), true)
     return (
         <object className={`cal-day${inMonth ? " current-month" : ""}${isToday ? " today" : ""}${isPast ? " past" : ""}${isWeekend ? " weekend" : ""}`}>
             <div className="cal-day-header">
-                <span>{day.value.getDate() === 1 ? CAL.month.long[day.value.getMonth()] : ""}</span>
+                <span>{value.getDate() === 1 ? CAL.month.long[value.getMonth()] : ""}</span>
                 <Link href={`/e/calendar/day/${dayURL}`}>
                     <div className="day-button" style={isToday ? {color: "var(--text1)"} : null}>
-                        {day.value.getDate()}
+                        {value.getDate()}
                     </div>
                 </Link>
             </div>
@@ -56,19 +49,21 @@ const CalDay = ({ day, events = [], inMonth }) => {
     )
 }
 
-const Calendar = ({ firstDay, events, viewDays = 35 }) => {
-    console.log(events)
-    let { startDate, endDate, totalDays } = getCalendarView(firstDay);
+const Calendar = ({ startDate, endDate, events, viewDays = 35 }) => {
+    console.log("Calendar start date:", { startDate })
 
-    const thisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 13).getMonth();
+    const thisMonth = 10;
 
     const displayDays = {};
     
+    const calendarDay = CALENDAR.createNowDate(startDate)
+    console.log({calendarDay})
     for (var x = 0;
         x < viewDays;
         x++) {
-        displayDays[CALENDAR.getDashedValue(startDate, true)] = {value: new Date(startDate), events: []}
-        startDate.setDate(startDate.getDate() + 1);
+        console.log({calendarDay})
+        displayDays[CALENDAR.getDashedValue(calendarDay, true)] = {value: new Date(calendarDay), events: []}
+        calendarDay.setDate(calendarDay.getDate() + 1);
     }
 
     events.forEach(event => {
@@ -93,8 +88,8 @@ const Calendar = ({ firstDay, events, viewDays = 35 }) => {
             </div>
             <div className="grid-calendar">
                 {
-                    Object.values(displayDays).map((day, i) => {
-                        return <CalDay key={i} day={day} events={day.events} inMonth={day.value.getMonth() === thisMonth} />
+                    Object.values(displayDays).map((day, d) => {
+                        return <CalDay key={d} day={day} inMonth={day.value.getMonth() === thisMonth} />
                     })
                 }
             </div>

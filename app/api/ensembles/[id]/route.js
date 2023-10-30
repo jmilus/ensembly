@@ -1,3 +1,5 @@
+import { createMember } from '@/api/members/route';
+import { createMembership } from '@/api/membership/route';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -71,3 +73,31 @@ export async function PUT(request, { params }) {
 }
 
 // ###############
+
+export const createEnsembleMember = async (props) => {
+
+    let member;
+    try {
+        member = await createMember(props);
+    }
+    catch(err) {
+        return Error(err.message)
+    }
+
+    try {
+        const membership = await createMembership({ ...props, member: member.id, ensemble: props.ensembleId, membership_start: props.membership_start, membership_type: props.membership_type })
+    }
+    catch (err2) {
+        return Error(err2.message)
+    }
+    finally { return member }
+    
+}
+
+export async function POST(request, { params }) {
+    const _req = await request.formData()
+    const req = extractFields(_req);
+    const res = await createEnsembleMember({ ...req, ensembleId: params.id })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
+}
