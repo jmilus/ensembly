@@ -19,7 +19,10 @@ export const getMemberUser = async (props) => {
 
     const { data: userProfile, error } = await query;
     
-    if (error) console.error("fetch Member User error:", error);
+    if (error) {
+        console.error("fetch Member User error:", error);
+        return Error(`fetch Member User error: ${error}`)
+    }
 
     return userProfile;
 }
@@ -27,7 +30,8 @@ export const getMemberUser = async (props) => {
 export async function GET(request) {
     const req = await request.json();
     const res = await getMemberUser(req);
-    return NextResponse.json({ res })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }
 
 // ######

@@ -14,17 +14,16 @@ export const getMemberEmails = async ({member, type}) => {
 
     if (type) {
         query = query.eq('type', type);
-        query = query.maybeSingle();
     }
 
-    const { data, error } = await query;
+    const { data: emails, error } = await query;
     
     if (error) {
         console.error("fetch email error:", error);
         return new Error(`fetch email error: ${error}`)
     }
 
-    return data;
+    return emails;
 }
 
 export async function GET(request, { params }) {

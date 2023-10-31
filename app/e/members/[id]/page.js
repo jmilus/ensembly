@@ -15,7 +15,7 @@ import FilterContainer from 'components/FilterContainer';
 import CALENDAR from 'utils/calendarUtils';
 import ConfirmButton from 'components/ConfirmButton';
 
-const MemberPage = async (context) => { // type
+const MemberPage = async (context) => { //
     const member = await getOneMember(context.params.id)
     const ensembleList = await getManyEnsembles();
     const membershipTypes = await getManyMembershipTypes();
@@ -28,7 +28,7 @@ const MemberPage = async (context) => { // type
     
     const bioOptions = await getBioOptions();
 
-    console.log({membershipTypes})
+    console.log({member})
 
     const ensembleOptions = {}
     ensembleList.map(ensemble => {
@@ -88,10 +88,10 @@ const MemberPage = async (context) => { // type
                     <legend>Contact Info</legend>
                     <section className="inputs">
                         <Form id="member-email" APIURL={`/api/emails/${member.EmailAddress[0]?.id}`} auxData={{memberId: member.id, type: "Primary"}} auto >
-                            <Text id="email" name="email" format="email" label="Email" value={member.EmailAddress[0]?.email} recordId={member.EmailAddress[0]?.id} />
+                            <Text id="email" name="email" format="email" label="Email" value={member.EmailAddress[0]?.email} />
                         </Form>
                         <Form id="member-phone" APIURL={`/api/phonenumber/${member.PhoneNumber[0]?.id}`} auxData={{memberId: member.id, type: "Primary"}} auto >
-                            <Text id="phone" name="number" label="Phone Number" format="phone" value={member.PhoneNumber[0]?.phonenumber} recordId={member.PhoneNumber[0]?.id} />
+                            <Text id="phone" name="number" label="Phone Number" format="phone" value={member.PhoneNumber[0]?.phonenumber} />
                         </Form>
                     </section>
 
@@ -99,9 +99,9 @@ const MemberPage = async (context) => { // type
                         <Text id="street1" name="street" label="Street" value={member.Address[0]?.street} />
                         <Text id="street2" name="street2" label="Street 2" value={member.Address[0]?.street2} />
                         <section className="inputs">
-                            <Text id="city" name="city" label="City" value={member.Address[0]?.city} Vstyle={{ flex: 4 }} />
+                            <Text id="city" name="city" label="City" value={member.Address[0]?.city} style={{ flex: 4 }} />
                             <Text id="state" name="state" label="State" value={member.Address[0]?.state} />
-                            <Text id="postalCode" name="postalCode" label="Zip Code" value={member.Address[0]?.postalCode} Vstyle={{ flex: 2 }}/>
+                            <Text id="postalCode" name="postalCode" label="Zip Code" value={member.Address[0]?.postalCode} style={{ flex: 2 }}/>
                         </section>
                     </Form>
 
