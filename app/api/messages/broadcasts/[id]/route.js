@@ -11,18 +11,20 @@ export const getOneBroadcast = async (id) => {
         .from("Broadcast")
         .select()
         .eq('id', id)
+        .single()
     
     if (error) {
         console.error("fetch one Broadcast error:", error);
-        return new Error(error);
+        return new Error(`fetch one Broadcast error: ${error}`);
     }
 
-    return broadcast[0];
+    return broadcast;
 }
 
 export async function GET({ params }) {
     const res = await getOneBroadcast(params.id)
-    return NextResponse.json({ res })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
+    return NextResponse.json(res)
 }
 
 //###########

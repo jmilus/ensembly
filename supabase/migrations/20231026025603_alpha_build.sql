@@ -4,6 +4,8 @@ alter table "public"."Event" drop constraint "Event_location_fkey";
 
 alter table "public"."EventModel" drop constraint "EventModel_location_fkey";
 
+alter table "public"."EventModel" from constraint "EventModel_type_fkey";
+
 alter table "public"."Profile" drop constraint "Profile_role_fkey";
 
 alter table "public"."Address" drop constraint "Address_type_fkey";
@@ -35,6 +37,17 @@ create table "public"."MembershipType" (
     "ensembles" uuid[]
 );
 
+--
+
+alter table "public"."EventModel" rename column "type" to "type_old";
+
+alter table "public"."EventModel" add column "type" text;
+
+update "EventModel" set "type" = (select "type" from "EventType" where "EventType".id = "EventModel".type_old);
+
+alter table "public"."EventModel" drop column "type_old";
+
+--
 
 alter table "public"."MembershipType" enable row level security;
 
@@ -66,9 +79,7 @@ alter table "public"."Event" drop column "location";
 
 alter table "public"."Event" add column "address" uuid;
 
-alter table "public"."EventModel" drop column "location";
-
-alter table "public"."EventModel" add column "address" uuid;
+alter table "public"."EventModel" rename column "location" to "address";
 
 alter table "public"."Lineup" drop column "lineup_divisions";
 
@@ -121,6 +132,10 @@ alter table "public"."Event" validate constraint "Event_address_fkey";
 alter table "public"."EventModel" add constraint "EventModel_address_fkey" FOREIGN KEY (address) REFERENCES "Address"(id) ON DELETE SET NULL not valid;
 
 alter table "public"."EventModel" validate constraint "EventModel_address_fkey";
+
+alter table "public"."EventModel" add constraint "EventModel_type_fkey" FOREIGN KEY (type) REFERENCES "EventType"(type) ON DELETE SET NULL not valid;
+
+alter table "public"."EventModel" validate constraint "EventModel_type_fkey";
 
 alter table "public"."MembershipType" add constraint "MembershipType_name_key" UNIQUE using index "MembershipType_name_key";
 

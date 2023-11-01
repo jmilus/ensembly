@@ -163,7 +163,7 @@ const BroadcastDetailsPage = async (context) => {
             <section className="button-tray">
                 <Button name="duplicate" APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="POST" followPath={`$slug$`} statusCaptions={{ saved: "Duplicated!" }} buttonClass='fit' ><i>content_copy</i><span>Duplicate</span></Button>
                 <Button name="delete" APIURL={`/api/messages/broadcasts/${broadcast.id}`} METHOD="DELETE" followPath={`/e/messages/broadcasts/`} statusCaptions={{ saving: "Deleting...", saved: "Broadcast Deleted." }} buttonClass='fit angry' ><i>delete_forever</i><span>Delete Draft</span></Button>
-                <Button name="send" APIURL={`/api/messages/broadcasts/send`} METHOD="POST" payload={broadcast.id} followPath={`/e/messages/broadcasts/${broadcast.id}`} statusCaptions={{saving: "Sending...", saved: "Sent!"}} buttonClass='fit happy' style={{ marginLeft: "auto" }} ><i>send</i><span>Send Broadcast</span></Button>
+                <Button name="send" APIURL={`/api/messages/broadcasts/${broadcast.id}/send`} METHOD="POST" followPath={`/e/messages/broadcasts/${broadcast.id}`} statusCaptions={{saving: "Sending...", saved: "Sent!"}} buttonClass='fit happy' style={{ marginLeft: "auto" }} json><i>send</i><span>Send Broadcast</span></Button>
             </section>
         </article>
         

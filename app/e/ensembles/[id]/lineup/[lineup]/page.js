@@ -5,14 +5,14 @@ import { getOneLineup } from '@/api/ensembles/[id]/lineup/[lineup]/route';
 import { getAllMembershipCapacities } from '@/api/membership/capacity/route';
 
 import LineupManager from './Lineup';
-import { getAllMembershipTypes } from '@/api/membership/types/route';
+import { getManyMembershipTypes } from '@/api/membership/types/route';
 import { getManyDivisions } from '@/api/ensembles/[id]/division/route';
 
 const LineupPage = async ({ params }) => {
     const ensemble = await getOneEnsemble(params.id)
     const lineup = await getOneLineup(params.lineup);
     const allcapacities = await getAllMembershipCapacities()
-    const membershipTypes = await getAllMembershipTypes(params.id)
+    const membershipTypes = await getManyMembershipTypes(params.id)
     const divisions = await getManyDivisions(params.id, true)
 
     const membershipcapacities = membershipTypes.map(mt => {

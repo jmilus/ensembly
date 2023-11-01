@@ -6,7 +6,7 @@ export const isEmpty = (obj) => {
 
 export const packageOptions = (obj) => {
     if (!obj) return {};
-    console.log({obj})
+    // console.log({obj})
     
     let newObj = {};
     if (Array.isArray(obj) && obj.length > 0) {

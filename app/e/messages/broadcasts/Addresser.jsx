@@ -116,7 +116,8 @@ const Addresser = ({ to_address=[], cc_address=[], bcc_address=[], mailgroups })
                 divMembers = Object.values(item.members).map((member, m) => {
                     const checkState = toList.includes(member.email);
                     return (
-                        <div key={m} className={`collapser-node terminus${checkState ? " checked" : ""}`} onClick={() => toggleMembersAsContact([member.email], !checkState)} style={{['--node-height']: contactNodeHeight}}>
+                        <div key={m} className={`collapser-node terminus${checkState ? " checked" : ""}`} onClick={() => toggleMembersAsContact([member.email], !checkState)} style={{ ['--node-height']: contactNodeHeight }}>
+                            <i className="expander">portrait</i>
                             <i className={`${checkState ? "all" : "none"}`}>{checkState ? "check_box" : "check_box_outline_blank"}</i><span>{member.name}</span>
                         </div>
                     )

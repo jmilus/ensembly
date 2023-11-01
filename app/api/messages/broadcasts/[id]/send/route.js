@@ -4,16 +4,16 @@ import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 import { slateToHtml } from 'utils/slateToHtml';
 import { POSTMARK_TOKEN } from 'config';
-import { getOneBroadcast, updateOneBroadcast } from '../[id]/route';
+import { getOneBroadcast, updateOneBroadcast } from '../route';
 
 export const sendBroadcast = async (props) => {
     // const { id, to_address, cc_address, bcc_address, subject, htmlBody, textBody, tag } = props
-    // console.log({ props })
+    console.log({ props })
     // console.log(POSTMARK_TOKEN);
 
     const broadcast = await getOneBroadcast(props.id)
 
-    // console.log({ broadcast });
+    console.log({ broadcast });
 
     const thisHtml = slateToHtml(broadcast.body);
 
@@ -54,8 +54,10 @@ export const sendBroadcast = async (props) => {
     return sentResponse;
 }
 
-export async function POST(request) {
-    const req = await request.json();
-    const res = await sendBroadcast(req)
+export async function POST(request, { params }) {
+    // const req = await request.json();
+    console.log("send email?", params)
+    const res = await sendBroadcast({id: params.id })
+    if (res instanceof Error) return NextResponse.json({ error: res.message }, { status: 400 })
     return NextResponse.json(res);
 }
