@@ -12,10 +12,11 @@ export const getMemberUser = async (props) => {
     let query = supabase
         .from('Profile')
         .select()
-        .maybeSingle()
     
     if (email) query = query.eq('email', email)
     if (member) query = query.eq('member', member)
+
+    query = query.maybeSingle();
 
     const { data: userProfile, error } = await query;
     

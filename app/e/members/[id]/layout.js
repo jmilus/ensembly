@@ -12,7 +12,7 @@ export default async function MemberProfilePageLayout(context) {
     const memberUser = await getMemberUser({ member: context.params.id });
     const memberEmail = await getMemberEmails({ member: context.params.id, type: "Primary" })
 
-    // console.log({memberEmail})
+    console.log({memberUser})
 
     const navNodes = [
         { caption: "Profile", route: `/e/members/${context.params.id}` }
