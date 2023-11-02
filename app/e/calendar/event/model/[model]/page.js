@@ -171,6 +171,7 @@ const EventModelPage = async (context) => {
     return (
         <>
             <div id="page-header">
+                <div className="hero-text" style={{marginRight:"10px"}}>Event Model:</div>
                 <Form id="event-model-name-form" auto >
                     <Text id="event-model-title" name="name" value={model.name} hero isRequired />
                 </Form>

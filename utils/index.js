@@ -61,9 +61,13 @@ export const deleteRecord = async (APIURL, id) => {
 export const getInitials = (name) => {
     if(!name) return "XX"
     const nameArray = name.split(" ");
-    return nameArray.map(n => {
-        return n.substr(0, 1).toUpperCase();
+    const result = nameArray.map(n => {
+        const letter = n.substr(0, 1)
+        if (letter.toLowerCase === letter) return "";
+        if (!isNaN(parseInt(letter))) return n;
+        return letter.toUpperCase();
     }).join("");
+    return result.slice(0, 3);
 }
 
 export const getErrorMessage = (code) => {

@@ -24,7 +24,7 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
         return path.replace(a.route, "").length - path.replace(b.route, "").length
     })
 
-    const initials = profile.member ? getInitials(profile.member?.aka) : <i style={{fontSize: "2em", margin: "auto"}}>no_accounts</i>;    
+    const initials = profile.Member ? getInitials(profile.Member?.aka) : <i style={{fontSize: "2em", margin: "auto"}}>no_accounts</i>;    
 
     const signOut = async () => {
         const { error } = await supabase.auth.signOut()
@@ -32,9 +32,13 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
         router.refresh()
     }
 
+    const userMenuStyle = {
+        padding: "10px 15px",
+        justifyContent: "left"
+    }
     const userIcon = <div ref={userIconRef} className="hero-icon">
         <button className="profile-button" onClick={() => setShowMenu(true)}>
-            <div className="profile-icon">{initials}</div>
+            <div className="hero-initials">{initials}</div>
         </button>
         {showMenu && 
             <PopupMenu
@@ -42,7 +46,17 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
                 parentRef={userIconRef}
                 hideMe={() => setShowMenu(false)}
             >
-                <button className="fit select-option" onClick={() => signOut()}>Sign Out</button>
+                <article className="button-chain column" style={{['--hover-color']: "var(--color-c3)", marginTop: "10px"}}>
+                    {profile.member &&
+                        <button
+                            className="select-option"
+                            onClick={() => router.push(`/e/members/${profile.member}/account`)}
+                            style={userMenuStyle}
+                        >
+                            <i>account_circle</i><span>My User Profile</span>
+                        </button>}
+                    <button className="select-option" onClick={() => signOut()} style={userMenuStyle}><i>logout</i><span>Sign Out</span></button>
+                </article>
             </PopupMenu>
         }
     </div>

@@ -4,7 +4,7 @@ alter table "public"."Event" drop constraint "Event_location_fkey";
 
 alter table "public"."EventModel" drop constraint "EventModel_location_fkey";
 
-alter table "public"."EventModel" from constraint "EventModel_type_fkey";
+alter table "public"."EventModel" drop constraint "EventModel_type_fkey";
 
 alter table "public"."Profile" drop constraint "Profile_role_fkey";
 

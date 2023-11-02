@@ -50,7 +50,7 @@
 
 .page-grid {
     display: grid;
-    grid-gap: 40px;
+    grid-gap: 10px;
 }
 
 .nav-wrapper {
@@ -61,6 +61,13 @@
     --hero-size: 40px;
     margin: auto 0;
     align-items: center;
+}
+.nav-wrapper > .hero-icon {
+    outline: 0px solid white;
+    transition: all 0.2s ease;
+}
+.nav-wrapper > .hero-icon:hover {
+    outline: 5px solid white;
 }
 
 .nav-header {

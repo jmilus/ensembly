@@ -8,7 +8,7 @@ export default async function ModelLayout(props) {
     return (
         <div id="page-base">
             <div id="nav-header">
-                <SubNav root="calendar" caption="model" />
+                <SubNav root="calendar" />
             </div>
             <div id="page-frame">
                 {props.children}

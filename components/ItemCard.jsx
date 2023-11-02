@@ -33,10 +33,14 @@ const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subt
                 {dropItem && <i style={{color: "var(--gray5)", margin: "0 10px 0 0", cursor: "all-scroll"}}>drag_indicator</i>}
                 {itemIcon
                     ? itemIcon
-                    : <div className="hero-icon">{getInitials(caption)}</div>
+                    : <div className="hero-icon">
+                        <div className="hero-initials">
+                            {getInitials(caption)}
+                        </div>
+                    </div>
                 }
                 {caption &&
-                    <div>
+                    <div style={{flex:1}}>
                         <div className="card-caption">{caption}</div>
                         <div className="card-subtitle">{subtitle}</div>
                     </div>

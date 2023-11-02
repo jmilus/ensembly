@@ -14,6 +14,7 @@ export const getMemberEmails = async ({member, type}) => {
 
     if (type) {
         query = query.eq('type', type);
+        query = query.maybeSingle()
     }
 
     const { data: emails, error } = await query;

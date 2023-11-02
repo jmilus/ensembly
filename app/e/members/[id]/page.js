@@ -136,102 +136,104 @@ const MemberPage = async (context) => { //
                                 { name: "membership-status", filterBy: "membershipStatus", buttons: membershipStatus.map(ms => { return { caption: ms.type } }) }
                             ]}
                         >
-                            {
-                                member.EnsembleMembership.map((membership, i) => {
-                                    console.log("membership:", membership)
-                                    const lineupList = {}
-                                    membership.assignments.forEach((assignment, a) => { 
-                                        if (!lineupList[assignment.Lineup.id]) lineupList[assignment.Lineup.id] = {name: assignment.Lineup.name, assignments: []}
-                                        lineupList[assignment.Lineup.id].assignments.push({title: assignment.title, divId: assignment.Division.id, divName: assignment.Division.name})
-                                    })
-                                    // const divisionOptions = await getManyDivisions(membership.ensemble.id)
-                                    const modalTitle = <><section><span style={{ color: "var(--color-c2)", marginRight: "10px" }}>{membership.membership_type.name}</span><span>{membership.ensemble.name}</span></section>
-                                        <section style={{ fontSize: "0.65em", display: "flex", alignItems: "center" }}>
-                                            <span style={{ color: "var(--color-c2)", marginRight: "10px" }}>Member Since</span>
-                                            <span >{membership.membership_start ? CALENDAR.straightDate(membership.membership_start).toLocaleDateString() : ""}</span>
-                                        </section>
-                                    </>
-                                    //
-                                    
-                                    //
-                                    return (
-                                        <ItemCard
-                                            key={i}
-                                            caption={membership.ensemble.name}
-                                            filterTag="membership"
-                                            membershipStatus={membership.status}
-                                            style={{borderLeftWidth: "15px", borderLeftColor: `hsl(${membershipStatus.find(ms => ms.type === membership.status).color})`}}
-                                        >
-                                            <ModalButton
-                                                modalButton={<><i className="naked">feed</i></>}
-                                                title={modalTitle}
-                                                dismiss="Close"
-                                                buttonStyle={{marginLeft: "auto"}}
+                            <article className="scroll column">
+                                {
+                                    member.EnsembleMembership.map((membership, i) => {
+                                        console.log("membership:", membership)
+                                        const lineupList = {}
+                                        membership.assignments.forEach((assignment, a) => { 
+                                            if (!lineupList[assignment.Lineup.id]) lineupList[assignment.Lineup.id] = {name: assignment.Lineup.name, assignments: []}
+                                            lineupList[assignment.Lineup.id].assignments.push({title: assignment.title, divId: assignment.Division.id, divName: assignment.Division.name})
+                                        })
+                                        // const divisionOptions = await getManyDivisions(membership.ensemble.id)
+                                        const modalTitle = <><section><span style={{ color: "var(--color-c2)", marginRight: "10px" }}>{membership.membership_type.name}</span><span>{membership.ensemble.name}</span></section>
+                                            <section style={{ fontSize: "0.65em", display: "flex", alignItems: "center" }}>
+                                                <span style={{ color: "var(--color-c2)", marginRight: "10px" }}>Member Since</span>
+                                                <span >{membership.membership_start ? CALENDAR.straightDate(membership.membership_start).toLocaleDateString() : ""}</span>
+                                            </section>
+                                        </>
+                                        //
+                                        
+                                        //
+                                        return (
+                                            <ItemCard
+                                                key={i}
+                                                caption={membership.ensemble.name}
+                                                filterTag="membership"
+                                                membershipStatus={membership.status}
+                                                style={{borderLeftWidth: "15px", borderLeftColor: `hsl(${membershipStatus.find(ms => ms.type === membership.status).color})`}}
                                             >
-                                                <article style={{ width: "750px" }}>
-                                                    <Form id="membership-details-form" APIURL={`/api/membership/${membership.id}`} auto >
-                                                        <section className="inputs" >
-                                                            <article style={{flex: 1}}>
-                                                                <Select id="membership-status-select" label="Membership Status" name="status" value={membership.status} options={membershipStatus.map(s => {return {...s, value: s.type} })} debug/>
-                                                                <DateOnly id="membership-expiration-date" label="Membership Expires" name="membership_expires" value={membership.membership_expires} />
-                                                            </article>
-                                                            <Text id="status-note" label="Status Note" name="status_note" value={membership.status_note} limit={1000} style={{ flex: 2 }} />
-                                                        </section>
-                                                    </Form>
-                                                    <article className="scroll">
-                                                        {
-                                                            Object.keys(lineupList).map((lineupId, l) => {
-                                                                // if(!assignment.Lineup.is_primary) return null
-                                                                const lineup = lineupList[lineupId]
-                                                                return (
-                                                                    <section key={l} className="lineup" style={{padding: "5px 10px", border: "1px solid var(--gray3)", borderRadius: "5px", marginTop : "5px"}}>
-                                                                        <div style={{ flex: 2 }}>
-                                                                            <span style={{ fontSize: "1.25em" }}>{lineup.name}</span>
-                                                                            
-                                                                        </div>
-                                                                        <div style={{flex: 3}}>
-                                                                            {
-                                                                                lineup.assignments.map((assignment, a) => {
-                                                                                    return (
-                                                                                        <section key={a} className="inputs" style={{alignItems: "center"}}>
-                                                                                            <Form id={`${l}-${a}-update-assignment-form`} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} auto>
-                                                                                                <section className="inputs">
-                                                                                                    <Select id={`${l}-${a}-division-select`} label="Division" name="new_division" value={assignment.divId} options={divisionOptions[membership.ensemble.id]} isRequired/>
-                                                                                                    <Text id={`${l}-${a}-title-text`} label="Title" name="title" value={assignment.title} />
-                                                                                                </section>
-                                                                                            </Form>
-                                                                                            <ConfirmButton
-                                                                                                button={<i class="switch" style={{['--icon1']:"'delete_outline'", ['--icon2']:"'delete'" }}></i>}
-                                                                                                style={{ ['--edge-color']: "0 90% 50%" }}
-                                                                                                popupStyle={{background: "var(--gray2)", borderRadius: "5px"}}
-                                                                                            >
-                                                                                                <Button
-                                                                                                    name="delete-assignment-button"
-                                                                                                    APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`}
-                                                                                                    METHOD="DELETE"
-                                                                                                    buttonClass="fit"
-                                                                                                    style={{ ['--edge-color']: "0 90% 50%", height: "1.5em", padding: "0 5px" }}
-                                                                                                >Confirm Delete</Button>
-                                                                                            </ConfirmButton>
-                                                                                            
-                                                                                        </section>
-                                                                                    )
-                                                                                })
-                                                                            }
-                                                                        </div>
-                                                                    </section>
-                                                                )
-                                                            })
-                                                        }
+                                                <ModalButton
+                                                    modalButton={<><i className="naked">feed</i></>}
+                                                    title={modalTitle}
+                                                    dismiss="Close"
+                                                    buttonStyle={{marginLeft: "auto"}}
+                                                >
+                                                    <article style={{ width: "750px" }}>
+                                                        <Form id="membership-details-form" APIURL={`/api/membership/${membership.id}`} auto >
+                                                            <section className="inputs" >
+                                                                <article style={{flex: 1}}>
+                                                                    <Select id="membership-status-select" label="Membership Status" name="status" value={membership.status} options={membershipStatus.map(s => {return {...s, value: s.type} })} debug/>
+                                                                    <DateOnly id="membership-expiration-date" label="Membership Expires" name="membership_expires" value={membership.membership_expires} />
+                                                                </article>
+                                                                <Text id="status-note" label="Status Note" name="status_note" value={membership.status_note} limit={1000} style={{ flex: 2 }} />
+                                                            </section>
+                                                        </Form>
+                                                        <article className="scroll">
+                                                            {
+                                                                Object.keys(lineupList).map((lineupId, l) => {
+                                                                    // if(!assignment.Lineup.is_primary) return null
+                                                                    const lineup = lineupList[lineupId]
+                                                                    return (
+                                                                        <section key={l} className="lineup" style={{padding: "5px 10px", border: "1px solid var(--gray3)", borderRadius: "5px", marginTop : "5px"}}>
+                                                                            <div style={{ flex: 2 }}>
+                                                                                <span style={{ fontSize: "1.25em" }}>{lineup.name}</span>
+                                                                                
+                                                                            </div>
+                                                                            <div style={{flex: 3}}>
+                                                                                {
+                                                                                    lineup.assignments.map((assignment, a) => {
+                                                                                        return (
+                                                                                            <section key={a} className="inputs" style={{alignItems: "center"}}>
+                                                                                                <Form id={`${l}-${a}-update-assignment-form`} APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`} auto>
+                                                                                                    <section className="inputs">
+                                                                                                        <Select id={`${l}-${a}-division-select`} label="Division" name="new_division" value={assignment.divId} options={divisionOptions[membership.ensemble.id]} isRequired/>
+                                                                                                        <Text id={`${l}-${a}-title-text`} label="Title" name="title" value={assignment.title} />
+                                                                                                    </section>
+                                                                                                </Form>
+                                                                                                <ConfirmButton
+                                                                                                    button={<i class="switch" style={{['--icon1']:"'delete_outline'", ['--icon2']:"'delete'" }}></i>}
+                                                                                                    style={{ ['--edge-color']: "0 90% 50%" }}
+                                                                                                    popupStyle={{background: "var(--gray2)", borderRadius: "5px"}}
+                                                                                                >
+                                                                                                    <Button
+                                                                                                        name="delete-assignment-button"
+                                                                                                        APIURL={`/api/membership/${membership.id}/lineup/${lineupId}/division/${assignment.divId}`}
+                                                                                                        METHOD="DELETE"
+                                                                                                        buttonClass="fit"
+                                                                                                        style={{ ['--edge-color']: "0 90% 50%", height: "1.5em", padding: "0 5px" }}
+                                                                                                    >Confirm Delete</Button>
+                                                                                                </ConfirmButton>
+                                                                                                
+                                                                                            </section>
+                                                                                        )
+                                                                                    })
+                                                                                }
+                                                                            </div>
+                                                                        </section>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </article>
                                                     </article>
-                                                </article>
-                                                {/* <section className="modal-buttons">
-                                                </section> */}
-                                            </ModalButton>
-                                        </ItemCard>
-                                    )
-                                })
-                            }
+                                                    {/* <section className="modal-buttons">
+                                                    </section> */}
+                                                </ModalButton>
+                                            </ItemCard>
+                                        )
+                                    })
+                                }
+                            </article>
                         </FilterContainer>
                     </div>
                 </fieldset>

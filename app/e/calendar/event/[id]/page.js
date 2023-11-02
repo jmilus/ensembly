@@ -64,9 +64,9 @@ const EventPage = async (context) => {
                                         <DateTime id="endDate" name="eventEndDate" label="End" value={event.eventEndDate} includeTime/>
                                     </DateTime>
                                 </section>
+                                <Select id="eventType" label="Event Type" value={event.model.type} options={eventTypes} readonly/>
+                                <Text id="eventDetails" name="details" label="Details" value={event.model.details} limit="1000" readonly />
                             </Form>
-                            <Select id="eventType" name="type" label="Event Type" value={event.model.type} options={eventTypes} readonly/>
-                            <Text id="eventDetails" name="details" label="Details" value={event.model.details} limit="1000" readonly />
                         </fieldset>
                         <fieldset>
                             <legend>Event Address</legend>

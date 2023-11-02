@@ -254,9 +254,6 @@ button.fit {
   padding: 0 10px;
   height: 2em;
 }
-button.fit + button {
-  margin-left: 10px;
-}
 
 button.fat {
   font-size: 1.1em;
@@ -351,6 +348,7 @@ label:has(input) {
 .button-chain button,
 .button-chain .button {
   margin: 0;
+  margin-left: 0;
   border-radius: 0;
 }
 
@@ -437,10 +435,6 @@ label:has(input) {
 }
 .profile-button:hover {
   box-shadow: 0 0 0px 5px white;
-}
-
-.profile-icon {
-  display: flex;
 }
 
 .main-menu-panel {
@@ -657,15 +651,13 @@ i.btn.active {
 
 fieldset {
   padding: 10px;
-  margin: 0;
+  margin: 20px;
   height: fit-content;
-  border-style: solid;
-  border-color: var(--gray3);
-  border-width: 0 0 0 1px;
+  border: none;
 }
 
 legend {
-  color: hsl(var(--mintx) 75%);
+  color: hsl(var(--mintx) 50%);
   font-weight: 900;
   font-size: 1.5em;
 }
@@ -862,11 +854,17 @@ fieldset.buttons > legend {
 }
 
 .hero-icon {
-  min-height: var(--hero-size);
-  min-width: var(--hero-size);
+  height: var(--hero-size);
+  width: var(--hero-size);
   border-radius: 50%;
   margin-right: 10px;
+  overflow: hidden;
+}
+
+.hero-initials {
   display: flex;
+  height: 100%;
+  width: 100%;
   align-items:center;
   justify-content:center;
   color: var(--text1);
@@ -1129,7 +1127,7 @@ fieldset.buttons > legend {
   border: 1px solid red;
   border-radius: 7px;
   padding: 5px 10px;
-  margin-top: 3px;
+  margin: 2px 2px 0;
   font-size: 0.75em;
   cursor: pointer;
   --node-color: hsl(var(--color-p));
@@ -1149,6 +1147,28 @@ fieldset.buttons > legend {
 
 .event-node.model > i {
   font-size: 1.25em;
+}
+
+.dayspan-start {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right-width: 0;
+  margin-right: 0;
+}
+
+.dayspan-mid {
+  border-radius: 0;
+  border-right-width: 0;
+  border-left-width: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.dayspan-end {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-width: 0;
+  margin-left: 0;
 }
 
 .sub-nav {

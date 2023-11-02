@@ -36,6 +36,11 @@ export const MENUOPTIONS = [
         route: "/dashboard"
     },
     {
+        name: "Members",
+        icon: "emoji_people",
+        route: "/members"
+    },
+    {
         name: "Ensembles",
         icon: "theater_comedy",
         route: "/ensembles"
@@ -44,11 +49,6 @@ export const MENUOPTIONS = [
         name: "Calendar",
         icon: "calendar_month",
         route: `/calendar/${CALENDAR.getDashedValue(new Date()).slice(0, 10)}`
-    },
-    {
-        name: "Members",
-        icon: "emoji_people",
-        route: "/members"
     },
     {
         name: "Messages",
