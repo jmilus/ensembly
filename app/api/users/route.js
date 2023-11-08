@@ -17,7 +17,7 @@ export const getMemberUser = async (props) => {
     if (email) query = query.eq('email', email)
     if (member) query = query.eq('member', member)
 
-    query = query.maybeSingle();
+    
 
     const { data: userProfile, error } = await query;
     

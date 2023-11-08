@@ -20,7 +20,12 @@ export default async function MemberProfilePageLayout(context) {
 
     const navButtons = {}
 
-    if (memberUser != null) {
+    const isUser = !!memberUser?.member
+    const hasEmail = typeof memberEmail?.email === 'string' && memberEmail?.email.length > 0
+
+    console.log({isUser}, {hasEmail})
+
+    if (isUser) {
         navNodes.push({ caption: "Account", route: `/e/members/${context.params.id}/account` })
         navButtons.account = [
             <ModalButton
@@ -42,10 +47,7 @@ export default async function MemberProfilePageLayout(context) {
             </ModalButton>
         ]
     }
-    const isUser = !!memberUser?.member
-    const hasEmail = typeof memberEmail?.email === 'string' && memberEmail?.email.length > 0
-
-    console.log({isUser}, {hasEmail})
+    
 
     if (!isUser && hasEmail) {
         navButtons.profile = [
