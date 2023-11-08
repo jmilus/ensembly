@@ -8,7 +8,6 @@ export const getMemberUser = async (props) => {
     const supabase = createServerComponentClient({ cookies });
 
     const { email, member } = props;
-    console.log("getMemberUser props:", { props })
 
     let query = supabase
         .from('Profile')
@@ -17,8 +16,6 @@ export const getMemberUser = async (props) => {
     if (email) query = query.eq('email', email)
     if (member) query = query.eq('member', member)
 
-    
-
     const { data: userProfile, error } = await query;
     
     if (error) {
@@ -26,7 +23,8 @@ export const getMemberUser = async (props) => {
         return Error(`fetch Member User error: ${error}`)
     }
 
-    return userProfile;
+    if (userProfile.length > 0) return userProfile[0];
+    return null;
 }
 
 export async function GET(request) {
