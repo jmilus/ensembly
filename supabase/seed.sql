@@ -27,18 +27,19 @@ VALUES
 
 INSERT INTO "EnsembleType" ("type", "color")
 VALUES 
-    ('chorus', '#00aaff'),
-    ('orchestra', '#aa00ff'),
-    ('theater', '#ffd500');
+    ('chorus', '200 100% 50%'),
+    ('orchestra', '280 100% 50%'),
+    ('band', '340 100% 50%'),
+    ('theater', '50 100% 50%');
 
 INSERT INTO "EventType" ("type", "color")
 VALUES 
-    ('Rehearsal', '#e6c419'),
-    ('Dress Rehearsal', '#5de619'),
-    ('Performance', '#19c3e6'),
-    ('Social', '#3b19e6'),
-    ('Administrative', '#e619e5'),
-    ('Audition', '#e6195d');
+    ('Rehearsal', '50 80% 50%'),
+    ('Dress Rehearsal', '100 80% 50%'),
+    ('Performance', '190 80% 50%'),
+    ('Social', '250 80% 50%'),
+    ('Administrative', '300 80% 50%'),
+    ('Audition', '340 80% 50%');
 
 INSERT INTO "EyeColor" ("type")
 VALUES 
@@ -64,14 +65,17 @@ INSERT INTO "MembershipCapacity" ("type")
 VALUES 
     ('Performer'),
     ('Crew'),
-    ('Staff');
+    ('Staff'),
+    ('Board'),
+    ('Guardian');
 
 INSERT INTO "MembershipStatus" ("type")
 VALUES 
     ('Active'),
+    ('Retired'),
     ('Suspended'),
     ('Inactive'),
-    ('Retired');
+    ('Terminated');
 
 INSERT INTO "PhoneType" ("type")
 VALUES 
@@ -94,9 +98,10 @@ VALUES
 INSERT INTO "RecurrencePeriod" ("type")
 VALUES 
     ('Week'),
-    ('Month');
+    ('Month'),
+    ('Year');
 
-INSERT INTO "SecurityRole" ("role", "permissions")
+INSERT INTO "SecurityRole" ("role_name", "permissions")
 VALUES 
     ('Admin', '{"modules":{"members":"all","calendar":"all","messages":"all","settings":"all","dashboard":"all","ensembles":"all"}}');
 

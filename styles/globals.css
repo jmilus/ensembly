@@ -743,23 +743,11 @@ fieldset.buttons > legend {
   display: flex;
   flex-flow: row wrap;
   margin-bottom: 10px;
-}
-
-.filter-buttons-set {
-    display: flex;
-    align-items: center;
-    padding: 1em 5px 0 5px;
-    align-items: center;
+  align-items: center;
 }
 
 .filter-button input {
     display: none;
-}
-
-.clear-button-container {
-  display: flex;
-  align-items: center;
-  padding: 1em 5px 0 5px;
 }
 
 .filter-container-content {
@@ -970,6 +958,7 @@ fieldset.buttons > legend {
   transition: all 0.2s ease;
   box-shadow: none;
   white-space: nowrap;
+  margin-right: 3px;
 }
 .tab-button:not(.active):hover {
   background: var(--gray2);
@@ -1006,11 +995,6 @@ fieldset.buttons > legend {
   color: var(--color-moss);
   padding: 20px;
   font-size: 1.1em;
-}
-
-
-.tab-button ~ .tab-button {
-  margin-left: 3px;
 }
 
 .tab-wrapper.large > .tab-row > .tab-button {

@@ -1,8 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useContext, useRef } from 'react';
-
-import { GlobalContext } from '../ContextFrame';
+import { useEvent } from 'hooks/useEvent';
 
 import { packageOptions } from '../../utils';
 
@@ -13,7 +12,10 @@ const Select = (props) => {
     const { id, name, label, value, options, filtersArray = [], extraAction, style, hero, isRequired, specialSize="", children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || "");
     const [showPopup, setShowPopup] = useState(false);
-    const selectRef = useRef();
+    const controlRef = useRef();
+    const [inputRef, emitEvent] = useEvent('change', (e) =>
+        console.log('Event fired', e, e.target)
+    );
 
     let controlOptions = packageOptions(options, value)
 
@@ -28,14 +30,13 @@ const Select = (props) => {
 
     if (debug) console.log(name, "select control state", { props }, { controlValue }, { controlOptions }, {filtersArray});
 
-    const { dispatch } = useContext(GlobalContext);
-
     const handleDropDownSelection = (input) => {
         console.log("selected:", input)
-        const selectControl = document.getElementById(id)
-        const inputEvent = new Event('change', { bubbles: true });
-        selectControl.dispatchEvent(inputEvent);
-
+        // const selectControl = document.getElementById(id)
+        // const inputEvent = new Event('change', { bubbles: true });
+        // selectRef.current.dispatchEvent(inputEvent);
+        emitEvent(input)
+        
         if (extraAction) extraAction(input);
         setShowPopup(false);
         setControlValue(input)
@@ -75,29 +76,20 @@ const Select = (props) => {
 
     const clonedChildren = handleChildren();
 
-    const showDropDown = (e) => {
-        // e.preventDefault();
-        if (readonly) return null;
-        
-        setShowPopup(true)
-    }
-
     return (
         <>
-            <div ref={selectRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${hero ? " hero" : ""}${controlValue ? "" : " empty"}`} style={style}>
+            <div ref={controlRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${hero ? " hero" : ""}${controlValue ? "" : " empty"}`} style={style}>
                 {label != undefined &&
                     <label htmlFor={id} className="label">{label}</label>
                 }
                 <select
+                    ref={inputRef}
                     id={id}
                     name={name}
                     value={controlOptions[controlValue]?.value || ""}
                     onChange={() => null}
-                    onFocus={showDropDown}
                     autoComplete="do-not-autofill"
-                    required={isRequired}
-                    readOnly={readonly}
-                    style={controlOptions[controlValue]?.color ? { color: `hsl(${controlOptions[controlValue].color})` } : {}}
+                    style={{display: "none", height: "0px", overflow: "hidden"}}
                 >
                     {!value && <option key="xx" value="" hidden>{label}</option>}
                     {
@@ -107,11 +99,23 @@ const Select = (props) => {
                         })
                     }
                 </select>
+                <input
+                    placeholder={label}
+                    id={`${id}-search`}
+                    // name={name}
+                    type="text"
+                    value={controlOptions[controlValue]?.value || ""}
+                    onChange={() => console.log("triggered!")}
+                    onFocus={() => setShowPopup(true)}
+                    autoComplete="do-not-autofill"
+                    required={isRequired}
+                    readOnly={readonly}
+                />
             </div>
             {showPopup && 
                 <PopupMenu
                     id={`${id}-popup`}
-                    parentRef={selectRef}
+                    parentRef={controlRef}
                     hideMe={() => setShowPopup(false)}
                     matchParentWidth={true}
                 >

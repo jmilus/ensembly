@@ -53,6 +53,7 @@ export default async function MemberProfilePageLayout(context) {
                 payload={{ member: context.params.id }}
                 followPath={`/e/members/${context.params.id}/account`}
                 buttonClass="fit"
+                json
             ><i>account_circle</i><span>Make User</span></Button>
         ]
     }

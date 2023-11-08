@@ -105,33 +105,26 @@ const FilterContainer = (props) => {
 
     const allFilterButtons = filters.map((filter, f) => {
         return (
-            <div key={f} className="filter-buttons-set">
-                {
-                    filter.buttons.map((filterObject, o) => {
-                        const { caption, value } = filterObject;
-                        // console.log(activeFilterSets[filter.name])
-                        const isChecked = activeFilterSets[filter.name] ? Object.keys(activeFilterSets[filter.name].filterParams).includes(caption) : false;
-                        return (
-                            <label key={`${f}-${o}`} id={`${id}-filter`} htmlFor={`${id}-${caption}`} className={`filter-button tab-button ${isChecked ? "active" : ""}`}>
-                                <input
-                                    id={`${id}-${caption}`}
-                                    type="checkbox"
-                                    checked={isChecked}
-                                    onChange={() => toggleFilter(filter, filterObject)} 
-                                />
-                                {caption}
-                            </label>
-                        ) 
-                    })
-                }
-            </div>
+            filter.buttons.map((filterObject, o) => {
+                const { caption, value } = filterObject;
+                // console.log(activeFilterSets[filter.name])
+                const isChecked = activeFilterSets[filter.name] ? Object.keys(activeFilterSets[filter.name].filterParams).includes(caption) : false;
+                return (
+                    <label key={`${f}-${o}`} id={`${id}-filter`} htmlFor={`${id}-${caption}`} className={`filter-button tab-button ${isChecked ? "active" : ""}`}>
+                        <input
+                            id={`${id}-${caption}`}
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleFilter(filter, filterObject)} 
+                        />
+                        {caption}
+                    </label>
+                ) 
+            })
         )
     })
 
-    const clearButton = 
-        <div className="clear-button-container">
-            <i id={`${id}-clear-button`} className={`big ${""}`} onClick={clearAll}>cancel</i>
-        </div>
+    const clearButton = <i id={`${id}-clear-button`} className={`big ${""}`} onClick={clearAll}>cancel</i>
     
     const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px", minWidth: "150px" }} />
     

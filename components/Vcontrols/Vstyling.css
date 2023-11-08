@@ -39,7 +39,7 @@ section>form {
     background-size: 3px 100%;
     background-position: bottom left;
 }
-.input-control-base.empty:has([required]) select {
+.input-control-base.empty:has([required]).select-box > input {
     background-image: 
         linear-gradient(45deg, var(--color-o), var(--color-f)),
         linear-gradient(45deg, transparent 50%, var(--color-f) 50%),
@@ -60,16 +60,16 @@ section.spaced > * + * {
 }
 
 .input-control-base > input:focus-visible,
-.input-control-base > select:focus-visible,
+/* .input-control-base.select-box > input:focus-visible, */
 .input-control-base > textarea:focus-visible {
     border-color: var(--gray0);
     background-color: var(--gray0);
 }
-.input-control-base > select:focus-visible {
+.input-control-base.select-box > input:focus-visible {
     border-bottom-color: var(--gray2);
 }
 
-.input-control-base.select-box > select,
+.input-control-base.select-box > input,
 .input-control-base.file-box > label {
     border-width: 1px;
     border-radius: 4px;
@@ -84,7 +84,7 @@ input[type="date"][value=""] {
 
 }
 
-select {
+.select-box > input {
     appearance: none;
     padding-right: 40px !important;
     background-image:
@@ -98,7 +98,7 @@ select {
         8px 8px;
     background-repeat: no-repeat;
 }
-select:hover {
+.select-box > input:hover {
     background-image:
         linear-gradient(45deg, transparent 50%, hsl(var(--edge-color)) 50%),
         linear-gradient(135deg, hsl(var(--edge-color)) 50%, transparent 50%);
@@ -110,7 +110,7 @@ select:hover {
         8px 8px;
     background-repeat: no-repeat;
 }
-select:focus-visible {
+.select-box > input:focus-visible {
     background-image:
         linear-gradient(135deg, transparent 50%, hsl(var(--edge-color)/0.25) 50%),
         linear-gradient(45deg, hsl(var(--edge-color)/0.25) 50%, transparent 50%);
@@ -123,10 +123,10 @@ select:focus-visible {
     background-repeat: no-repeat;
 }
 
-.hero > select {
+.select-box.hero > input {
     background-image: none;
 }
-.hero > select:hover {
+.select-box.hero > input:hover {
     background-image: 
         linear-gradient(50deg, transparent 50%, var(--mint4) 50%),
         linear-gradient(130deg, var(--mint4) 50%, transparent 50%);
@@ -137,7 +137,7 @@ select:focus-visible {
         8px 13px,
         8px 13px;
 }
-.hero > select:focus {
+.select-box.hero > input:focus {
     background-image:
         linear-gradient(50deg, var(--mint4) 50%, transparent 50%),
         linear-gradient(130deg, transparent 50%, var(--mint4) 50%);
@@ -182,13 +182,12 @@ select:-internal-list-box {
   white-space: wrap;
 }
 
-.empty > select {
+.select-box.empty > input {
     color: hsl(0, 0%, 80%);
     font-style: italic;
 }
 
 .input-control-base > input,
-.input-control-base > select,
 .input-control-base > textarea,
 .input-control-base > .collection-container,
 .input-control-base > .file-container {
@@ -210,7 +209,7 @@ select:-internal-list-box {
 }
 
 .input-control-base:not(.hero):hover > input:not(:focus-visible):not([readonly]),
-.input-control-base:not(.hero):hover > select:not(:focus-visible):not([readonly]),
+/* .input-control-base:not(.hero):hover > select:not(:focus-visible):not([readonly]), */
 .input-control-base:not(.hero):hover > textarea:not(:focus-visible):not([readonly]),
 .input-control-base:not(.hero):hover > .collection-container:not(:focus-visible):not([readonly]),
 .input-control-base:not(.hero):hover > .file-container:not(:focus-visible):not([readonly]) {
@@ -412,11 +411,11 @@ select:-internal-list-box {
 
 }
 
-.input-control-base.tiny {
+.input-control-base.select-box.tiny {
     height: auto;
 }
 
-.compact select {
+.select-box.compact input {
     height: auto;
     padding: 7px;
     background-position:
@@ -427,25 +426,19 @@ select:-internal-list-box {
         6px 6px;
 }
 
-.compact select:focus {
+.select-box.compact input:focus {
     background-position:
         calc(100% - 12px) 0.85em,
         calc(100% - 6px) 0.85em;
     outline: 0;
 }
 
-.tiny select {
+.select-box.tiny input {
     font-size: 0.65em;
     padding: 2px 5px;
     height: auto;
     border: none;
     background: var(--gray3);
-}
-
-.tiny .expanded .select-option {
-    font-size: 0.65em;
-    padding: 2px 5px;
-    height: 15px;
 }
 
 .uncontrolled-text {
@@ -481,12 +474,6 @@ i.dot.selected {
 }
 .button-tray > * + * {
     margin-left: 5px;
-}
-
-
-.input-control-base.touched input:invalid,
-.input-control-base.touched select:invalid {
-    border: 1px solid red;
 }
 
 .checkbox {
