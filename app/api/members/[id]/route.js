@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const getOneMember = async (memberId) => {
-    console.log({memberId})
+    // console.log({memberId})
     const supabase = createServerComponentClient({ cookies });
 
     const { data: member, error } = await supabase

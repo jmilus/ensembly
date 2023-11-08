@@ -8,6 +8,7 @@ export const getMemberUser = async (props) => {
     const supabase = createServerComponentClient({ cookies });
 
     const { email, member } = props;
+    console.log("getMemberUser props:", { props })
 
     let query = supabase
         .from('Profile')
