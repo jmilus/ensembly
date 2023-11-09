@@ -40,7 +40,7 @@ export const createEnsemble = async (data) => {
         .insert([
             {
                 name,
-                type: parseInt(type),
+                type: type,
                 logoUrl: data.logoUrl ? data.logoUrl : null
             }
         ])
@@ -59,6 +59,6 @@ export const createEnsemble = async (data) => {
 export async function POST(request) {
     const _req = await request.formData()
     const req = extractFields(_req);
-    const res = await createEnsemble(extractFields(req))
+    const res = await createEnsemble(req)
     return NextResponse.json(res)
 }
