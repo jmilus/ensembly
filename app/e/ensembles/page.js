@@ -20,14 +20,14 @@ const EnsemblesLayout = async (props) => {
             title="Create New Ensemble"
             buttonClass="fit"
         >
-            <Form id="create-new-ensemble-form" METHOD="POST" followPath="$slug$" >
+            <Form id="create-new-ensemble-form" METHOD="POST" followPath="/e/ensembles/$slug$" >
                 <section className="modal-fields inputs">
                     <Text id="newEnsembleName" name="name" label="Ensemble Name" />
                     <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ ensembleTypes } />
                 </section>
             </Form>
             <section className="modal-buttons">
-                <button name="submit" form="create-new-ensemble-form">Create Ensemble</button>
+                <button name="submit" className="fit" form="create-new-ensemble-form">Create Ensemble</button>
             </section>
         </ModalButton>
     ]
