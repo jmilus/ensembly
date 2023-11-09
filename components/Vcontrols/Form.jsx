@@ -49,7 +49,7 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
             })
     }
 
-    const handleFormSubmit = async (e) => {
+    const handleFormSubmit = async (e) => { 
         e.preventDefault();
         if (debug) console.log("form submit event", e);
         
