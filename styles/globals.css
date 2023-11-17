@@ -746,6 +746,9 @@ fieldset.buttons > legend {
   align-items: center;
 }
 
+.filter-button {
+  height:auto;
+}
 .filter-button input {
     display: none;
 }
@@ -844,6 +847,7 @@ fieldset.buttons > legend {
 .hero-icon {
   height: var(--hero-size);
   width: var(--hero-size);
+  min-width: var(--hero-size);
   border-radius: 50%;
   margin-right: 10px;
   overflow: hidden;

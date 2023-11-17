@@ -11,9 +11,9 @@ export default async function SettingsLayout(params) {
     const capacities = await getAllMembershipCapacities()
     const ensembles = await getManyEnsembles()
     const termPeriod = [
-        { id: 1, caption: "Week" },
-        { id: 2, caption: "Month" },
-        { id: 3, caption: "Year" }
+        { id: 1, value: "Week" },
+        { id: 2, value: "Month" },
+        { id: 3, value: "Year" }
     ]
     const navNodes = [
         { caption: "General", route: '/e/settings/general' },

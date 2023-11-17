@@ -1,82 +1,94 @@
-/* this is a comment */
+/* this is a comment :active */
 
-
-section>.input-control-base,
-section>form {
+section > .verdant-control,
+section > form {
     flex: 1;
 }
 
-.label {
-    font-size: 0.75em;
-    color: gray;
-    transition: all 0.2s ease-out;
-    margin: 0 0 1px 5px;
-    top: 2px;
-    height:1.1em;
+.verdant-control {
+    height: min-content;
 }
 
-.text-box.empty > .label,
-.select-box.empty > .label,
-.collection-box.empty > .label {
+.control-surface {
+    width: 100%;
+    height: 2.75em;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    padding: 10px 15px;
+    background-color: transparent;
+    transition: all 0.2s ease;
+}
+
+.control-surface:focus-visible {
+    background: var(--gray0);
+}
+
+.verdant-control input::placeholder,
+.verdant-control textarea::placeholder {
+    font-size: 0.9em;
+}
+
+.verdant-control > .hover-effect {
+    background: hsl(var(--grayx) 90% / 0.25);
+    border-bottom: 1px solid hsl(var(--edge-color));
+    overflow: hidden;
+    box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
+    transition: all 0.2s ease;
+}
+
+.verdant-control.select-box > .hover-effect,
+.verdant-control.date-box > .hover-effect,
+.verdant-control.file-box > .hover-effect {
+    border-bottom: none;
+    box-shadow: 0 0 0 0.5px inset hsl(var(--edge-color));
+}
+
+.verdant-control > .hover-effect:hover {
+    box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
+    background: hsl(var(--grayx) 98% / 0.5);
+}
+.verdant-control.collection-box > .hover-effect:hover {
+    
+}
+
+
+
+label {
+    flex: 1;
+    font-size: 0.75em;
+    color: gray;
+    margin: 0 0 1px 5px;
+    height:1.1em;
+    transition: all 0.2s ease-out;
+}
+
+.verdant-control.empty:not(.date-box) > label {
     color: transparent;
 }
 
-.input-control-base {
-    display: flex;
-    flex-direction: column;
-    /* margin: 0; */
-    /* padding-top: 1em; */
-    position: relative;
-}
-.input-control-base.checkbox {
-    margin: 5px;
-}
-
-.input-control-base.empty:has([required]) input,
-.input-control-base.empty:has([required]) .collection-container {
-    background-image: linear-gradient(45deg, var(--color-o), var(--color-f));
-    background-repeat: no-repeat;
-    background-size: 3px 100%;
-    background-position: bottom left;
-}
-.input-control-base.empty:has([required]).select-box > input {
-    background-image: 
-        linear-gradient(45deg, var(--color-o), var(--color-f)),
-        linear-gradient(45deg, transparent 50%, var(--color-f) 50%),
-        linear-gradient(135deg, var(--color-f) 50%, transparent 50%);
-    background-repeat: no-repeat;
-    background-size: 
-        3px 100%,
-        8px 8px,
-        8px 8px;
-    background-position:
-        bottom left,
-        calc(100% - 18px) calc(1em + 3px),
-        calc(100% - 10px) calc(1em + 3px);
+[required]::placeholder,
+.required > label {
+    color: hsl(0 90% 50% / 0.5);
 }
 
 section.spaced > * + * {
     margin-left: 10px;
 }
 
-.input-control-base > input:focus-visible,
-/* .input-control-base.select-box > input:focus-visible, */
-.input-control-base > textarea:focus-visible {
-    border-color: var(--gray0);
-    background-color: var(--gray0);
-}
-.input-control-base.select-box > input:focus-visible {
-    border-bottom-color: var(--gray2);
-}
-
-.input-control-base.select-box > input,
-.input-control-base.file-box > label {
-    border-width: 1px;
+.verdant-control.select-box > .hover-effect,
+.verdant-control.date-box > .hover-effect,
+.verdant-control.file-box label {
     border-radius: 4px;
 }
 
-.number-input {
-    text-align: right;
+.verdant-control.file-box label {
+    color: hsl(var(--edge-color));
+}
+
+.verdant-control.select-box .hover-effect:has(input:focus-visible) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 input[type="date"][value=""] {
@@ -84,7 +96,7 @@ input[type="date"][value=""] {
 
 }
 
-.select-box > input {
+.select-box .control-surface {
     appearance: none;
     padding-right: 40px !important;
     background-image:
@@ -98,7 +110,7 @@ input[type="date"][value=""] {
         8px 8px;
     background-repeat: no-repeat;
 }
-.select-box > input:hover {
+.select-box .control-surface:hover {
     background-image:
         linear-gradient(45deg, transparent 50%, hsl(var(--edge-color)) 50%),
         linear-gradient(135deg, hsl(var(--edge-color)) 50%, transparent 50%);
@@ -110,7 +122,7 @@ input[type="date"][value=""] {
         8px 8px;
     background-repeat: no-repeat;
 }
-.select-box > input:focus-visible {
+.select-box .control-surface:focus-visible {
     background-image:
         linear-gradient(135deg, transparent 50%, hsl(var(--edge-color)/0.25) 50%),
         linear-gradient(45deg, hsl(var(--edge-color)/0.25) 50%, transparent 50%);
@@ -123,10 +135,10 @@ input[type="date"][value=""] {
     background-repeat: no-repeat;
 }
 
-.select-box.hero > input {
+.select-box.hero input {
     background-image: none;
 }
-.select-box.hero > input:hover {
+.select-box.hero input:hover {
     background-image: 
         linear-gradient(50deg, transparent 50%, var(--mint4) 50%),
         linear-gradient(130deg, var(--mint4) 50%, transparent 50%);
@@ -137,7 +149,7 @@ input[type="date"][value=""] {
         8px 13px,
         8px 13px;
 }
-.select-box.hero > input:focus {
+.select-box.hero input:focus {
     background-image:
         linear-gradient(50deg, var(--mint4) 50%, transparent 50%),
         linear-gradient(130deg, transparent 50%, var(--mint4) 50%);
@@ -160,20 +172,20 @@ select[multiple] {
 /* select[multiple]:-internal-list-box {
   } */
 
-select[multiple]>option {
+select[multiple] > option {
     padding: calc(1em - 3px);
 }
 
-select[multiple]>option:hover {
+select[multiple] > option:hover {
     background-color: var(--gray2);
     cursor: pointer;
 }
 
-select[multiple]>option~option {
+select[multiple] > option ~ option {
     border-top: 1px solid var(--gray2);
 }
 
-select[multiple]>option:checked {
+select[multiple] > option:checked {
     background-color: var(--gray3);
     border: 1px solid var(--gray4);
 }
@@ -187,48 +199,23 @@ select:-internal-list-box {
     font-style: italic;
 }
 
-.input-control-base > input,
-.input-control-base > textarea,
-.input-control-base > .collection-container,
-.input-control-base > .file-container {
-    width: 100%;
-    border-style: solid;
-    border-color: hsl(var(--edge-color));
-    border-width: 0 0 1px 0;
-    outline: none;
-    font-size: 1em;
-    padding: 10px 15px;
-    background-color: hsl(0 0% 100% / 0.5);
-    box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
-    transition: all 0.2s ease;
+.verdant-control.number-box input{
+    text-align: right;
 }
 
-.input-control-base input::placeholder,
-.input-control-base textarea::placeholder {
-    font-size: 0.9em;
-}
-
-.input-control-base:not(.hero):hover > input:not(:focus-visible):not([readonly]),
-/* .input-control-base:not(.hero):hover > select:not(:focus-visible):not([readonly]), */
-.input-control-base:not(.hero):hover > textarea:not(:focus-visible):not([readonly]),
-.input-control-base:not(.hero):hover > .collection-container:not(:focus-visible):not([readonly]),
-.input-control-base:not(.hero):hover > .file-container:not(:focus-visible):not([readonly]) {
-    box-shadow: 0 0 0 1px inset hsl(var(--edge-color));
-    background-color: hsl(0 0% 100% / 0.5);
-}
-
-.input-control-base input,
-.input-control-base select {
-    height: 3em;
-}
-.input-control-base .collection-container {
+.verdant-control .collection-container {
     display: flex;
     flex-wrap: wrap;
-    min-height: 3em;
-    padding: 1.5px;
 }
 
-.input-control-base.collection-box > select {
+.verdant-control.collection-box > .collection-container {
+    margin-right: none;
+}
+.verdant-control.collection-box > input {
+    margin-left: none;
+}
+
+.verdant-control.collection-box > select {
     border: none;
 }
 
@@ -236,9 +223,7 @@ select:-internal-list-box {
     flex: 1;
     border: none;
     outline: none;
-    height: 2.5em !important;
     min-width: 4em;
-    margin: 1.5px;
 }
 
 .node-wrapper {
@@ -269,8 +254,8 @@ select:-internal-list-box {
 
 .input-clear-button {
     position: absolute;
-    right: 0.85em;
-    top: 0.85em;
+    right: 0.35em;
+    top: 0.35em;
     font-size: 1.75em;
     color: var(--gray3);
     cursor: pointer;
@@ -283,6 +268,7 @@ select:-internal-list-box {
 
 .clearable-control {
     position: relative;
+    margin-right: 10px;
 }
 
 .clearable-control > input {
@@ -291,22 +277,26 @@ select:-internal-list-box {
     background: white;
 }
 
+.clearable-control > label {
+    display: none;
+}
+
 .clearable {
     padding-right: 2.5em;
 }
 
-.input-control-base input.not-valid:not(:focus) {
+.verdant-control input.not-valid:not(:focus) {
     outline: 1px solid red;
     outline-offset: -2px;
 }
 
-.input-control-base textarea {
+.verdant-control textarea {
     padding: 10px;
 }
 
-.input-control-base input[readonly],
-.input-control-base select[readonly],
-.input-control-base textarea[readonly] {
+.verdant-control input[readonly],
+.verdant-control select[readonly],
+.verdant-control textarea[readonly] {
     border-color: var(--gray3);
     outline: none;
     cursor: default;
@@ -315,13 +305,13 @@ select:-internal-list-box {
     color: var(--gray6);
 }
 
-.sub-nav .input-control-base input,
-.sub-nav .input-control-base select {
+.sub-nav .verdant-control input,
+.sub-nav .verdant-control select {
     background-color: transparent;
     border-color: var(--color-c1);
     color: white;
 }
-.sub-nav .input-control-base label {
+.sub-nav .verdant-control label {
     color: var(--color-c2)
 }
 
@@ -348,7 +338,9 @@ select:-internal-list-box {
 
 .select-option:hover {
     cursor: pointer;
-    box-shadow: 0 0 50px -30px inset var(--hover-color)
+    /* box-shadow: 0 0 50px -30px inset var(--hover-color) */
+    outline: 1px solid var(--hover-color);
+    outline-offset: -1px;
 }
 
 .color-dot {
@@ -357,13 +349,23 @@ select:-internal-list-box {
     border-radius: 50%;
 }
 
-.input-control-base.hero {
+.verdant-control.hero {
     margin: 20px 0;
     padding: 0;
 }
 
-.input-control-base.hero > input,
-.input-control-base.hero > select {
+.verdant-control.hero > .hover-effect {
+    background: transparent;
+    box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
+    border: none;
+}
+
+.verdant-control.hero input:focus-within {
+    background: var(--gray0);
+}
+
+.verdant-control.hero input,
+.verdant-control.hero select {
     font-size: 2.5em;
     font-family: var(--brand-font);
     border: none;
@@ -373,45 +375,34 @@ select:-internal-list-box {
     height: 50px;
     transition: all 0.2s ease;
 }
-.input-control-base.hero > input {
+.verdant-control.hero input {
     padding: 0;
 }
 
-.input-control-base.hero > select {
-    padding: 0;
-}
-
-.input-control-base.hero > input:not([readonly]):hover,
-.input-control-base.hero > select:not([readonly]):hover {
+.verdant-control.hero > .hover-effect:hover {
     background-color: var(--gray2);
 }
 
-.input-control-base.hero > input:not([readonly]):focus-visible,
-.input-control-base.hero > select:not([readonly]):focus-visible {
-    outline: none;
-    background-color: white;
-}
-
-.input-control-base.hero > label {
+.verdant-control.hero > label {
     display: none;
 }
 
-.hero > input:hover {
+.hero input:hover {
     padding: 0 10px;
 }
 
-.hero > input::placeholder {
+.hero input::placeholder {
     color: transparent;
 }
 
-.hero > input:hover::placeholder {
+.hero input:hover::placeholder {
     font-style:normal;
     font-family:sans-serif;
     color: var(--gray5);
 
 }
 
-.input-control-base.select-box.tiny {
+.verdant-control.select-box.tiny {
     height: auto;
 }
 
@@ -472,8 +463,12 @@ i.dot.selected {
 .button-tray > * {
     flex: 0;
 }
-.button-tray > * + * {
-    margin-left: 5px;
+.button-tray > * {
+    margin-right: 5px;
+}
+
+.verdant-control.checkbox {
+    margin: 5px;
 }
 
 .checkbox {
@@ -487,7 +482,6 @@ i.dot.selected {
     display: flex;
     align-items: center;
     background: transparent;
-    border: 1px solid var(--gray4);
     padding: 10px;
     cursor: pointer;
     user-select: none;

@@ -60,7 +60,7 @@ const Button = (props) => {
     }
 
     return (
-        <button name={name} className={buttonClass} style={style} onClick={executeAPI}>{children}</button>
+        <button name={name} className={`hover-effect ${buttonClass}`} style={style} onClick={executeAPI}>{children}</button>
     )
 }
 

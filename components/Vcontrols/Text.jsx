@@ -69,40 +69,36 @@ const EditText = (props) => {
 
     const clearbutton = clear && <i id={`${id}-clear-button`} className={`input-clear-button${controlValue ? " show" : ""}`} onClick={() => handleControlValueChange("")}>close</i>
 
+    const inputProps = {
+        id,
+        name,
+        value: controlValue,
+        placeholder: placeholder || label,
+        type: {textType},
+        className: `control-surface text-input${clear ? " clearable" : ""}${isValid ? "" : " not-valid"}`,
+        onChange: (e) => handleControlValueChange(e.target.value),
+        required: isRequired,
+        autoComplete: "do-not-autofill",
+        maxLength: limit,
+        readOnly: readonly,
+        pattern
+    }
+
     const inputControl = limit > 100
         ? <textarea
-            id={id}
-            name={name}
-            value={controlValue}
-            placeholder={placeholder || label}
-            type="text"
-            className="text-input"
-            onChange={(e) => handleControlValueChange(e.target.value)}
-            required={isRequired}
-            autoComplete="do-not-autofill"
-            maxLength={limit}
-            readOnly={readonly}
+            {...inputProps}
         />
         : <input
-            id={id}
-            name={name}
-            value={controlValue}
-            placeholder={placeholder || label}
-            type={textType}
-            className={`text-input${clear ? " clearable" : ""}${isValid ? "" : " not-valid"}`}
-            onChange={(e) => handleControlValueChange(e.target.value)}
-            required={isRequired}
-            autoComplete="do-not-autofill"
-            maxLength={limit}
-            readOnly={readonly}
-            pattern={pattern}
+            {...inputProps}
         />
     return (
         <>
-            <div id={`text-${id}`} className={`input-control-base text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}${controlValue === "" ? " empty" : ""}`} style={style}>
-                <label htmlFor={id} className="label">{label}</label>
-                {inputControl}
-                {controlValue != "" && clearbutton}
+            <div id={`text-${id}`} className={`verdant-control text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}${controlValue === "" ? " empty" : ""}`} style={style}>
+                <label htmlFor={id} >{label}</label>
+                <div className="hover-effect">
+                    {inputControl}
+                    {controlValue != "" && clearbutton}
+                </div>
             </div>
             {clonedChildren}
         </>
@@ -116,9 +112,9 @@ const Text = (props) => {
 
     return (
         <>
-            <div id={`text-${id}`} className={`input-control-base text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${value === "" ? " empty" : ""}`} style={style}>
-                <label htmlFor={id} className="label">{label}</label>
-                <div className="text-input" style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
+            <div id={`text-${id}`} className={`text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${value === "" ? " empty" : ""}`} style={style}>
+                <label htmlFor={id} >{label}</label>
+                <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
             </div>
             {children}
         </>

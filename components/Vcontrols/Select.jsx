@@ -8,10 +8,11 @@ import { packageOptions } from '../../utils';
 import PopupMenu from '../PopupMenu';
 
 
-const Select = (props) => {
+const EditSelect = (props) => {
     const { id, name, label, value, options, filtersArray = [], extraAction, style, hero, isRequired, specialSize="", children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || "");
     const [showPopup, setShowPopup] = useState(false);
+    const [searchString, setSearchString] = useState("")
     const controlRef = useRef();
     const [inputRef, emitEvent] = useEvent('change', (e) =>
         console.log('Event fired', e, e.target)
@@ -32,14 +33,16 @@ const Select = (props) => {
 
     const handleDropDownSelection = (input) => {
         console.log("selected:", input)
-        // const selectControl = document.getElementById(id)
-        // const inputEvent = new Event('change', { bubbles: true });
-        // selectRef.current.dispatchEvent(inputEvent);
-        emitEvent(input)
+        emitEvent()
         
         if (extraAction) extraAction(input);
         setShowPopup(false);
         setControlValue(input)
+    }
+
+    const handleSearch = (e) => {
+        e.stopPropagation();
+        setSearchString(e.target.value)
     }
 
     const handleChildren = () => {
@@ -60,7 +63,7 @@ const Select = (props) => {
             //
             const newChildOptions = {}
             const childOptions = packageOptions(child.props.options)
-            console.log("packaged:", {childOptions})
+            // console.log("packaged:", {childOptions})
             Object.keys(childOptions).forEach(key => {
                 const option = childOptions[key]
                 const exclude = childFiltersArray.every(filter => {
@@ -76,41 +79,52 @@ const Select = (props) => {
 
     const clonedChildren = handleChildren();
 
+    const displayValue = showPopup ? "meh" : controlOptions[controlValue]?.caption || "";
+
     return (
         <>
-            <div ref={controlRef}  id={`select-${id}`} className={`input-control-base select-box ${specialSize}${hero ? " hero" : ""}${controlValue ? "" : " empty"}`} style={style}>
+            <div ref={controlRef}  id={`select-${id}`} className={`verdant-control select-box ${specialSize}${hero ? " hero" : ""}${controlValue ? "" : " empty"}`} style={style}>
                 {label != undefined &&
-                    <label htmlFor={id} className="label">{label}</label>
+                    <label htmlFor={id} >{label}</label>
                 }
-                <select
-                    ref={inputRef}
-                    id={id}
-                    name={name}
-                    value={controlOptions[controlValue]?.value || ""}
-                    onChange={() => null}
-                    autoComplete="do-not-autofill"
-                    style={{display: "none", height: "0px", overflow: "hidden"}}
-                >
-                    {!value && <option key="xx" value="" hidden>{label}</option>}
-                    {
-                        Object.values(controlOptions).map((option, o) => {
-                            // const hideMe = hideOption(option);
-                            return <option key={o} id={option.id} value={option.value} hidden={true} >{option.caption}</option>
-                        })
+                <div className="hover-effect">
+                    {showPopup
+                        ?
+                        <input
+                            id={`${id}-search`}
+                            className="control-surface"
+                            type="text"
+                            value={searchString}
+                            onChange={handleSearch}
+                            // onFocus={() => setShowPopup(true)}
+                            autoComplete="do-not-autofill"
+                            placeholder={label}
+                            autoFocus
+                        />
+                        :
+                        <div className="control-surface" onClick={() => setShowPopup(true)}>{controlOptions[controlValue]?.caption || ""}</div>
                     }
-                </select>
-                <input
-                    placeholder={label}
-                    id={`${id}-search`}
-                    // name={name}
-                    type="text"
-                    value={controlOptions[controlValue]?.value || ""}
-                    onChange={() => console.log("triggered!")}
-                    onFocus={() => setShowPopup(true)}
-                    autoComplete="do-not-autofill"
-                    required={isRequired}
-                    readOnly={readonly}
-                />
+                    
+                    <select
+                        ref={inputRef}
+                        id={id}
+                        name={name}
+                        value={controlOptions[controlValue]?.value || ""}
+                        onChange={() => null}
+                        autoComplete="do-not-autofill"
+                        style={{display: "none", height: "0px", overflow: "hidden"}}
+                    >
+                        {!value && <option key="xx" value="" hidden>{label}</option>}
+                        {
+                            Object.values(controlOptions).map((option, o) => {
+                                // const hideMe = hideOption(option);
+                                return <option key={o} id={option.id} value={option.value} hidden={true} >{option.caption}</option>
+                            })
+                        }
+                    </select>
+                    
+
+                </div>
             </div>
             {showPopup && 
                 <PopupMenu
@@ -122,6 +136,7 @@ const Select = (props) => {
                     {
                         Object.keys(controlOptions).map((key, o) => {
                             const option = controlOptions[key];
+                            if (!option.caption.toLowerCase().includes(searchString.toLowerCase())) return;
                             return (
                                 <div key={o} id={option.id} className="select-option" style={{['--hover-color']: option.color ? `hsl(${option.color})` : 'var(--mint5)', padding: "10px 15px"}} onClick={(e) => handleDropDownSelection(key, e)}>
                                     {option.color && <div className="color-dot" style={{marginRight: "10px", backgroundColor: `hsl(${option.color})`}}></div>}
@@ -138,6 +153,22 @@ const Select = (props) => {
         </>
     );
 
+}
+
+const Select = (props) => {
+    const { id, label, value = "", style, hero, specialSize="", children, readonly } = props;
+
+    if (!readonly) return <EditSelect {...props} />
+
+    return (
+        <>
+            <div id={`select-${id}`} className={`verdant-control select-box ${specialSize}${hero ? " hero" : ""}`} style={style}>
+                <label htmlFor={id} >{label}</label>
+                <div className="select-input" style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
+            </div>
+            {children}
+        </>
+    )
 }
 
 export default Select;

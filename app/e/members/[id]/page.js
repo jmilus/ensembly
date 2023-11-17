@@ -32,7 +32,7 @@ const MemberPage = async (context) => { //
 
     const ensembleOptions = {}
     ensembleList.map(ensemble => {
-        ensembleOptions[ensemble.id] = { ...ensemble, membershipTypes: [] }
+        ensembleOptions[ensemble.id] = { ...ensemble, caption: ensemble.name, membershipTypes: [] }
     })
     membershipTypes.forEach(mt => {
         mt.ensembles.forEach(ens => {
@@ -69,7 +69,7 @@ const MemberPage = async (context) => { //
                             <Text id="suffix" name="suffix" label="Suffix" value={member.suffix} style={{ maxWidth: "4em" }} />
                         </section>
                         <section className="inputs">
-                            <Select id="sex" name="sex" label="Sex" value={member.sex} options={bioOptions.sex} />
+                            <Select id="sex" name="sex" label="Sex" value={member.sex} options={bioOptions.sex} debug/>
                             <Select id="hair" name="hair" label="Hair Color" value={member.hair} options={bioOptions.hair} />
                             <Select id="eyes" name="eyes" label="Eye Color" value={member.eyes} options={bioOptions.eyes} />
                         </section>

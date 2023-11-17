@@ -1,8 +1,6 @@
 module.exports = {
   reactStrictMode: true,
-  experimental: {
-    serverActions: true
-  },
+  experimental: {},
   // webpack5: true,
   webpack: config => {
     config.resolve.fallback = {

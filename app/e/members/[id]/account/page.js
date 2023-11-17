@@ -32,7 +32,7 @@ const AccountPage = async (context) => {
                     <legend>Account Details</legend>
                     <Form id="update-roles-form" APIURL={`/api/users/${userProfile.user}/profile`} auto>
                         <Text id="login-email" label="User Email" value={userProfile.email} readonly />
-                        <Collection id="user-roles" name="roles" label="Roles" value={userProfile.roles} options={allRoles.map(r => r.role_name)} />
+                        <Collection id="user-roles" name="roles" label="Roles" value={userProfile.roles} options={allRoles.map(r => r.role_name)} debug/>
                     </Form>
                 </fieldset>
 

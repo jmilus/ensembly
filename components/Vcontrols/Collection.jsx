@@ -1,6 +1,7 @@
 'use client'
 
 import { packageOptions } from '../../utils';
+import { useEvent } from 'hooks/useEvent';
 
 import { useState, useRef, useEffect } from 'react';
 
@@ -8,24 +9,24 @@ import PopupMenu from 'components/PopupMenu';
 // import './Vstyling.css';
 
 
-const Collection = (props) => {
+const EditCollection = (props) => {
     const { id, name, label, value = [], options, extraAction, style, hero, isRequired, children, readonly, debug } = props;
-    const [controlValues, setControlValues] = useState(packageOptions(value))
-    const [searchStr, setSearchStr] = useState("")
+    const [controlValues, setControlValues] = useState(packageOptions(value));
+    const [matchString, setMatchString] = useState("")
     const [showPopup, setShowPopup] = useState(false);
     const collectorRef = useRef()
-
-    useEffect(() => {
-        setSearchStr("")
-    }, [controlValues])
+    const inputRef = useRef()
+    const [selectRef, emitEvent] = useEvent('change', (e) =>
+        console.log('Event fired', e, e.target)
+    );
 
     let controlOptions = packageOptions(options, value)
 
-    if (debug) console.log({ options },  {controlOptions}, { value }, { controlValues })
+    if (debug) console.log(id, { options },  {controlOptions}, { value }, { controlValues })
 
     const handleValueUpdate = (input) => {
-        const inputEvent = new Event('change', { bubbles: true });
-        collectorRef.current.dispatchEvent(inputEvent);
+        emitEvent(input)
+        setMatchString("")
         setShowPopup(false)
         if(extraAction) extraAction(input)
         setControlValues(input)
@@ -38,29 +39,28 @@ const Collection = (props) => {
         handleValueUpdate(controlValuesCopy)
     }
 
+    const handleChange = (e) => {
+        e.stopPropagation();
+        setMatchString(e.target.value)
+    }
+
+    const handleKeys = (key) => {
+        switch (key) {
+            case "Escape":
+                inputRef.current.blur();
+            case "Tab":
+                vanishPopup();
+                break;
+            default:
+                break;
+        }
+    }
+
     const removeSelection = (optionKey) => {
         const controlValuesCopy = { ...controlValues }
         delete controlValuesCopy[optionKey]
         
         handleValueUpdate(controlValuesCopy);
-    }
-
-    const showDropDown = (e) => {
-        e.stopPropagation();
-        const str = e.target.value
-        setSearchStr(str);
-        if (readonly) return null;
-        const parentControl = document.getElementById(`collection-${id}`)
-        const valuesToShow = { ...controlOptions }
-        if (str != "") {
-            Object.keys(controlOptions).forEach(val => {
-                if (!controlOptions[val].caption.toLowerCase().includes(str.toLowerCase()))
-                    delete valuesToShow[val]
-            })
-        }
-        
-        setShowPopup(true);
-        return false;
     }
 
     const ItemNode = ({data}) => {
@@ -70,25 +70,41 @@ const Collection = (props) => {
             <div className={`node-wrapper ${data.extraClass ? data.extraClass : ""}`} style={data.extraStyle}>
                 {data.icon && data.icon}
                 <span>{data.caption}</span>
-                <i onClick={() => removeSelection(data.value)}>cancel</i>
+                {!readonly &&
+                    <i onClick={() => removeSelection(data.value)}>cancel</i>
+                }
             </div>
         )
     }
 
     return (
         <>
-            <div id={`collection-${id}`} className={`input-control-base collection-box ${Object.keys(controlValues).length > 0 ? "" : " empty"}`} style={style}>
-                {label && <label htmlFor={id} className="label">{label}</label>}
-                <div className={`collection-container${isRequired ? " required" : ""}`} >
+            <div ref={collectorRef} id={`collection-${id}`} className={`verdant-control collection-box ${Object.keys(controlValues).length > 0 ? "" : " empty"}`} style={style}>
+                {label && <label htmlFor={id} >{label}</label>}
+                <div className={`collection-container hover-effect${isRequired ? " required" : ""}`} style={{flex: 0}} >
                     {
                         Object.values(controlValues).map((option, i) => {
                             return <ItemNode key={i} data={option} />
                         })
                     }
-                    <input type="text" className="collection-adder" value={searchStr} style={{background:"transparent"}} onClick={(e) => showDropDown(e)} onChange={(e) => showDropDown(e)} placeholder={Object.keys(controlValues).length > 0 ? "" : label} />
+                    {!readonly &&
+                        <input
+                            ref={inputRef}
+                            id={`${id}-search`}
+                            type="text"
+                            className="control-surface collection-adder"
+                            value={matchString}
+                            style={{ background: "transparent", flex: 1 }}
+                            onChange={(e) => handleChange(e)}
+                            onKeyDown={(e) => handleKeys(e.key)}
+                            onFocus={() => setShowPopup(true)}
+                            placeholder={Object.keys(controlValues).length > 0 ? "" : label}
+                            required={isRequired}
+                        />
+                    }
                 </div>
                 <select
-                    ref={collectorRef}
+                    ref={selectRef}
                     id={id}
                     name={name}
                     value={Object.keys(controlValues)}
@@ -96,7 +112,7 @@ const Collection = (props) => {
                     multiple={true}
                     required={isRequired}
                     readOnly={readonly}
-                    style={{height: "0px", overflow: "hidden"}}
+                    style={{display: "none", height: "0px", overflow: "hidden"}}
                 >
                     {
                         Object.values(controlOptions).map((item, i) => {
@@ -113,6 +129,9 @@ const Collection = (props) => {
                     {
                         Object.keys(controlOptions).map((key, o) => {
                             const option = controlOptions[key];
+                            console.log(option.caption)
+                            if (!option.caption.toLowerCase().includes(matchString.toLowerCase())) return;
+                            if (Object.keys(controlValues).includes(key)) return;
                             return (
                                 <div key={o} id={option.id} className="select-option" style={{['--hover-color']: option.color ? `hsl(${option.color})` : 'var(--mint5)', padding: "10px 15px"}} onClick={(e) => handleDropDownSelection(key, e)}>
                                     {option.color && <div className="color-dot" style={{marginRight: "10px", backgroundColor: `hsl(${option.color})`}}></div>}
@@ -125,6 +144,39 @@ const Collection = (props) => {
             }
         </>
     )
+}
+
+const Collection = (props) => {
+    const { id, label, value="", style, hero, children, readonly } = props;
+
+    if (!readonly) return <EditCollection {...props} />
+
+    const ItemNode = ({data}) => {
+        console.log({ data })
+        return (
+            <div className={`node-wrapper ${data.extraClass ? data.extraClass : ""}`} style={data.extraStyle}>
+                {data.icon && data.icon}
+                <span>{data.name}</span>
+            </div>
+        )
+    }
+
+    return (
+        <>
+            <div id={`collection-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
+                <label htmlFor={id} >{label}</label>
+                <div style={{ display: "flex", height: "3em", fontFamily: "arial", padding: "5px", borderBottom: "1px solid var(--gray3)" }}>
+                    {
+                        Object.values(value).map((option, i) => {
+                            return <ItemNode key={i} data={option} />
+                        })
+                    }
+                </div>
+            </div>
+            {children}
+        </>
+    )
+
 }
 
 export default Collection;

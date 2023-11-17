@@ -6,7 +6,7 @@ export const isEmpty = (obj) => {
 
 export const packageOptions = (obj) => {
     if (!obj) return {};
-    // console.log({obj})
+    console.log({obj})
     
     let newObj = {};
     if (Array.isArray(obj) && obj.length > 0) {
@@ -36,7 +36,7 @@ export const packageOptions = (obj) => {
             if (!newObj[key].caption) newObj[key].caption = newObj[key].name || key;
         })
     }
-    // console.log("packaged options:", {newObj})
+    console.log("packaged options:", {newObj})
     return newObj;
 }
 

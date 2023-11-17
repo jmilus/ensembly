@@ -35,8 +35,8 @@ const File = (props) => {
     }
 
     return (
-        <div className={`input-control-base file-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}`} style={style}>
-            <label htmlFor={id} className="file-container">
+        <div className={`verdant-control file-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}`} style={style}>
+            <label htmlFor={id} className="control-surface file-container hover-effect">
                 <i>description</i>
                 {controlValue}
                 <input

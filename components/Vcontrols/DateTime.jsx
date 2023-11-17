@@ -6,7 +6,7 @@ import CALENDAR from '../../utils/calendarUtils';
 
 // import './Vstyling.css';
 
-const DateTime = (props) => {
+const EditDateTime = (props) => {
     const { id, name, label, value, extraAction, max, min, style, hero, isRequired, includeTime, children, recordId, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value ? new Date(value) : "");
 
@@ -43,26 +43,53 @@ const DateTime = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-box${label ? "" : " unlabeled"}${controlValue === "" ? " emptry" : ""}`} style={style}>
-                <label htmlFor={name} className="label">{`${label} Date`}</label>
-                <input
-                    id={id}
-                    value={displayValue}
-                    type={props.includeTime ? "datetime-local" : "date"}
-                    className=""
-                    onChange={(e) => handleControlValueChange(e.target.value)}
-                    max={max}
-                    min={min}
-                    required={isRequired}
-                    autoComplete="do-not-autofill"
-                    readOnly={readonly}
-                />
-                <input name={name} value={controlValue} style={{ display: "none" }} onChange={() => null} />
+            <div id={`date-${id}`} className={`verdant-control date-box${label ? "" : " unlabeled"}${controlValue === "" ? " emptry" : ""}`} style={style}>
+                <label htmlFor={name} >{`${label} Date`}</label>
+                <div className="hover-effect">
+                    <input
+                        id={id}
+                        className="control-surface"
+                        value={displayValue}
+                        type={props.includeTime ? "datetime-local" : "date"}
+                        onChange={(e) => handleControlValueChange(e.target.value)}
+                        max={max}
+                        min={min}
+                        required={isRequired}
+                        autoComplete="do-not-autofill"
+                        readOnly={readonly}
+                    />
+                    <input name={name} value={controlValue} style={{ display: "none" }} onChange={() => null} />
+                </div>
             </div>
             { clonedDateChildren }
         </>
     )
 
+}
+
+const DateTime = (props) => {
+    const { id, label, value = "", style, hero, children, readonly } = props;
+
+    if (!readonly) return <EditDateTime {...props} />
+
+    console.log({ value })
+    const tz = new Date().getTimezoneOffset() / 60;
+    console.log({tz})
+    const [date, time] = value.split("T")
+    const dateArray = date.split("-")
+    const timeArray = time.split(":")
+    console.log({ dateArray }, { timeArray })
+    const displayDate = new Date(parseInt(dateArray[0]), parseInt(dateArray[1]) - 1, parseInt(dateArray[2]), parseInt(timeArray[0]) - tz, parseInt(timeArray[1]));
+    console.log({ displayDate })
+    return (
+        <>
+            <div id={`dateonly-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
+                <label htmlFor={id} >{label}</label>
+                <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{`${displayDate.toDateString()} ${displayDate.toLocaleTimeString()}`}</div>
+            </div>
+            {children}
+        </>
+    )
 }
 
 export default DateTime;

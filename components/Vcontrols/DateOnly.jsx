@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 
 // import './Vstyling.css';
 
-const DateOnly = (props) => {
+const EditDateOnly = (props) => {
     const { id, name, label, value, extraAction, max, min, style, hero, isRequired, children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || "");
 
@@ -37,26 +37,47 @@ const DateOnly = (props) => {
 
     return (
         <>
-            <div id={`date-${id}`} className={`input-control-base date-only-box${label ? "" : " unlabeled"}${controlValue === "" ? " empty" : ""}`} style={style}>
-                <label htmlFor={name} className="label">{`${label} Date`}</label>
-                <input
-                    id={id}
-                    name={name}
-                    value={controlValue}
-                    type={"date"}
-                    className=""
-                    onChange={(e) => handleControlValueChange(e.target.value)}
-                    max={max}
-                    min={min}
-                    required={isRequired}
-                    autoComplete="do-not-autofill"
-                    readOnly={readonly}
-                />
+            <div id={`date-${id}`} className={`verdant-control date-box date-only${label ? "" : " unlabeled"}${controlValue === "" ? " empty" : ""}`} style={style}>
+                <label htmlFor={name} >{`${label} Date`}</label>
+                <div className="hover-effect">
+                    <input
+                        id={id}
+                        className="control-surface"
+                        name={name}
+                        value={controlValue}
+                        type={"date"}
+                        onChange={(e) => handleControlValueChange(e.target.value)}
+                        max={max}
+                        min={min}
+                        required={isRequired}
+                        autoComplete="do-not-autofill"
+                        readOnly={readonly}
+                    />
+                </div>
             </div>
             { clonedDateChildren }
         </>
     )
 
+}
+
+const DateOnly = (props) => {
+    const { id, label, value = "", style, hero, children, readonly } = props;
+
+    if (!readonly) return <EditDateOnly {...props} />
+
+    const dateArray = value.split("-")
+    const displayDate = new Date(parseInt(dateArray[0]), parseInt(dateArray[1]) - 1, parseInt(dateArray[2]));
+
+    return (
+        <>
+            <div id={`dateonly-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
+                <label htmlFor={id} >{label}</label>
+                <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{displayDate.toDateString()}</div>
+            </div>
+            {children}
+        </>
+    )
 }
 
 export default DateOnly;

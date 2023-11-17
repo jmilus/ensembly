@@ -14,9 +14,9 @@ export default async function MembershipSettingsPage(context) {
     const capacities = await getAllMembershipCapacities()
     const ensembles = await getManyEnsembles()
     const termPeriod = [
-        { id: 1, caption: "Week" },
-        { id: 2, caption: "Month" },
-        { id: 3, caption: "Year" }
+        { id: 1, value: "Week" },
+        { id: 2, value: "Month" },
+        { id: 3, value: "Year" }
     ]
 
     console.log({ ensembles })
@@ -47,7 +47,7 @@ export default async function MembershipSettingsPage(context) {
                                     <span style={{fontSize: "2em"}}>{type.name}</span>
                                     <section>
                                         <span style={{color: "var(--mint6)", marginRight:"10px"}}>Membership Term:</span>
-                                        <span>{`${type.term_length} ${termPeriod.find(period => period.id === type.term_period).caption}s`}</span>
+                                        <span>{`${type.term_length} ${type.term_period}${type.term_length > 1 ? "s" : ""}`}</span>
                                     </section>
                                     <section>
                                         <span style={{color: "var(--mint6)", marginRight:"10px"}}>Capacities:</span>
@@ -71,7 +71,7 @@ export default async function MembershipSettingsPage(context) {
                                         <Text id="membership-typ-name" name="name" label="Type Name" value={type.name} isRequired />
                                         <section className="inputs">
                                             <Number id="membership-term-length" name="term_length" label="Expires in" value={type.term_length} style={{ flex: 1 }} isRequired />
-                                            <Select id="memberhsip-term-period" name="term_period" label="" options={termPeriod} value={type.term_period} style={{ flex: 5 }} isRequired />
+                                            <Select id="memberhsip-term-period" name="term_period" label="" options={termPeriod} value={type.term_period} style={{ flex: 5 }} isRequired debug />
                                         </section>
                                         <Collection id="membership-capacities" name="capacity" label="Capacities" options={capacities.map(cap => cap.type)} value={type.capacity} isRequired />
                                         <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={ensembles} value={ensembles.filter(e => type.ensembles.includes(e.id))} isRequired debug/>

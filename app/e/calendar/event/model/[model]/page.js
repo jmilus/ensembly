@@ -24,7 +24,7 @@ const generateOccurrences = () => {
         occurrences[ws] = {
                 id: i,
                 value: ws,
-                period: 1,
+                period: "Week",
                 caption: ws,
                 short: ws
             }
@@ -33,7 +33,7 @@ const generateOccurrences = () => {
         occurrences[`m-${x}`] = {
                 id: x.toString(),
                 value: x.toString(),
-                period: 2,
+                period: "Month",
                 caption: x.toString(),
                 short: x.toString()
             }
@@ -160,6 +160,7 @@ const EventModelPage = async (context) => {
     const recEndDate = dateArray ? CALENDAR.getDashedValue(new Date(dateArray[0], dateArray[1]-1, dateArray[2]), true) : ""
     
     const occurrenceOptionsSet = generateOccurrences()
+    console.log({occurrenceOptionsSet})
     
     const formatOccurrenceValues = () => {
         const occ = Array.isArray(model.occurrence) ? model.occurrence : [model.occurrence];
@@ -181,11 +182,11 @@ const EventModelPage = async (context) => {
                     <legend>Basic Details</legend>
                     <Form id="event-details" auto >
                         <section className="inputs">
-                            <DateTime id="startDate" name="modelStartDate" label="Start" value={model.modelStartDate} includeTime isRequired>
+                            <DateTime id="startDate" name="modelStartDate" label="Start" value={model.modelStartDate} includeTime isRequired >
                                 <DateTime id="endDate" name="modelEndDate" label="End" value={model.modelEndDate} includeTime isRequired/>
                             </DateTime>
                         </section>
-                        <Select id="eventType" name="type" label="Event Type" value={model.type.id} options={eventTypes} isRequired/>
+                        <Select id="eventType" name="type" label="Event Type" value={model.type.type} options={eventTypes} isRequired debug/>
                         <Text id="eventDetails" name="details" label="Details" value={model.details} limit="1000" />
                     </Form>
                     
@@ -250,8 +251,8 @@ const EventModelPage = async (context) => {
                             <Form id="event-recurrence" METHOD="PUT" debug >
                                 <section className="inputs" style={{width:"600px"}}>
                                     <Number id="recurrence-interval" name="interval" label="Every" value={model.interval || 1} style={{maxWidth: "75px"}} isRequired />
-                                    <Select id="recurrence-period" name="period" label="Period" value={model.period || 1} options={[{ id: 1, caption: "Week" }, { id: 2, caption: "Month" }]} isRequired style={{maxWidth:"100px"}} >
-                                        <Collection id="recurrence-occurrence" name="occurrence" label="Occurrence" value={occurrenceValues} options={occurrenceOptionsSet} filterKey="period" isRequired debug />
+                                    <Select id="recurrence-period" name="period" label="Period" value={model.period || "Week"} options={[{ id: 1, value: "Week", caption: "Week" }, { id: 2, value: "Month", caption: "Month" }]} isRequired style={{maxWidth:"100px"}} >
+                                        <Collection id="recurrence-occurrence" name="occurrence" label="Occurrence" value={occurrenceValues} options={occurrenceOptionsSet} filterKey="period" isRequired debug/>
                                     </Select>
                                 </section>
                                 <DateOnly id="recurrence-end-date" name="recurrenceEndDate" label="End Recurrence" value={recEndDate || minStartdate} min={minStartdate} isRequired />

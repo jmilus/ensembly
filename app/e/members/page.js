@@ -26,8 +26,8 @@ const MembersPage = async () => {
         >
             <Form id="new-member-modal-form" METHOD="POST" followPath="/e/members/$slug$" >
                 <section className="modal-fields inputs">
-                    <Text id="newMemberFirstName" name="firstName" label="First Name" value=""/>
-                    <Text id="newMemberLastName" name="lastName" label="Last Name" value=""/>
+                    <Text id="newMemberFirstName" name="firstName" label="First Name" value="" isRequired/>
+                    <Text id="newMemberLastName" name="lastName" label="Last Name" value="" isRequired/>
                 </section>
             </Form>
             <section className="modal-buttons">

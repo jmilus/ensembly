@@ -63,11 +63,11 @@ const EventsPage = async (context) => {
             modalButton={<><i>event</i><span>New Event</span></>}
             buttonClass="fit"
         >
-            <Form id="new-event-modal-form" METHOD="POST" APIURL="/api/calendar/event/model" followPath="/e/calendar/event/model/$slug$" debug>
+            <Form id="new-event-modal-form" METHOD="POST" APIURL="/api/calendar/event/model" followPath="/e/calendar/event/model/$slug$" >
                 <Text id="newEventName" name="modelName" label="Event Name" value="" limit="64" isRequired/>
                 <Select id="newEventType" name="type" label="Event Type" value="" options={eventTypes} isRequired />
                 <section className="inputs">
-                    <DateTime id="newEventStart" name="modelStartDate" label="Event Start" value="" includeTime isRequired debug>
+                    <DateTime id="newEventStart" name="modelStartDate" label="Event Start" value="" includeTime isRequired >
                         <DateTime id="newEventEnd" name="modelEndDate" label="Event End" value="" includeTime isRequired/>
                     </DateTime>
                 </section>

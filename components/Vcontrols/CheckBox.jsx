@@ -31,7 +31,7 @@ const CheckBox = (props) => {
     }
 
     return (
-        <div className={`input-control-base checkbox${controlValue ? " checked" : ""}${readonly ? " readonly" : ""}`} style={style} >
+        <div className={`verdant-control checkbox${controlValue ? " checked" : ""}${readonly ? " readonly" : ""}`} style={style} >
             <label htmlFor={id} className="">
                 {checkButton}
                 <input
