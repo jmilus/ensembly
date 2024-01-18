@@ -90,12 +90,12 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         if (json) {
             const jsonData = {};
             formData.forEach((value, key) => {
-                if(!Reflect.has(jsonData, key)){
+                if (!Reflect.has(jsonData, key)) {
                     jsonData[key] = value;
                     return;
                 }
-                if(!Array.isArray(jsonData[key])){
-                    jsonData[key] = [jsonData[key]];    
+                if (!Array.isArray(jsonData[key])) {
+                    jsonData[key] = [jsonData[key]];
                 }
                 jsonData[key].push(value);
             });

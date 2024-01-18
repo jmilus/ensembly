@@ -10,32 +10,51 @@ import FilterContainer from 'components/FilterContainer';
 import { getManyEnsembles } from '@/api/ensembles/route';
 import { getAllEnsembleTypes } from '@/api/ensembles/types/route';
 
-const EnsemblesLayout = async (props) => {
+const EnsemblesPage = async (props) => {
     const ensembles = await getManyEnsembles()
     const ensembleTypes = await getAllEnsembleTypes()
-    const buttons = [
-        <ModalButton
-            key="x"
-            modalButton={<><i>add_circle</i><span>New Ensemble</span></>}
-            title="Create New Ensemble"
-            buttonClass="fit"
-        >
-            <Form id="create-new-ensemble-form" METHOD="POST" followPath="/e/ensembles/$slug$" >
-                <section className="modal-fields inputs">
-                    <Text id="newEnsembleName" name="name" label="Ensemble Name" />
-                    <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ ensembleTypes } />
+
+    const newEnsembleButton = (button, buttonStuff) => {
+        return (
+            <ModalButton
+                key="x"
+                modalButton={button}
+                title="Create New Ensemble"
+                buttonClass={buttonStuff.class}
+                buttonStyle={buttonStuff.style}
+            >
+                <Form id="create-new-ensemble-form" METHOD="POST" followPath="/e/ensembles/$slug$" >
+                    <section className="modal-fields inputs">
+                        <Text id="newEnsembleName" name="name" label="Ensemble Name" />
+                        <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ensembleTypes} />
+                    </section>
+                </Form>
+                <section className="modal-buttons">
+                    <button name="submit" className="fit" form="create-new-ensemble-form">Create Ensemble</button>
                 </section>
-            </Form>
-            <section className="modal-buttons">
-                <button name="submit" className="fit" form="create-new-ensemble-form">Create Ensemble</button>
-            </section>
-        </ModalButton>
+            </ModalButton>
+        )
+    }
+
+    
+
+    const newEnsembleNavButton = newEnsembleButton(<><i>add_circle</i><span>New Ensemble</span></>, {class: "fit"})
+    const newEnsembleGridButton = newEnsembleButton(<ItemCard
+        caption="Create New Ensemble"
+        itemIcon={<i>add_box</i>}
+        style={{color: "hsl(var(--color-h2))", borderStyle: "dashed", borderColor: "hsl(var(--color-h2))", height: "100%"}}
+    />,
+        { style: { border: "none", height: "100%", background: "transparent" } }
+    )
+
+    const buttons = [
+        newEnsembleNavButton
     ]
 
     return (
         <SecurityWrapper currentModule="ensembles">
             <div id="page-base">
-                <div id="nav-header">
+                <div id="page-header">
                     <SubNav root="ensembles" buttons={buttons} />
                 </div>
                 <div id="page-frame">
@@ -63,6 +82,9 @@ const EnsemblesLayout = async (props) => {
                                         )
                                     })
                                 }
+                                {
+                                    newEnsembleGridButton
+                                }
                             </article>
                         </FilterContainer>
                     </div>
@@ -72,4 +94,4 @@ const EnsemblesLayout = async (props) => {
     )
 }
 
-export default EnsemblesLayout;
+export default EnsemblesPage;

@@ -49,7 +49,7 @@ export const updateOneMembershipType = async (typeData) => {
             id,
             name,
             capacity: Array.isArray(capacity) ? capacity : [capacity],
-            term_length,
+            term_length: parseInt(term_length),
             term_period,
             ensembles: Array.isArray(ensembles) ? ensembles : [ensembles]
         })

@@ -26,6 +26,8 @@ const ELayout = async ({children}) => {
 
     const profile = await getMemberUserProfile();
 
+    // console.log({ profile })
+
     const nav = <Nav />
     
     return (

@@ -1,18 +1,19 @@
 'use client'
 
 import React, { useState, useEffect } from 'react';
+import { getDashedValue } from 'utils/calendarUtils';
 
 // import './Vstyling.css';
 
 const EditDateOnly = (props) => {
     const { id, name, label, value, extraAction, max, min, style, hero, isRequired, children, readonly, debug } = props;
-    const [controlValue, setControlValue] = useState(value || "");
+    const [controlValue, setControlValue] = useState(getDashedValue(value, true) || "");
 
     if (debug) console.log(name, { props }, { controlValue });
 
     useEffect(() => {
         
-        setControlValue(value || "");
+        setControlValue(getDashedValue(value, true) || "");
     }, [value])
 
     const handleControlValueChange = (input) => {
@@ -38,7 +39,7 @@ const EditDateOnly = (props) => {
     return (
         <>
             <div id={`date-${id}`} className={`verdant-control date-box date-only${label ? "" : " unlabeled"}${controlValue === "" ? " empty" : ""}`} style={style}>
-                <label htmlFor={name} >{`${label} Date`}</label>
+                {label && <label htmlFor={name} >{`${label} Date`}</label>}
                 <div className="hover-effect">
                     <input
                         id={id}
@@ -72,7 +73,7 @@ const DateOnly = (props) => {
     return (
         <>
             <div id={`dateonly-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
-                <label htmlFor={id} >{label}</label>
+                {label && <label htmlFor={id} >{label}</label>}
                 <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{displayDate.toDateString()}</div>
             </div>
             {children}

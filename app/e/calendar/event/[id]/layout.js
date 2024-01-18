@@ -21,7 +21,7 @@ export default async function EventLayout(props) {
 
     return (
         <div id="page-base">
-            <div id="nav-header">
+            <div id="page-header">
                 <SubNav root="calendar" buttons={navButtons} />
             </div>
             <div id="page-frame">

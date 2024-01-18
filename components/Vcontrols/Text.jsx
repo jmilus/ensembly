@@ -7,7 +7,7 @@ import { validateEmail } from '../../utils';
 // import './Vstyling.css';
 
 const EditText = (props) => {
-    const { id, name, label, value="", placeholder, extraAction, format, limit, style, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
+    const { id, name, label, value="", placeholder, extraAction, format, limit, style, innerStyle, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value === null ? "" : value)
 
     if (debug) console.log(name, { props }, { controlValue });
@@ -22,6 +22,7 @@ const EditText = (props) => {
     let textType;
     switch (format) {
         case "phone":
+        case "phonenumber":
             textType = "text"
             break;
         case "email":
@@ -31,11 +32,13 @@ const EditText = (props) => {
             textType = format
     }
 
-    const handleControlValueChange = (input) => {
-        let workingValue;
+    const formatValue = (v) => {
+        if (v === null) return ""
+        let workingValue = v.toString();
         switch (format) {
             case "phone":
-                workingValue = input.replace(/[^0-9]*/gm, '');
+            case "phonenumber":
+                workingValue = workingValue.replace(/[^0-9]*/gm, '');
                 if (workingValue?.length > 4) {
                     if (workingValue.length > 7) {
                         if (workingValue.length >= 10) {
@@ -52,11 +55,16 @@ const EditText = (props) => {
             case "email":
 
             default:
-                workingValue = input;
+                workingValue = v;
                 break;
         }
-        if (extraAction) extraAction(workingValue);
-        setControlValue(workingValue);
+        return workingValue
+    }
+
+    const handleControlValueChange = (input) => {
+        const v = formatValue(input)
+        if (extraAction) extraAction(v);
+        setControlValue(v);
     }
 
     const handleChildren = () => {
@@ -69,13 +77,16 @@ const EditText = (props) => {
 
     const clearbutton = clear && <i id={`${id}-clear-button`} className={`input-clear-button${controlValue ? " show" : ""}`} onClick={() => handleControlValueChange("")}>close</i>
 
+    const displayValue = formatValue(controlValue)
+
     const inputProps = {
         id,
         name,
-        value: controlValue,
+        value: displayValue,
         placeholder: placeholder || label,
-        type: {textType},
+        type: textType,
         className: `control-surface text-input${clear ? " clearable" : ""}${isValid ? "" : " not-valid"}`,
+        style: innerStyle,
         onChange: (e) => handleControlValueChange(e.target.value),
         required: isRequired,
         autoComplete: "do-not-autofill",
@@ -94,7 +105,7 @@ const EditText = (props) => {
     return (
         <>
             <div id={`text-${id}`} className={`verdant-control text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}${controlValue === "" ? " empty" : ""}`} style={style}>
-                <label htmlFor={id} >{label}</label>
+                {label && <label htmlFor={id} >{label}</label>}
                 <div className="hover-effect">
                     {inputControl}
                     {controlValue != "" && clearbutton}
@@ -113,7 +124,7 @@ const Text = (props) => {
     return (
         <>
             <div id={`text-${id}`} className={`text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${value === "" ? " empty" : ""}`} style={style}>
-                <label htmlFor={id} >{label}</label>
+                {label && <label htmlFor={id} >{label}</label>}
                 <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
             </div>
             {children}

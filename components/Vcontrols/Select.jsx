@@ -9,7 +9,7 @@ import PopupMenu from '../PopupMenu';
 
 
 const EditSelect = (props) => {
-    const { id, name, label, value, options, filtersArray = [], extraAction, style, hero, isRequired, specialSize="", children, readonly, debug } = props;
+    const { id, name, label, value, options, filtersArray = [], promptText, extraAction, style, innerStyle, hero, isRequired, specialSize="", children, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value || "");
     const [showPopup, setShowPopup] = useState(false);
     const [searchString, setSearchString] = useState("")
@@ -79,7 +79,7 @@ const EditSelect = (props) => {
 
     const clonedChildren = handleChildren();
 
-    const displayValue = showPopup ? "meh" : controlOptions[controlValue]?.caption || "";
+    const displayValue = controlOptions[controlValue]?.caption ? controlOptions[controlValue]?.caption : promptText;
 
     return (
         <>
@@ -102,7 +102,7 @@ const EditSelect = (props) => {
                             autoFocus
                         />
                         :
-                        <div className="control-surface" onClick={() => setShowPopup(true)}>{controlOptions[controlValue]?.caption || ""}</div>
+                        <div className="control-surface" style={innerStyle} onClick={() => setShowPopup(true)}>{displayValue}</div>
                     }
                     
                     <select
@@ -163,7 +163,7 @@ const Select = (props) => {
     return (
         <>
             <div id={`select-${id}`} className={`verdant-control select-box ${specialSize}${hero ? " hero" : ""}`} style={style}>
-                <label htmlFor={id} >{label}</label>
+                {label && <label htmlFor={id} >{label}</label>}
                 <div className="select-input" style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
             </div>
             {children}

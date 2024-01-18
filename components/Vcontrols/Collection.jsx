@@ -99,7 +99,6 @@ const EditCollection = (props) => {
                             onKeyDown={(e) => handleKeys(e.key)}
                             onFocus={() => setShowPopup(true)}
                             placeholder={Object.keys(controlValues).length > 0 ? "" : label}
-                            required={isRequired}
                         />
                     }
                 </div>

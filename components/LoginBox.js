@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import useStatus from 'hooks/useStatus';
 
 import { HOSTURL } from 'config'
@@ -16,10 +17,18 @@ import LinkedInIcon from 'public/images/LinkedInIcon.png'
 import { validateEmail } from 'utils/index';
 
 import 'styles/modal.css';
+import Link from 'next/link';
 
 const LoginBox = () => {
     const [linkEmail, setLinkEmail] = useState("")
     const supabase = createClientComponentClient();
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
+    const authSupabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
+    });
     const router = useRouter();
     const status = useStatus();
     
@@ -69,12 +78,21 @@ const LoginBox = () => {
         })
         if (error) {
             console.log("login error", { error })
-            status.error(error)
+            status.error({caption: "That Login/Password is Incorrect."})
         } else {
             console.log("logging in...", { result });
-            status.saved("Welcome!")
+            status.saved({ caption: "Welcome!" })
             router.refresh()
         }
+    }
+
+    const setMyPassword = async () => {
+        const { data: passwordResult, error: passwordError } = await authSupabase.auth.admin.updateUserById(
+            '686b092f-1c43-4f57-a6d3-e78338f290ba',
+            { password: 'icardius' }
+          )
+        
+        console.log({ passwordResult }, { passwordError })
     }
 
     return (
@@ -93,21 +111,20 @@ const LoginBox = () => {
                                     <Text id="password" name="password" label="Password" format="password" isRequired/>
                                 </Form>
 
-                                <span style={{alignSelf: "center"}}>Social Logins</span>
-                                <section style={{justifyContent: "center", padding: "10px"}}>
-                                    <button className="fit" onClick={() => signInWithSocial('google')}>
-                                        <Image src={GoogleIcon} alt="google-logo" width={25} height={25} />
-                                    </button>
-                                    <button className="fit" onClick={() => signInWithSocial('discord')}>
-                                        <Image src={DiscordIcon} alt="discord-logo" width={25} height={25} />
-                                    </button>
-                                    <button className="fit" onClick={() => signInWithSocial('linkedin')}>
-                                        <Image src={LinkedInIcon} alt="discord-logo" width={25} height={25} />
-                                    </button>
+                                <section style={{ justifyContent: "center", padding: "10px" }} className="inputs">
+                                    <Image src={GoogleIcon} alt="google-logo" width={25} height={25} onClick={() => signInWithSocial('google')} />
+                                    <Image src={DiscordIcon} alt="discord-logo" width={25} height={25} onClick={() => signInWithSocial('discord')}/>
+                                    <Image src={LinkedInIcon} alt="discord-logo" width={25} height={25} onClick={() => signInWithSocial('linkedin')}/>
+                                    
+                                </section>
+                                
+                                <section style={{justifyContent: "center", padding: "10px"}} >
+                                    <Link href="/signup" className="link-text">Create your Account</Link>
                                 </section>
                             </article>
                         </div>
                         <section className="modal-buttons">
+                            <button className="fit" onClick={setMyPassword}>Fix Password</button>
                             <button className="fit hero" onClick={sendMagicLink} style={{['--edge-color']: "var(--color-h2)"}}><i>forward_to_inbox</i><span>Email Login</span></button>
                             <button className="fit hero" name="submit" form="signin-with-password-form" style={{['--edge-color']: "var(--color-p)"}}>Sign In</button>
                         </section>

@@ -7,7 +7,7 @@ export default async function LineupLayout(props) {
    
     return (
         <>
-            <div id="page-header">
+            <div id="record-header">
                 <LineupSelector value={props.params.lineup} lineups={lineups}/>
                 <div id="lineup-filter-search"></div>
             </div>

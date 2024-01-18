@@ -15,7 +15,7 @@ export default async function EnsembleGeneralPage({params}) {
     const memberships = ensemble.EnsembleMembership.map(m => m);
     return (
         <>
-            <div id="page-header" className="hero-text">{ensemble.name}</div>
+            <div id="record-header" className="hero-text">{ensemble.name}</div>
             <div id="page" >
                 <fieldset style={{ height: "100%" }}>
                     <legend>Members</legend>
@@ -23,7 +23,7 @@ export default async function EnsembleGeneralPage({params}) {
                         modalButton={<><i>person_add</i><span>New Member</span></>}
                         buttonClass="fit"
                         title="Create New Member"
-                        buttonStyle={{width: "100%"}}
+                        buttonStyle={{width: "100%", marginBottom: "10px"}}
                     >
                         <Form id="new-member-modal-form" APIURL={`/api/ensembles/${ensemble.id}`} METHOD="POST" followPath="/e/members/$slug$" >
                             <section className="inputs">
@@ -71,7 +71,7 @@ export default async function EnsembleGeneralPage({params}) {
                         modalButton={<><i>add_circle</i><span>Create Lineup</span></>}
                         buttonClass="fit"
                         title="Create New Lineup"
-                        buttonStyle={{width: "100%"}}
+                        buttonStyle={{width: "100%", marginBottom: "10px"}}
                     >
                         <Form id="new-lineup-form" APIURL={`/api/ensembles/${ensemble.id}/lineup`} METHOD="POST" followPath={`/e/ensembles/${ensemble.id}/lineup/$slug$`} debug>
                             <Text id="lineup-name" name="name" label="Lineup Name" isRequired />

@@ -67,7 +67,7 @@ export default async function MemberProfilePageLayout(context) {
     return (
         <SecurityWrapper currentModule="members">
             <div id="page-base">
-                <div id="nav-header">
+                <div id="page-header">
                     <SubNav
                         caption="members"
                         root="members"

@@ -22,7 +22,7 @@ export async function getProfile() {
                 role
             )
         `)
-        .eq('user', session.user.id)
+        .eq('email', session.user.email)
 
     if (error) {
         console.error("fetch member user error:", error)
@@ -32,7 +32,6 @@ export async function getProfile() {
     // console.log({ profile });
 
     return {
-        user: profile[0].user,
         member: profile[0].member,
         role: profile[0].SecurityRole.role,
         permissions: profile[0].SecurityRole.permissions

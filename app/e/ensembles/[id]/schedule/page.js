@@ -9,7 +9,7 @@ export default async function EnsembleGeneralPage({params}) {
     // console.log({ events })
     return (
         <>
-            <div id="page-header" className="hero-text">Schedule</div>
+            <div id="record-header" className="hero-text">Schedule</div>
             <div id="page-grid">
                 {
                     events.map((ev, i) => {

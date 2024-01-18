@@ -16,7 +16,7 @@ const buttons = {
 const MessagesPage = async (props) => {
     return (
         <div id="page-base">
-            <div id="nav-header">
+            <div id="page-header">
                 <SubNav caption="Messaging" root="messages" navNodes={navNodes} buttons={buttons} />
             </div>
             <div id="page-frame">

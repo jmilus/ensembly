@@ -48,7 +48,7 @@ export default async function SettingsLayout(params) {
     return (
         <SecurityWrapper currentModule="settings">
             <div id="page-base">
-                <div id="nav-header">
+                <div id="page-header">
                     <SubNav caption="settings" root="settings" navNodes={navNodes} buttons={navButtons} />
                 </div>
                 <div id="page-frame">

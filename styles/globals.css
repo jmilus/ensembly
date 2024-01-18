@@ -33,7 +33,7 @@ body {
   --color-h3: 190 39% 40%;
   --gradient-cyan: linear-gradient(var(--color-c1), var(--color-c2), var(--color-c3));
   --color-moss: #31B824;
-  --color-cactus: #186B10;
+  --color-cactus: 115 74% 24%;
   
 
   --text1: white;
@@ -140,7 +140,13 @@ section {
 }
 
 section.center {
+  flex: 1;
   align-items: center;
+}
+
+section.scroll {
+  overflow-x: scroll;
+
 }
 
 section.inputs > * + *{
@@ -159,7 +165,7 @@ article.scroll {
 }
 article.scroll.column {
   display: grid;
-  grid-template-columns: "1fr";
+  grid-template-columns: 1fr;
   grid-auto-rows: min-content;
   grid-gap: 5px;
 }
@@ -422,8 +428,8 @@ label:has(input) {
 }
 
 .profile-button {
-  height: 40px;
-  width: 40px;
+  height: 100%;
+  width: 100%;
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid var(--primary);
@@ -624,30 +630,15 @@ label:has(input) {
   color: hsl(var(--color-p));
   cursor: pointer;
 }
+.link-text:hover {
+  text-decoration: underline;
+}
+.link-text:visited {
+  color: hsl(var(--color-h3));
+}
 
 
 /* controls */
-
-.btn {
-  cursor: pointer;
-}
-.btn:hover:not(.disabled) {
-  color: hsl(var(--color-p));
-}
-.btn.disabled {
-  opacity: 0.25;
-  cursor:not-allowed;
-}
-
-/* i.btn {
-  font-size: 1.25em;
-  padding: 5px;
-}
-i.btn.active {
-  border-radius: 50%;
-  background: var(--gray2);
-  background-clip: content-box;
-} */
 
 fieldset {
   padding: 10px;
@@ -860,7 +851,7 @@ fieldset.buttons > legend {
   align-items:center;
   justify-content:center;
   color: var(--text1);
-  font-size: calc(var(--hero-size) * 0.4);
+  font-size: calc(var(--hero-size) * 0.35);
   background-image: linear-gradient(120deg, lch(73 74.58 62.82) 20%, lch(46 73.56 7.6) 100%);
 }
 

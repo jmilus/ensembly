@@ -36,7 +36,7 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
         padding: "10px 15px",
         justifyContent: "left"
     }
-    const userIcon = <div ref={userIconRef} className="hero-icon">
+    const userIcon = <div ref={userIconRef} className="hero-icon" style={{['--hero-size']:"35px"}}>
         <button className="profile-button" onClick={() => setShowMenu(true)}>
             <div className="hero-initials">{initials}</div>
         </button>

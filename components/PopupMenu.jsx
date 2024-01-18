@@ -11,7 +11,7 @@ const PopupMenu = ({ id, parentRef, hideMe, position, matchParentWidth=false, di
     const menuPos = menuRef.current ? menuRef.current.getBoundingClientRect() : {x: 0, y: 0, width: 0, height: 0};
     const anchorNode = document.getElementById('app-body');
 
-    console.log("popup:", children)
+    // console.log("popup:", children)
     
     useEffect(() => {
         document.addEventListener('click', clickHandler, true)

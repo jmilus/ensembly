@@ -14,7 +14,7 @@ export const straightDate = (input) => {
 export const localizeDate = (input) => {
     const date = new Date(input)
     if (isNaN(date)) return undefined;
-    return new Date(date.getTime() - ((date.getTimezoneOffset() / 360) * ONEDAY));
+    return new Date(date.getTime() + ((date.getTimezoneOffset() / 360) * ONEDAY));
 }
 
 export const getTime = (input) => {
@@ -33,9 +33,10 @@ export const createNowDate = (input) => {
 }
 
 export const getDashedValue = (input, dateOnly) => {
+    // console.log({ input })
     let dashThisDate = input
     if (input instanceof Date != true) dashThisDate = new Date(input)
-    // console.log({ input })
+    if (input instanceof Date != true) return input;
     let dashedValue = `${dashThisDate.getFullYear()}-${doubleDigit(dashThisDate.getMonth() + 1)}-${doubleDigit(dashThisDate.getDate())}`
     if (dateOnly) return dashedValue;
     dashedValue += `T${doubleDigit(dashThisDate.getHours())}:${doubleDigit(dashThisDate.getMinutes())}:${doubleDigit(dashThisDate.getSeconds())}`

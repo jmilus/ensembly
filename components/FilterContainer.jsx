@@ -126,7 +126,7 @@ const FilterContainer = (props) => {
 
     const clearButton = <i id={`${id}-clear-button`} className={`big ${""}`} onClick={clearAll}>cancel</i>
     
-    const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px", minWidth: "150px" }} />
+    const searchBox = <Text id={`${id}-searchbox`} label={search?.label} value={searchString} clear extraAction={(v) => setSearchString(v)} style={{ flex: 1, maxWidth: "300px", minWidth: "200px" }} />
     
     let searchContainer;
     if (typeof window !== 'undefined') searchContainer = document.getElementById(`${id}-search`)

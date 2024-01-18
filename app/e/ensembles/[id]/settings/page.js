@@ -113,7 +113,7 @@ export default async function EnsembleSettingsPage({ params }) {
 
     return (
         <>
-            <div id="page-header" className="hero-text">{ensemble.name}</div>
+            <div id="record-header" className="hero-text">{ensemble.name}</div>
             <div id="page" >
                 <fieldset style={{flex: 1}}>
                     <legend>

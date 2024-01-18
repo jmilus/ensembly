@@ -5,7 +5,7 @@ import { useState } from 'react';
 // import './Vstyling.css';
 
 const File = (props) => {
-    const { id, name, label="Browse Files", limit, style, hero, isRequired, fileTypes, handling, debug } = props;
+    const { id, name, label="Browse Files", limit, style, hero, isRequired, fileTypes, handling="upload", debug } = props;
     const [controlValue, setControlValue] = useState(label);
 
     if (debug) console.log(name, { props }, { controlValue });
@@ -36,7 +36,7 @@ const File = (props) => {
 
     return (
         <div className={`verdant-control file-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}`} style={style}>
-            <label htmlFor={id} className="control-surface file-container hover-effect">
+            <label htmlFor={id} className={`control-surface file-container hover-effect${controlValue === label ? " no-file" : " file-selected"}`}>
                 <i>description</i>
                 {controlValue}
                 <input

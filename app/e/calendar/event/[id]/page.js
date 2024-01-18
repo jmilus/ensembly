@@ -48,7 +48,7 @@ const EventPage = async (context) => {
 
     return (
         <>
-            <div id="page-header">
+            <div id="record-header">
                 <Form id="event-event-name-form" auto >
                     <Text id="event-event-title" label="Event Name" name="name" value={event.name || event.model.name} hero isRequired />
                 </Form>

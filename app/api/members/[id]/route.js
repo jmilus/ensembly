@@ -74,7 +74,7 @@ export const updateOneMember = async (memberData) => {
     if (error) console.error("update member error:", error);
     if(data) console.log("update member data:", data)
 
-    return data;
+    return data[0];
 }
 
 // update

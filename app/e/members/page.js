@@ -9,6 +9,7 @@ import SubNav from 'components/SubNav';
 import FilterContainer from 'components/FilterContainer';
 import ItemCard from 'components/ItemCard';
 import { getBioOptions } from '@/api/members/bio/route';
+import Link from 'next/link';
 
 const MembersPage = async () => {
 
@@ -34,25 +35,28 @@ const MembersPage = async () => {
                 <button name="submit" className="fit" form="new-member-modal-form">Create Member</button>
             </section>
         </ModalButton>,
-        <ModalButton
-            key="modal-button-upload-members"
-            modalButton={<><i>upload</i><span>Upload Members</span></>}
-            title="Upload Members from Excel File"
-            buttonClass="fit"
-        >
-            <Form id="upload-members-modal-form" APIURL="/api/members/uploadMembers" METHOD="POST" debug>
-                <File id="fileUpload" name="members" handling="upload" fileTypes="xlsx" isRequired />
-            </Form>
-            <section className="modal-buttons">
-                <button name="submit" className="fit" form="upload-members-modal-form">Upload</button>
-            </section>
-        </ModalButton>
+        <Link href="/e/members/upload">
+            <button className="fit"><i>upload</i><span>Upload Members</span></button>
+        </Link>
+        // <ModalButton
+        //     key="modal-button-upload-members"
+        //     modalButton={<><i>upload</i><span>Upload Members</span></>}
+        //     title="Upload Members from Excel File"
+        //     buttonClass="fit"
+        // >
+        //     <Form id="upload-members-modal-form" APIURL="/api/members/uploadMembers" METHOD="POST" debug>
+        //         <File id="fileUpload" name="members" handling="upload" fileTypes="xlsx" isRequired />
+        //     </Form>
+        //     <section className="modal-buttons">
+        //         <button name="submit" className="fit" form="upload-members-modal-form">Upload</button>
+        //     </section>
+        // </ModalButton>
     ]
 
     return (
         <SecurityWrapper currentModule="members">
             <div id="page-base">
-                <div id="nav-header">
+                <div id="page-header">
                     <SubNav caption="members" root="members" buttons={navButtons} />
                 </div>
                 <div id="page-frame">

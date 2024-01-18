@@ -74,7 +74,7 @@ const EditNumber = (props) => {
     
     return (
         <div id={`number-${id}`} className={`verdant-control number-box${label ? "" : " unlabeled"}${controlValue === 0 ? " empty" : ""}`} style={style}>
-            <label htmlFor={id} >{label}</label>
+            {label && <label htmlFor={id} >{label}</label>}
             <div className="hover-effect">
                 <input
                     id={id}
@@ -110,7 +110,7 @@ const Number = (props) => {
     return (
         <>
             <div id={`number-${id}`} className={`number-box ${hero ? " hero" : ""}`} style={style}>
-                <label htmlFor={id} >{label}</label>
+                {label && <label htmlFor={id} >{label}</label>}
                 <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)", textAlign: "right"}}>{displayNumberValue}</div>
             </div>
             {children}

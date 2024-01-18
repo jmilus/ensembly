@@ -44,7 +44,7 @@ const EditDateTime = (props) => {
     return (
         <>
             <div id={`date-${id}`} className={`verdant-control date-box${label ? "" : " unlabeled"}${controlValue === "" ? " emptry" : ""}`} style={style}>
-                <label htmlFor={name} >{`${label} Date`}</label>
+                {label && <label htmlFor={name} >{`${label} Date`}</label>}
                 <div className="hover-effect">
                     <input
                         id={id}
@@ -84,7 +84,7 @@ const DateTime = (props) => {
     return (
         <>
             <div id={`dateonly-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
-                <label htmlFor={id} >{label}</label>
+                {label && <label htmlFor={name} >{`${label} Date`}</label>}
                 <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{`${displayDate.toDateString()} ${displayDate.toLocaleTimeString()}`}</div>
             </div>
             {children}

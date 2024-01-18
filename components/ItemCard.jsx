@@ -4,7 +4,20 @@ import { useRouter, usePathname } from 'next/navigation';
 import { getInitials } from '../utils';
 import { useDrag } from 'react-dnd';
 
-const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subtitle, cardLinkTo, captionLinkTo, style, cardBodyStyle, highlightWhenSelectedId, children }) => {
+const ItemCard = ({
+    classes = "basic",
+    cardType,
+    dropItem,
+    itemIcon,
+    caption,
+    subtitle,
+    cardLinkTo,
+    captionLinkTo,
+    style,
+    cardBodyStyle,
+    highlightWhenSelectedId,
+    children
+}) => {
     const router = useRouter();
     const pathname = usePathname()
 
@@ -40,7 +53,7 @@ const ItemCard = ({ classes="basic", cardType, dropItem, itemIcon, caption, subt
                     </div>
                 }
                 {caption &&
-                    <div style={{flex:1}}>
+                    <div style={{flex:1, textAlign: "left", whiteSpace: "pre-wrap"}}>
                         <div className="card-caption">{caption}</div>
                         <div className="card-subtitle">{subtitle}</div>
                     </div>

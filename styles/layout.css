@@ -17,10 +17,9 @@
     --text-active: white;
 }
 
-#nav-header { /* action-section */
-    color: var(--text2);
+#page-header {
     background: var(--gray2);
-    height: 4em;
+    height: 50px;
     display: flex;
     align-items: center;
     --text-active: var(--text2);
@@ -28,7 +27,7 @@
     --text-active: var(--text1);
 }
 
-#page-header {
+#record-header {
     display: flex;
     justify-content: space-between;
     position: sticky;

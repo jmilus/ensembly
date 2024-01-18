@@ -123,7 +123,7 @@ const LineupManager = ({ initialProps }) => { //
                     <FilterContainer
                         id="roster"
                         filterTag="member"
-                        search={{ label: "member", searchProp: "caption" }}
+                        search={{ label: "Search Members", searchProp: "caption" }}
                         filters={[
                             { name: "assigned", filterBy: "assigned", buttons: [{ caption: "unassigned", value: false }, { caption: "assigned", value: true }] },
                             { name: "membership-capacity", filterBy: "capacity", buttons: capacities.map(cap => { return { caption: cap.type, value: cap.type }}) },

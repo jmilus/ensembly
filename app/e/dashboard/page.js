@@ -6,7 +6,7 @@ const DashboardPage = async () => {
 
     return (
         <div id="page-base">
-            <div id="nav-header">
+            <div id="page-header">
                 <SubNav caption="dashboard" />
             </div>
             <div id="page-frame">

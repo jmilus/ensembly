@@ -1,7 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { nester } from '../../../../utils/index'
+import { nester } from 'utils/index'
 
 export const getAllDivisions = async (nested=true) => {
     const supabase = createServerComponentClient({ cookies });

@@ -31,7 +31,7 @@ section > form {
 
 .verdant-control > .hover-effect {
     background: hsl(var(--grayx) 90% / 0.25);
-    border-bottom: 1px solid hsl(var(--edge-color));
+    border-bottom: 0.5px solid hsl(var(--edge-color));
     overflow: hidden;
     box-shadow: 0 0 0 0px inset hsl(var(--edge-color));
     transition: all 0.2s ease;
@@ -84,6 +84,9 @@ section.spaced > * + * {
 
 .verdant-control.file-box label {
     color: hsl(var(--edge-color));
+}
+.verdant-control.file-box label.no-file {
+    color: var(--gray6);
 }
 
 .verdant-control.select-box .hover-effect:has(input:focus-visible) {
@@ -268,7 +271,6 @@ select:-internal-list-box {
 
 .clearable-control {
     position: relative;
-    margin-right: 10px;
 }
 
 .clearable-control > input {
@@ -485,6 +487,7 @@ i.dot.selected {
     padding: 10px;
     cursor: pointer;
     user-select: none;
+    margin: 0;
 }
 /* .file-box label:hover {
     background: hsl(var(--edge-color)/0.2);
