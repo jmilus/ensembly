@@ -189,37 +189,36 @@ export const validateValue = (value, fieldName, options) => {
         
         case 'list':
             console.log("evaluating list item:", fieldName, value, options)
-            switch (fieldName) {
-                case 'membershipType':
-                    if (value === null) return [null, 'pass']
-                    return [value, 'pass']
-                case 'division':
-                case 'ensemble':
-                    if (value === null) {
-                        if (options.length === 1) return [options[0], 'warn'];
-                        return [null, 'pass']
-                    }
-                    if (options.map(o => o.name).includes(value)) {
-                        return [value, 'pass'];
-                    }
-                    break;
-                case "sex":
-                case "eyes":
-                case "hair":
-                case "race":
-                    if (value === null || value === "") return [null, 'pass']
-                    //
-                    if (options.includes(value)
-                        || options.map(o => o.name).includes(value)
-                        || options.map(o => o.type).includes(value))
-                    {
-                        return [value, 'pass'];
-                    }
-                    //
-                    return [value, 'fail']
-                default:
-                    break;
+            if (options.length === 1) {
+                const onlyOption = options[0].name || options[0].type || options[0]
+                return [onlyOption, onlyOption === value ? 'pass' : 'warn'];
             }
+
+            if (value === null || value === "") {
+                switch (fieldName) {
+                    case 'membershipType':
+                        return [null, 'pass']
+                    case 'division':
+                    case 'ensemble':
+                        return [null, 'fail']
+                    case "sex":
+                    case "eyes":
+                    case "hair":
+                    case "race":
+                        return [null, 'pass']
+                    default:
+                        break;
+                }
+            }
+
+            if (options.includes(value)
+                || options.map(o => o.name).includes(value)
+                || options.map(o => o.type).includes(value))
+            {
+                return [value, 'pass'];
+            }
+            
+            
             return [value, 'fail']
         
         default:
@@ -245,14 +244,16 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                 })
                 if (validatedHeader) {
                     const header = FIELDS[validatedHeader].conform ? FIELDS[validatedHeader].conform : validatedHeader;
-                    headerSet[header] = c
+                    headerSet[c] = header
                 }
             })
 
             //if 'ensemble' header is not present in xls file, add
-            if (!Object.keys(headerSet).includes('ensemble')) headerSet.ensemble = 'implicit'
+            if (!Object.values(headerSet).includes('ensemble')) headerSet[headerSet.length] = 'ensemble'
             //if 'membershipType' heeader is not present in xls file, add
-            if (!Object.keys(headerSet).includes('membershipType')) headerSet.membershipType = 'implicit'
+            if (!Object.values(headerSet).includes('membershipType')) headerSet[headerSet.length] = 'membershipType'
+
+            const ensembleColIndex = Object.keys(headerSet).find(key => headerSet[key] === 'ensemble')
 
             worksheet.eachRow((row, r) => {
                 if (r > 1) {
@@ -262,13 +263,29 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                         rowValues[c] = cell.value;
                     })
                     Object.keys(FIELDS).forEach(field => {
-                        if (headerSet[field]) {
-                            const rowValue = Number.isInteger(headerSet[field]) ? rowValues[headerSet[field]] : null
-                            console.log({ field }, {rowValue})
+                        const columnNum = Object.keys(headerSet).find(key => headerSet[key] === field)
+                        if (columnNum) {
+                            let rowValue = ""
+                            let fieldOptions = optionSets[field]
+                            if (field === 'ensemble') {
+                                if (ensembleName != null && ensembleName != "") rowValue = ensembleName
+                            }
+
+                            if (field === 'membershipType') {
+                                const thisEnsembleName = rowValues[ensembleColIndex]
+                                const thisEnsemble = optionSets.ensemble.find(ens => ens.name === thisEnsembleName)
+                                fieldOptions = fieldOptions.filter(option => {
+                                    return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
+                                })
+                            }
+
+                            if (rowValues[columnNum]) rowValue = rowValues[columnNum]
+                            console.log({ field }, {rowValue}, {fieldOptions})
                             const validatedValue = validateValue(
                                 rowValue === undefined ? "" : rowValue,
                                 field,
-                                optionSets[field]
+                                fieldOptions,
+                                rowValues
                             );
     
                             switch (field) {
@@ -296,18 +313,8 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                                     member.membership[field] = validatedValue;
                                     break;
                                 case 'ensemble':
-                                    console.log("ensemble:", validatedValue)
-                                    let ensembleValue = validatedValue
-                                    if (validatedValue[0] === null) {
-                                        if (ensembleName != null && ensembleName != "") {
-                                            console.log("ensemble name:", ensembleName, ensembleName != "")
-                                            ensembleValue = [ensembleName, 'pass']
-                                        } else if (headerSet.membershipType || headerSet.membershipStart || headerSet.membershipExpires || headerSet.division) {
-                                            ensembleValue = ["REQUIRED", 'fail']
-                                        }
-                                        ensembleValue = [null, 'pass']
-                                    }
-                                    member.ensemble = ensembleValue;
+                                    // console.log("ensemble:", validatedValue)
+                                    member.ensemble = validatedValue;
                                     break;
                                 case 'division':
                                     member.division = validatedValue;

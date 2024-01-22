@@ -10,7 +10,8 @@ import { getDashedValue } from 'utils/calendarUtils';
 const ImportRow = ({row, r, optionSets}) => {
     const [rowValues, setRowValues] = useState(row)
 
-    console.log({ optionSets })
+    // console.log({ optionSets })
+    // console.log({rowValues})
 
     const updateCell = (field, value, options) => {
         const newRowValues = { ...rowValues }
@@ -19,25 +20,38 @@ const ImportRow = ({row, r, optionSets}) => {
     }
 
     const getInputControl = (field, value, validState, rowIndex) => {
-        // console.log({ field }, { value })
+        // console.log("getting input controls:", { field }, { value })
 
         const importStyling = (status) => {
             switch (status) {
                 case 'warn':
-                    return { backgroundColor: 'hsl(var(--color-h2))', color: 'white' }
+                    return { backgroundColor: 'hsl(var(--color-h2) / 0.25)',['--edge-color']: 'var(--color-h2)', color: 'hsl(var(--color-h2))' }
                 case 'fail': 
-                    return { backgroundColor: 'red', color: 'white' }
+                    return { backgroundColor: 'hsl(0 100% 50% / 0.25)', ['--edge-color']: '0 100% 50%', color: 'red' }
                 default:
                     return {}
             }
         }
 
-        const props = { id: `${rowIndex}-${field}`, name: field, value: value, innerStyle: importStyling(validState), extraAction: (v) => updateCell(field, v, optionSets[field]) }
+        const props = { id: `${rowIndex}-${field}`, name: field, value: value, style: importStyling(validState), extraAction: (v) => updateCell(field, v, optionSets[field]) }
+        const thisEnsemble = optionSets.ensemble.find(ens => ens.name === rowValues.ensemble[0])
         switch (field) {
 
-            case "division":
-            case "ensemble":
             case "membershipType":
+                const membershipOptions = optionSets.membershipType.filter(option => {
+                    return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
+                })
+                return <Select {...props} options={membershipOptions} promptText={value} />
+            case "division":
+                const thisMembershipType = optionSets.membershipType.find(mem => mem.name === rowValues.membershipType[0])
+                const divisionOptions = optionSets.division.filter(div => {
+                    if (!thisEnsemble || !thisMembershipType) return false
+                    if (div.ensemble != thisEnsemble.id) return false
+                    if (thisMembershipType.capacity.includes(div.capacity)) return true
+                    
+                })
+                return <Select {...props} options={divisionOptions} promptText={value} />
+            case "ensemble":
             case "addressType":
             case "sex":
             case "hair":
@@ -51,10 +65,10 @@ const ImportRow = ({row, r, optionSets}) => {
             case "weight":
                 return <Number {...props} format={field} />
             case "birthday":
-                return <Text {...props} value={getDashedValue(value, true)} style={{textAlign: "right"}} />
+                return <Text {...props} value={getDashedValue(value, true)} innerStyle={{textAlign: "right"}} />
             case "membershipStart":
             case "membershipExpires":
-                return <Text {...props} style={{textAlign: "right"}} />
+                return <Text {...props} innerStyle={{textAlign: "right"}} />
             case "firstName":
             case "middleName":
             case "lastName":
