@@ -470,7 +470,9 @@ i.dot.selected {
 }
 
 .verdant-control.checkbox {
-    margin: 5px;
+    display: flex;
+    height: auto;
+    padding: 5px;
 }
 
 .checkbox {
@@ -519,19 +521,23 @@ i.dot.selected {
 
 .checkbox i {
     font-size: 1.5em;
-    margin-right: 5px;
     color: gray;
+}
+
+.checkbox span {
+    margin-left: 5px;
 }
 
 .checkbox input {
     display: none;
 }
 
-.checkbox label {
+.checkbox > label {
     display: flex;
     align-items: center;
     width: 100%;
     color: black;
+    margin: auto 5px;
 }
 
 .radio-buttons-set {

@@ -41,7 +41,7 @@ const CheckBox = (props) => {
                     onChange={handleControlValueChange} 
                     readOnly={readonly}
                 />
-                {label}
+                {label && <span>{label}</span>}
             </label>
         </div>
     )

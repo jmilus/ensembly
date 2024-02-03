@@ -6,34 +6,34 @@ import { CAL, STATES } from './constants';
 import { getDashedValue, localizeDate } from './calendarUtils';
 
 export const FIELDS = {
-    firstName:           { type: 'string',   caption: "First Name",          show: false, width: "150px" },
-    lastName:           { type: 'string',   caption: "Last Name",           show: false, width: "150px" },
-    middleName:         { type: 'string',   caption: "Middle Name",         show: false, width: "150px" },
-    suffix:              { type: 'string',   caption: "Suffix",               show: false, width: "150px" },
-    aka:                { type: 'string',   caption: "AKA",                 show: false, width: "150px" },
-    birthday:           { type: 'dateonly', caption: "Birthday",            show: false, width: "150px" },
-    sex:                { type: 'list',     caption: "Sex",                 show: false, width: "150px" },
-    height:             { type: 'height',   caption: "Height",              show: false, width: "150px" },
-    weight:             { type: 'int',      caption: "Weight",              show: false, width: "150px" },
-    race:               { type: 'list',     caption: "Race",                show: false, width: "150px" },
-    ethnicity:          { type: 'string',   caption: "Ethnicity",           show: false, width: "150px" },
-    hair:               { type: 'list',     caption: "Hair Color",          show: false, width: "150px" },
-    eyes:               { type: 'list',     caption: "Eye Color",           show: false, width: "150px" },
-    email:              { type: 'string',   caption: "Email",               show: false, width: "150px" },
-    phonenumber:        { type: 'phone',    caption: "Phone Number",        show: false, width: "150px" },
-    street:             { type: 'string',   caption: "Street",              show: false, width: "150px" },
-    street2:            { type: 'string',   caption: "Unit",                show: false, width: "150px" },
-    city:               { type: 'string',   caption: "City",                show: false, width: "150px" },
-    state:              { type: 'state',    caption: "State",               show: false, width: "150px" },
-    postalCode:         { type: 'string',   caption: "Zip",                 show: false, width: "150px" },
-    country:            { type: 'string',   caption: "Country",             show: false, width: "150px" },
-    poBox:              { type: 'string',   caption: "PO Box",              show: false, width: "150px" },
-    addressType:        { type: 'list',     caption: "Address Type",        show: false, width: "150px" },
-    ensemble:           { type: 'list',     caption: "Ensemble",            show: false, width: "200px" },
-    membershipType:     { type: 'list',     caption: "Membership Type",     show: false, width: "150px" },
-    division:           { type: 'list',     caption: "Division",            show: false, width: "200px" },
-    membershipStart:    { type: 'date',     caption: "Membership Start",    show: false, width: "150px" },
-    membershipExpires:  { type: 'date',     caption: "Membership Expires",  show: false, width: "150px" },
+    firstName:           { type: 'string',   caption: "First Name",          show: false, width: "150px", required: true },
+    lastName:           { type: 'string',   caption: "Last Name",           show: false, width: "150px", required: true },
+    middleName:         { type: 'string',   caption: "Middle Name",         show: false, width: "150px", required: false },
+    suffix:              { type: 'string',   caption: "Suffix",               show: false, width: "150px", required: false },
+    aka:                { type: 'string',   caption: "AKA",                 show: false, width: "150px", required: false },
+    birthday:           { type: 'dateonly', caption: "Birthday",            show: false, width: "150px", required: false },
+    sex:                { type: 'list',     caption: "Sex",                 show: false, width: "150px", required: false },
+    height:             { type: 'height',   caption: "Height",              show: false, width: "75px", required: false },
+    weight:             { type: 'int',      caption: "Weight",              show: false, width: "150px", required: false },
+    race:               { type: 'list',     caption: "Race",                show: false, width: "150px", required: false },
+    ethnicity:          { type: 'string',   caption: "Ethnicity",           show: false, width: "150px", required: false },
+    hair:               { type: 'list',     caption: "Hair Color",          show: false, width: "150px", required: false },
+    eyes:               { type: 'list',     caption: "Eye Color",           show: false, width: "150px", required: false },
+    email:              { type: 'string',   caption: "Email",               show: false, width: "200px", required: false },
+    phonenumber:        { type: 'phone',    caption: "Phone Number",        show: false, width: "150px", required: false },
+    street:             { type: 'string',   caption: "Street",              show: false, width: "150px", required: false },
+    street2:            { type: 'string',   caption: "Unit",                show: false, width: "150px", required: false },
+    city:               { type: 'string',   caption: "City",                show: false, width: "175px", required: false },
+    state:              { type: 'state',    caption: "State",               show: false, width: "75px", required: false },
+    postalCode:         { type: 'string',   caption: "Zip",                 show: false, width: "100px", required: false },
+    country:            { type: 'string',   caption: "Country",             show: false, width: "150px", required: false },
+    poBox:              { type: 'string',   caption: "PO Box",              show: false, width: "150px", required: false },
+    addressType:        { type: 'list',     caption: "Address Type",        show: false, width: "150px", required: false },
+    ensemble:           { type: 'list',     caption: "Ensemble",            show: false, width: "200px", required: false },
+    membershipType:     { type: 'list',     caption: "Membership Type",     show: false, width: "150px", required: false },
+    division:           { type: 'list',     caption: "Division",            show: false, width: "200px", required: false },
+    membershipStart:    { type: 'date',     caption: "Membership Start",    show: false, width: "150px", required: false },
+    membershipExpires:  { type: 'date',     caption: "Membership Expires",  show: false, width: "150px", required: false },
     emailAddress:       { conform: 'email' },
     phone:              { conform: 'phonenumber' },
     street1:            { conform: 'street' },
@@ -45,23 +45,46 @@ export const FIELDS = {
 
 
 export const validateValue = (value, fieldName, options) => {
-    // console.log("validating value:", value, fieldName)
+
+    if (FIELDS[fieldName].type === 'list') {
+        // console.log("evaluating list item:", fieldName, value, options)
+        if (options.length === 1) {
+            const onlyOption = options[0].name || options[0].type || options[0]
+            return [onlyOption, onlyOption === value ? 'pass' : 'warn'];
+        }
+
+        if (value === null || value === "") {
+            return [null, FIELDS[fieldName].required ? 'fail' : 'pass']
+        }
+
+        if (options.includes(value)
+            || options.map(o => o.name).includes(value)
+            || options.map(o => o.type).includes(value))
+        {
+            return [value, 'pass'];
+        }
+        
+        return [value, 'fail']
+    }
+
+
+    if (value === null || value === "") {
+        return [value, FIELDS[fieldName].required ? 'fail' : 'pass']
+    }
     switch (FIELDS[fieldName].type) {
         case 'string':
-            if (value === null || value === "") {
-                if (fieldName === 'firstName' || fieldName === 'lastName') {
-                    return [null, 'fail']
-                }
-                return [value, 'pass']
+            switch (fieldName) {
+                case "email":
+                    let emailtext = value.text ? value.text : value;
+                    return [emailtext, validateEmail(emailtext) ? 'pass' : 'fail']
+                case "city":
+                    let cityName = value.split(",")
+                    return [cityName[0], 'pass']
+                default:
+                    return [value.toString(), 'pass'];
             }
-            if (fieldName === 'email') {
-                let emailtext = value.text ? value.text : value;
-                return [emailtext, validateEmail(emailtext) ? 'pass' : 'fail']
-            }
-            return [value.toString(), 'pass'];
 
         case 'phone':
-            if (value === null) return ["", 'pass']
             const phoneNumber = value.toString().replace(/[^0-9]*/gm, '')
             if (phoneNumber.length >= 7) {
                 return [phoneNumber, 'pass'];
@@ -70,103 +93,52 @@ export const validateValue = (value, fieldName, options) => {
 
         case 'height':
             let validatedHeight;
-            if (value === null) return [0, 'pass'];
-            if (!/[^0-9]/gm.test(value.toString())) {
-                return [parseInt(value), 'pass']
-
-            } else {
-                //import value is marked up
-                const h = value.toString();
-
-                const findFormat = () => {
-                    let separator;
-                    if (h.includes("'")) separator = "'"
-                    if (h.includes("’")) separator = "’"
-                    if (h.includes("f")) separator = "f"
-                    if (h.includes("-")) separator = "-"
-                    if (h.includes(". ")) separator = ". "
-                    if (h.includes(".")) separator = ".";
-                    switch (separator) {
-                        case "'":
-                        case "’":
-                        case "f":
-                        case "-":
-                        case ". ":
-                            return { type: "separator", separator }
-                        case ".":
-                        default:
-                            return { type: "point", separator }
+            const h = value.toString();
+    
+            let arr = h.split(/[^1234567890.]/g)
+            let feet = 0;
+            let inches = 0;
+            arr.forEach(v => {
+                if (/[1234567890.]/g.test(v)) {
+                    if (!feet) {
+                        feet = /[.]/g.test(v) ? parseFloat(v) : parseInt(v)
+                    } else if (!inches) {
+                        inches = /[.]/g.test(v) ? parseFloat(v) : parseInt(v)
                     }
                 }
-                const format = findFormat()
+            })
 
-                // console.log({ format })
+            validatedHeight = Math.round(feet * 12) + inches
 
-
-                switch (format.type) {
-                    case "separator":
-                        const getFeetAndInches = (sep) => {
-                            const sepIndex = h.indexOf(sep)
-                            const feet = h.slice(0, sepIndex).replace(/[^0123456789.]*/gm, '');
-                            const inch = h.slice(sepIndex + 1).replace(/[^0123456789.]*/gm, '');
-                            return { feet, inch }
-                        }
-                        const { feet, inch } = getFeetAndInches(format.separator)
-        
-                        // console.log({ feet }, { inch })
-
-                        validatedHeight = (parseInt(feet) * 12) + parseInt(inch);
-                        break;
-                    case "point":
-                        validatedHeight = Math.round(parseFloat(h.replace(/[^0123456789.]*/gm, '')) * 12)
-                        break;
-                    default:
-                        validatedHeight = 0
-                }
-            }
-            // console.log({validatedHeight})
-            return isNaN(validatedHeight) ? [value, 'fail'] : [validatedHeight, 'warn'];
+            if (validatedHeight === 0) return [value, "fail"]
+            if(validatedHeight < 36 || validatedHeight > 83) return [validatedHeight, "warn"]
+            
+            return [validatedHeight, 'pass'];
 
         case 'int':
-            if (value === null) return 0;
             return isNaN(parseInt(value)) ? [value, 'fail'] : [parseInt(value), 'pass'];
         
         case 'dateonly':
-            if (value === null) return [null, 'pass'];
-            if (!isNaN(new Date(value).getMonth())) return [localizeDate(value).toLocaleDateString(), 'pass'];
-            if (value.toString().match(/[A-z]/g)) {
-                let d = value.toString();
-                let month = 'none';
-                CAL.month.short.some(mon => {
-                    const foundIt = d.includes(mon)
-                    if (foundIt) month = mon;
-                    return foundIt
+            const dateNums = value.toLocaleString().match(/[0-9]+/g)
+
+            if (dateNums && dateNums.length > 0) {
+                
+                let monthIndex;
+                const monthSearch = CAL.month.short.some((mon, m) => {
+                    monthIndex = m
+                    return value.toString().includes(mon)
                 })
-                if (month != 'none') {
-                    const monthIndex = CAL.month.short.indexOf(month)
-                    const nums = d.match(/[0-9]+/g);
-                    let date;
-                    let year = new Date().getFullYear()
-                    nums.forEach(num => {
-                        const n = parseInt(num)
-                        if (n > 31 || n === 0) {
-                            if (n + 2000 > year) {
-                                year = 1900 + n
-                            } else {
-                                year = 2000 + n
-                            }
-                        } else {
-                            date = n;
-                        }
-                    })
-                    const birthdayValue = new Date(year, monthIndex, date)
-                    return [birthdayValue.toLocaleDateString(), 'warn']
+                
+                if (monthSearch) {
+                    return [`${monthIndex + 1}-${dateNums[0]}${dateNums.length > 1 ? `-${dateNums[1]}` : ""}`, 'pass']
+                } else if (dateNums.length > 1) {
+                    return [`${dateNums[0]}-${dateNums[1]}${dateNums.length > 2 ? `-${dateNums[2]}` : ""}`, 'pass']
                 }
             }
+
             return [value, 'fail']
 
         case 'date':
-            if (value === null) return [null, 'pass'];
             const pattern = /(st|rd|th)/g
             if (!isNaN(new Date(value).getMonth())) { // if it IS a number...
                 const dateString = localizeDate(value).toLocaleDateString();
@@ -178,48 +150,14 @@ export const validateValue = (value, fieldName, options) => {
             }
 
         case 'state':
-            if (value === null) return [null, 'pass'];
-            if (value.length > 2) {
-                return STATES.long[value.toLowerCase()] ? [STATES.long[value.toLowerCase()], 'pass'] : [value, 'fail'];
-            } else if (value.length === 2) {
-                return STATES.short[value.toUpperCase()] ? [value.toUpperCase(), 'pass'] : [value, 'fail'];
+            const stateValue = value.trim()
+            if (stateValue.length > 2) {
+                return STATES.long[stateValue.toLowerCase()] ? [STATES.long[stateValue.toLowerCase()], 'pass'] : [stateValue, 'fail'];
+            } else if (stateValue.length === 2) {
+                return STATES.short[stateValue.toUpperCase()] ? [stateValue.toUpperCase(), 'pass'] : [stateValue, 'fail'];
             } else {
-                return [value, 'fail']
+                return [stateValue, 'fail']
             }
-        
-        case 'list':
-            console.log("evaluating list item:", fieldName, value, options)
-            if (options.length === 1) {
-                const onlyOption = options[0].name || options[0].type || options[0]
-                return [onlyOption, onlyOption === value ? 'pass' : 'warn'];
-            }
-
-            if (value === null || value === "") {
-                switch (fieldName) {
-                    case 'membershipType':
-                        return [null, 'pass']
-                    case 'division':
-                    case 'ensemble':
-                        return [null, 'fail']
-                    case "sex":
-                    case "eyes":
-                    case "hair":
-                    case "race":
-                        return [null, 'pass']
-                    default:
-                        break;
-                }
-            }
-
-            if (options.includes(value)
-                || options.map(o => o.name).includes(value)
-                || options.map(o => o.type).includes(value))
-            {
-                return [value, 'pass'];
-            }
-            
-            
-            return [value, 'fail']
         
         default:
             return null;
@@ -248,10 +186,12 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                 }
             })
 
+            console.log({headerSet})
+
             //if 'ensemble' header is not present in xls file, add
-            if (!Object.values(headerSet).includes('ensemble')) headerSet[headerSet.length] = 'ensemble'
+            if (!Object.values(headerSet).includes('ensemble')) headerSet["100"] = 'ensemble'
             //if 'membershipType' heeader is not present in xls file, add
-            if (!Object.values(headerSet).includes('membershipType')) headerSet[headerSet.length] = 'membershipType'
+            if (!Object.values(headerSet).includes('membershipType')) headerSet["101"] = 'membershipType'
 
             const ensembleColIndex = Object.keys(headerSet).find(key => headerSet[key] === 'ensemble')
 
@@ -280,7 +220,7 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                             }
 
                             if (rowValues[columnNum]) rowValue = rowValues[columnNum]
-                            console.log({ field }, {rowValue}, {fieldOptions})
+                            // console.log({ field }, {rowValue}, {fieldOptions})
                             const validatedValue = validateValue(
                                 rowValue === undefined ? "" : rowValue,
                                 field,
@@ -305,7 +245,7 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                                     member.address[field] = validatedValue;
                                     break;
                                 case 'membershipType':
-                                    console.log("membership type:", validatedValue)
+                                    // console.log("membership type:", validatedValue)
                                     member.membership[field] = validatedValue
                                     break;
                                 case 'membershipStart':
@@ -326,7 +266,6 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
 
                     })
                     
-
                     records.push(member)
                 }
             })

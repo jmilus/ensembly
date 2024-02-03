@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { readXlsxFile, validateValue, FIELDS } from 'utils/importFromExcel';
-import { Form, Text, Number, File, Select, DateTime, DateOnly } from 'components/Vcontrols';
+import { Form, Text, Number, File, Select, CheckBox, DateTime, DateOnly } from 'components/Vcontrols';
+import SubNav from 'components/SubNav';
 
 import useStatus from 'hooks/useStatus';
 import { getDashedValue } from 'utils/calendarUtils';
 
-const ImportRow = ({row, r, optionSets}) => {
+const ImportRow = ({ row, r, optionSets, selectRow }) => {
     const [rowValues, setRowValues] = useState(row)
 
     // console.log({ optionSets })
@@ -25,8 +26,8 @@ const ImportRow = ({row, r, optionSets}) => {
         const importStyling = (status) => {
             switch (status) {
                 case 'warn':
-                    return { backgroundColor: 'hsl(var(--color-h2) / 0.25)',['--edge-color']: 'var(--color-h2)', color: 'hsl(var(--color-h2))' }
-                case 'fail': 
+                    return { backgroundColor: 'hsl(var(--color-h2) / 0.25)', ['--edge-color']: 'var(--color-h2)', color: 'hsl(var(--color-h2))' }
+                case 'fail':
                     return { backgroundColor: 'hsl(0 100% 50% / 0.25)', ['--edge-color']: '0 100% 50%', color: 'red' }
                 default:
                     return {}
@@ -36,12 +37,15 @@ const ImportRow = ({row, r, optionSets}) => {
         const props = { id: `${rowIndex}-${field}`, name: field, value: value, style: importStyling(validState), extraAction: (v) => updateCell(field, v, optionSets[field]) }
         const thisEnsemble = optionSets.ensemble.find(ens => ens.name === rowValues.ensemble[0])
         switch (field) {
-
+            
             case "membershipType":
                 const membershipOptions = optionSets.membershipType.filter(option => {
                     return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
                 })
-                return <Select {...props} options={membershipOptions} promptText={value} />
+                console.log({membershipOptions})
+                const membershipMatch = membershipOptions.some(mem => mem.name === value)
+                return <Select {...props} style={membershipMatch ? {} : importStyling('fail')} options={membershipOptions} promptText={value} />
+            
             case "division":
                 const thisMembershipType = optionSets.membershipType.find(mem => mem.name === rowValues.membershipType[0])
                 const divisionOptions = optionSets.division.filter(div => {
@@ -50,7 +54,16 @@ const ImportRow = ({row, r, optionSets}) => {
                     if (thisMembershipType.capacity.includes(div.capacity)) return true
                     
                 })
-                return <Select {...props} options={divisionOptions} promptText={value} />
+                console.log({ divisionOptions })
+                const thisDivision = divisionOptions.find(div => div.name === value);
+                let divInEnsemble = false;
+                let divCapMatch = false;
+                if (thisDivision) {
+                    divInEnsemble = thisDivision.ensemble === thisEnsemble.id;
+                    divCapMatch = thisMembershipType.capacity.includes(thisDivision.capacity)
+                }
+                return <Select {...props} style={divInEnsemble && divCapMatch ? {} : importStyling('fail') } options={divisionOptions} promptText={value} />
+            
             case "ensemble":
             case "addressType":
             case "sex":
@@ -58,17 +71,22 @@ const ImportRow = ({row, r, optionSets}) => {
             case "eyes":
             case "race":
                 return <Select {...props} options={optionSets[field]} promptText={value} />
+            
             case "email":
             case "phonenumber":
                 return <Text {...props} format={field} />
+            
             case "height":
             case "weight":
                 return <Number {...props} format={field} />
+
             case "birthday":
-                return <Text {...props} value={getDashedValue(value, true)} innerStyle={{textAlign: "right"}} />
+                return <Text {...props} value={getDashedValue(value, true)} innerStyle={{ textAlign: "right" }} />
+
             case "membershipStart":
             case "membershipExpires":
-                return <Text {...props} innerStyle={{textAlign: "right"}} />
+                return <Text {...props} innerStyle={{ textAlign: "right" }} />
+
             case "firstName":
             case "middleName":
             case "lastName":
@@ -103,15 +121,15 @@ const ImportRow = ({row, r, optionSets}) => {
     }
 
     return (
-        <Form id={`row-form-${r}`} altSubmit={submitRow} style={{display:"flex"}} >
+        <div style={{display: "flex"}}>
+            <CheckBox id={`row-${r}-select`} name={`select-${r}`} value={row.selected} extraAction={selectRow} style={{ fontSize: "1.5em", position: "sticky", left: "0px", background: "var(--gray2)" }} />
             {
                 Object.keys(FIELDS).map((field, c) => {
                     if (FIELDS[field].show) {
 
                         const cell = getInputControl(field, rowValues[field][0], rowValues[field][1], r)
                         return (
-                        
-                            <div key={c} className={`col-${field}`} style={{ marginBottom: 0, width: FIELDS[field].width }}>
+                            <div key={c} className={`col-${field}`} style={{ marginBottom: 0, minWidth: FIELDS[field].width }}>
                                 {
                                     cell
                                 }
@@ -120,8 +138,12 @@ const ImportRow = ({row, r, optionSets}) => {
                     }
                 })
             }
-            <button name="submit" className="fit">Save</button>
-        </Form>
+
+        </div>
+
+        // <Form id={`row-form-${r}`} altSubmit={submitRow} style={{ display:"flex" }}>
+        //     <button name="submit" className="fit">Save</button>
+        // </Form>
     )
 }
 
@@ -130,7 +152,7 @@ const Importer = ({optionSets}) => {
     const tableRef = useRef()
     const status = useStatus()
 
-    // console.log({ optionSets })
+    console.log({ importedMembers })
     
     const processFile = async (f) => {
         status.loading()
@@ -140,6 +162,20 @@ const Importer = ({optionSets}) => {
         setImportedMembers(members)
         // const data = { ensembleId: f.get('ensembleId'), members}
     
+    }
+
+    const selectRow = (r, v) => {
+        const selectedMembers = [...importedMembers]
+        selectedMembers[r].selected = v
+        setImportedMembers(selectedMembers)
+    }
+
+    const selectAll = () => {
+        const allSelected = importedMembers.every(im => im.selected)
+        console.log({allSelected})
+        const membersCopy = [...importedMembers]
+        membersCopy.forEach(member => member.selected = !allSelected)
+        setImportedMembers(membersCopy);
     }
 
     const uploadMembers = async () => {
@@ -165,7 +201,7 @@ const Importer = ({optionSets}) => {
 
     const rows = importedMembers.map(member => {
         // console.log({ member })
-        const cells = {}
+        const cells = {selected: member.selected}
         Object.keys(FIELDS).forEach(field => {
             if (!field.conform) {
                 const fieldValue = member.bio[field] ||
@@ -192,49 +228,59 @@ const Importer = ({optionSets}) => {
             </Form>
         </div>
     
-    
-    
     const importedResultsGrid =
         <div style={{width: "100%", overflow: "hidden"}}>
-            <section className="scroll">
-                <table ref={tableRef}>
-                    <thead>
-                        <tr>
-                            <th>
-                                <section>
-                                    {
-                                        Object.keys(FIELDS).map((field, b) => {
-                                            if (FIELDS[field].show) return (
-                                                <div key={b} className={`col-${field}`} style={{ width: FIELDS[field].width }}>{FIELDS[field].caption}</div>
-                                            )
-                                        })
-                                    }
-                                </section>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <section style={{ height: "100%" }}>
+                <article style={{overflow: "scroll"}}>
+                    <div style={{ display: "flex", position: "sticky", top: "0px", background: "var(--gray1)", width: "fit-content", zIndex: 1 }}>
+                        <CheckBox id="select-all" value={importedMembers.every(im => im.selected)} extraAction={selectAll} style={{ fontSize: "1.5em", position: "sticky", left: "0px", background: "var(--gray1)" }}/>
                         {
-                            rows.map((row, r) => {
-                                return (
-                                    <tr key={r}>
-                                        <td>
-                                            <ImportRow row={row} r={r} optionSets={optionSets} />
-                                        </td>
-                                    </tr>
+                            Object.keys(FIELDS).map((field, b) => {
+                                if (FIELDS[field].show) return (
+                                    <div key={b} className={`col-${field}`} style={{ minWidth: FIELDS[field].width, padding: "10px" }}>{FIELDS[field].caption}</div>
                                 )
                             })
                         }
-                    </tbody>
-                </table>
+                    </div>
+                    {
+                        rows.map((row, r) => {
+                            return (
+                                <ImportRow key={r} row={row} r={r} optionSets={optionSets} selectRow={(v) => selectRow(r, v)} />
+                                // <section key={r}>
+                                // </section>
+                            )
+                        })
+                    }
+                </article>
             </section>
 
         </div>
 
     return (
         <div id="page-base">
-            <div id="page-header" className="nav-header">
-                <span>Import Members</span>
+            <div id="page-header" >
+                <SubNav
+                    caption="Import Members"
+                    root="members"
+                    // navNodes={navNodes}
+                    buttons={[
+                        <button
+                            key="update"
+                            name="update-selected"
+                            className="fit"
+                        >
+                            <i>checklist</i><span>Mass Update</span>
+                        </button>,
+                        <button
+                            key="upload"
+                            name="upload-members"
+                            className="fit"
+                            onClick={() => console.log(importedMembers)}
+                        >
+                            <i>upload</i><span>Upload All</span>
+                        </button>
+                    ]}
+                />
             </div>
             <div id="page-frame">
                 <div id="page">

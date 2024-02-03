@@ -62,14 +62,14 @@ const PopupMenu = ({ id, parentRef, hideMe, position, matchParentWidth=false, di
 
     function clickHandler(e) {
         if (parentRef.current.contains(e.target)) {
-            console.log(id, "clicked in parent")
+            // console.log(id, "clicked in parent")
             return
         }
         if (menuRef.current.contains(e.target)) {
-            console.log(id, "clicked in self")
+            // console.log(id, "clicked in self")
             return
         }
-        console.log(id, "clicked outside")
+        // console.log(id, "clicked outside")
         hideMe();
     }
 
