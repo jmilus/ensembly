@@ -3,7 +3,7 @@ import Excel from 'exceljs';
 import { validateEmail } from 'utils';
 
 import { CAL, STATES } from './constants';
-import { getDashedValue, localizeDate } from './calendarUtils';
+import { isValidDate, getDashedValue, localizeDate } from './calendarUtils';
 
 export const FIELDS = {
     firstName:           { type: 'string',   caption: "First Name",          show: false, width: "150px", required: true },
@@ -119,24 +119,62 @@ export const validateValue = (value, fieldName, options) => {
             return isNaN(parseInt(value)) ? [value, 'fail'] : [parseInt(value), 'pass'];
         
         case 'dateonly':
-            const dateNums = value.toLocaleString().match(/[0-9]+/g)
+            const dateFormat = 'month-first' //TENANTSETTINGS.locale.date
 
-            if (dateNums && dateNums.length > 0) {
-                
-                let monthIndex;
-                const monthSearch = CAL.month.short.some((mon, m) => {
-                    monthIndex = m
-                    return value.toString().includes(mon)
-                })
-                
-                if (monthSearch) {
-                    return [`${monthIndex + 1}-${dateNums[0]}${dateNums.length > 1 ? `-${dateNums[1]}` : ""}`, 'pass']
-                } else if (dateNums.length > 1) {
-                    return [`${dateNums[0]}-${dateNums[1]}${dateNums.length > 2 ? `-${dateNums[2]}` : ""}`, 'pass']
-                }
+            if (isValidDate(value)) return [new Date(value).toJSON().slice(0, 10), 'pass']
+
+            // ------------
+
+            const dateNums = value.match(/\d+/g)
+            console.log({ dateNums })
+
+            if (!dateNums) return [value, 'fail']
+
+            //
+
+            const formatYear = (input) => {
+                if (!input || input.length > 4 || input.length === 3 || input.length === 1) return ""
+                if (input.length === 4) return input
+                const inputInt = parseInt(input) + 2000;
+                const thisYear = new Date().getFullYear()
+                if (inputInt > thisYear) return inputInt - 100
+                return inputInt;
             }
 
-            return [value, 'fail']
+            if (dateNums.length > 2) {
+                let monthValue;
+                let dayValue;
+                let yearValue = formatYear(dateNums[2])
+                if (dateFormat === 'month-first') {
+                    monthValue = dateNums[0];
+                    dayValue = dateNums[1];
+                } else {
+                    monthValue = dateNums[1];
+                    dayValue = dateNums[0];
+                }
+                return [`${yearValue}-${monthValue}-${dayValue}`, 'pass']
+            }
+
+            // ---------------
+
+            let monthIndex;
+            const monthSearch = CAL.month.short.some((mon, m) => {
+                monthIndex = m
+                return value.includes(mon)
+            })
+
+            if (monthSearch) {
+                let yearValue = formatYear(dateNums[1]);
+                return [`${yearValue}-${monthIndex + 1}-${dateNums[0]}`, 'warn']
+            }
+
+            // --------------
+
+            if (dateFormat === 'month-first') {
+                return [`-${dateNums[0]}-${dateNums[1]}`, 'pass']
+            } else {
+                return [`-${dateNums[1]}-${dateNums[0]}`, 'pass']
+            }
 
         case 'date':
             const pattern = /(st|rd|th)/g

@@ -42,7 +42,7 @@ const ImportRow = ({ row, r, optionSets, selectRow }) => {
                 const membershipOptions = optionSets.membershipType.filter(option => {
                     return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
                 })
-                console.log({membershipOptions})
+                // console.log({membershipOptions})
                 const membershipMatch = membershipOptions.some(mem => mem.name === value)
                 return <Select {...props} style={membershipMatch ? {} : importStyling('fail')} options={membershipOptions} promptText={value} />
             
@@ -54,7 +54,7 @@ const ImportRow = ({ row, r, optionSets, selectRow }) => {
                     if (thisMembershipType.capacity.includes(div.capacity)) return true
                     
                 })
-                console.log({ divisionOptions })
+                // console.log({ divisionOptions })
                 const thisDivision = divisionOptions.find(div => div.name === value);
                 let divInEnsemble = false;
                 let divCapMatch = false;
@@ -81,7 +81,7 @@ const ImportRow = ({ row, r, optionSets, selectRow }) => {
                 return <Number {...props} format={field} />
 
             case "birthday":
-                return <Text {...props} value={getDashedValue(value, true)} innerStyle={{ textAlign: "right" }} />
+                return <Text {...props} value={getDashedValue(value, true)} format="date" innerStyle={{ textAlign: "right" }} debug/>
 
             case "membershipStart":
             case "membershipExpires":

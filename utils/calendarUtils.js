@@ -6,6 +6,11 @@ const doubleDigit = (num) => {
     return `${leadingNum}${num}`;
 }
 
+export const isValidDate = (input) => {
+    const testDate = new Date(input);
+    return !isNaN(testDate.getTime())
+}
+
 export const straightDate = (input) => {
     const dateArr = input.split('-');
     return new Date(dateArr[0], dateArr[1] - 1, dateArr[2])
@@ -77,6 +82,7 @@ export const compareDates = (firstDate, secondDate) => {
 }
 
 const CALENDAR = {
+    isValidDate,
     getTime,
     get24Time,
     createNowDate,

@@ -2,25 +2,29 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { validateEmail } from '../../utils';
+import { CAL } from 'utils/constants';
+import { validateEmail } from 'utils';
 
 // import './Vstyling.css';
 
 const EditText = (props) => {
     const { id, name, label, value="", placeholder, extraAction, format, limit, style, innerStyle, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
     const [controlValue, setControlValue] = useState(value === null ? "" : value)
+    const [displayValue, setDisplayValue] = useState(formatValue(controlValue) || "")
 
-    if (debug) console.log(name, { props }, { controlValue });
+    if (debug) console.log(name, { props }, { controlValue }, { displayValue });
 
     let isValid = true;
     if (format === "email") isValid = controlValue != "" ? validateEmail(controlValue) : true;
 
     useEffect(() => {
+        setDisplayValue(formatValue(controlValue))
         setControlValue(value === null ? "" : value);
     }, [value])
 
     let textType;
     switch (format) {
+        // case "date":
         case "phone":
         case "phonenumber":
             textType = "text"
@@ -32,7 +36,7 @@ const EditText = (props) => {
             textType = format
     }
 
-    const formatValue = (v) => {
+    function formatValue(v) {
         if (v === null) return ""
         let workingValue = v.toString();
         switch (format) {
@@ -52,6 +56,19 @@ const EditText = (props) => {
                     workingValue = workingValue.slice(0, -4) + "-" + workingValue.slice(-4);
                 }
                 break;
+            // case "datey":
+            //     const dateFormat = 'month-first' //TENANTSETTINGS.locale.date
+            //     if (v.includes("-")) {
+            //         const nums = v.split("-");
+            //         workingValue = CAL.month.short[parseInt(nums[1])]
+            //         if (dateFormat === 'month-first') {
+            //             workingValue = `${workingValue} ${nums[2]}`
+            //         } else {
+            //             workingValue = `${nums[2]} ${workingValue}`
+            //         }
+            //         if (nums[0]) workingValue += `, ${nums[0]}`
+            //     }
+            //     break;
             case "email":
 
             default:
@@ -62,9 +79,9 @@ const EditText = (props) => {
     }
 
     const handleControlValueChange = (input) => {
-        const v = formatValue(input)
-        if (extraAction) extraAction(v);
-        setControlValue(v);
+        // const v = formatValue(input)
+        if (extraAction) extraAction(input);
+        setControlValue(input);
     }
 
     const handleChildren = () => {
@@ -77,7 +94,7 @@ const EditText = (props) => {
 
     const clearbutton = clear && <i id={`${id}-clear-button`} className={`input-clear-button${controlValue ? " show" : ""}`} onClick={() => handleControlValueChange("")}>close</i>
 
-    const displayValue = formatValue(controlValue)
+    // const displayValue = formatValue(controlValue)
 
     const inputProps = {
         id,
