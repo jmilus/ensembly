@@ -110,7 +110,7 @@ const MemberPage = async (context) => { //
                 <fieldset className="button-stack" style={{gridArea: "membership"}}>
                     <legend>Membership</legend>
                     <ModalButton
-                        modalButton={<><i>add</i><span>Add Membership</span></>}
+                        renderButton={<><i>add</i><span>Add Membership</span></>}
                         title="Add Membership"
                         buttonClass="fit"
                     >
@@ -164,7 +164,7 @@ const MemberPage = async (context) => { //
                                                 style={{borderLeftWidth: "15px", borderLeftColor: `hsl(${membershipStatus.find(ms => ms.type === membership.status).color})`}}
                                             >
                                                 <ModalButton
-                                                    modalButton={<><i className="naked">feed</i></>}
+                                                    renderButton={<><i className="naked">feed</i></>}
                                                     title={modalTitle}
                                                     dismiss="Close"
                                                     buttonStyle={{marginLeft: "auto"}}

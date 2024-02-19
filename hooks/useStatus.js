@@ -39,7 +39,7 @@ function useStatus() {
 
     const saved = (props = {}) => {
         const { caption } = props;
-        console.log("Data saved!")
+        console.log(caption)
         if (transitionTimer.current) clearTimeout(transitionTimer.current)
         setBlipState({ mode: "saved", caption })
         router.refresh()

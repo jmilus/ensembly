@@ -99,7 +99,6 @@ i {
 
 i.big {
   font-size: 20px;
-  color: var(--gray6);
   cursor: pointer;
 }
 i.big:hover {
@@ -284,7 +283,7 @@ button.caution {
 }
 
 button.sleeping {
-  --edge-color: var(--grayx) 90%;
+  --edge-color: var(--grayx) 83%;
 }
 
 button.dismiss {
@@ -1508,4 +1507,14 @@ fieldset.buttons > legend {
 .settings-page {
   display: flex;
   height: 100%;
+}
+
+.space-children > *:not(:first-child) {
+  margin-left: 10px;
+}
+
+.info-flag {
+  padding: 15px 20px;
+  border-radius: 3px;
+  user-select: none;
 }

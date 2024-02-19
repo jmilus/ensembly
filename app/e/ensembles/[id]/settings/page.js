@@ -22,7 +22,7 @@ export default async function EnsembleSettingsPage({ params }) {
         return Object.values(divisions).map((division, d) => {
 
             const createDivModal = <ModalButton
-                modalButton={<i>library_add</i>}
+                renderButton={<i>library_add</i>}
                 title={`Create Sub-Division of ${division.name}`}
             >
                 <Form id="create-subdivision-form" APIURL={`/api/ensembles/${ensemble.id}/division/create-division`} METHOD="POST" auxData={{ parent_division: division.id, capacity: division.capacity }}>
@@ -37,7 +37,7 @@ export default async function EnsembleSettingsPage({ params }) {
             </ModalButton>
 
             const updateDivModal = <ModalButton
-                modalButton={<i>edit</i>}
+                renderButton={<i>edit</i>}
                 title={`Update ${division.name} Sub-Division`}
             >
                 <Form id="update-subdivision-form" APIURL={`/api/ensembles/${ensemble.id}/division/${division.id}`} METHOD="PUT">
@@ -59,7 +59,7 @@ export default async function EnsembleSettingsPage({ params }) {
             </Form>
 
             const deleteDivModal = <ModalButton
-                modalButton={<i>delete</i>}
+                renderButton={<i>delete</i>}
                 title={`Delete ${division.name}`}
             >
                 <Form id="delete-div-form" APIURL={`/api/ensembles/${ensemble.id}/division/${division.id}`} METHOD="DELETE" style={{flex: 0}} >
@@ -127,7 +127,7 @@ export default async function EnsembleSettingsPage({ params }) {
                     <legend>Divisions</legend>
                     <section className="button-tray">
                         <ModalButton
-                            modalButton={<><i>library_add</i><span>Create New Division</span></>}
+                            renderButton={<><i>library_add</i><span>Create New Division</span></>}
                             buttonClass="fit"
                             title="Create Root-Level Division"
                         >

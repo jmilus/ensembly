@@ -30,7 +30,7 @@ export default async function MemberProfilePageLayout(context) {
         navButtons.account = [
             <ModalButton
                 key="change-password"
-                modalButton="Change Password"
+                renderButton="Change Password"
                 buttonClass="fit"
                 title="Change Password"
             >

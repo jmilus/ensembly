@@ -18,7 +18,7 @@ const EnsemblesPage = async (props) => {
         return (
             <ModalButton
                 key="x"
-                modalButton={button}
+                renderButton={button}
                 title="Create New Ensemble"
                 buttonClass={buttonStuff.class}
                 buttonStyle={buttonStuff.style}

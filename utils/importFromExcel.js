@@ -1,9 +1,9 @@
-import Excel from 'exceljs';
+import { Workbook } from 'exceljs';
 
-import { validateEmail } from 'utils';
+import { validateEmail } from 'utils'; // 'flag'
 
-import { CAL, STATES } from './constants';
-import { isValidDate, getDashedValue, localizeDate } from './calendarUtils';
+import { CAL, STATES } from 'utils/constants';
+import { isValidDate, localizeDate, validateBirthday } from 'utils/calendarUtils';
 
 export const FIELDS = {
     firstName:           { type: 'string',   caption: "First Name",          show: false, width: "150px", required: true },
@@ -19,7 +19,7 @@ export const FIELDS = {
     ethnicity:          { type: 'string',   caption: "Ethnicity",           show: false, width: "150px", required: false },
     hair:               { type: 'list',     caption: "Hair Color",          show: false, width: "150px", required: false },
     eyes:               { type: 'list',     caption: "Eye Color",           show: false, width: "150px", required: false },
-    email:              { type: 'string',   caption: "Email",               show: false, width: "200px", required: false },
+    email:              { type: 'string',   caption: "Email",               show: false, width: "215px", required: false },
     phonenumber:        { type: 'phone',    caption: "Phone Number",        show: false, width: "150px", required: false },
     street:             { type: 'string',   caption: "Street",              show: false, width: "150px", required: false },
     street2:            { type: 'string',   caption: "Unit",                show: false, width: "150px", required: false },
@@ -50,7 +50,7 @@ export const validateValue = (value, fieldName, options) => {
         // console.log("evaluating list item:", fieldName, value, options)
         if (options.length === 1) {
             const onlyOption = options[0].name || options[0].type || options[0]
-            return [onlyOption, onlyOption === value ? 'pass' : 'warn'];
+            return [onlyOption, onlyOption === value ? 'pass' : 'flag'];
         }
 
         if (value === null || value === "") {
@@ -119,62 +119,88 @@ export const validateValue = (value, fieldName, options) => {
             return isNaN(parseInt(value)) ? [value, 'fail'] : [parseInt(value), 'pass'];
         
         case 'dateonly':
-            const dateFormat = 'month-first' //TENANTSETTINGS.locale.date
-
-            if (isValidDate(value)) return [new Date(value).toJSON().slice(0, 10), 'pass']
-
-            // ------------
-
-            const dateNums = value.match(/\d+/g)
-            console.log({ dateNums })
-
-            if (!dateNums) return [value, 'fail']
-
-            //
-
             const formatYear = (input) => {
-                if (!input || input.length > 4 || input.length === 3 || input.length === 1) return ""
+                if (input.length > 4) return input.substr(-4) 
+                // console.log("year format:", input, input.length)
                 if (input.length === 4) return input
                 const inputInt = parseInt(input) + 2000;
                 const thisYear = new Date().getFullYear()
                 if (inputInt > thisYear) return inputInt - 100
-                return inputInt;
+                return inputInt.toString();
             }
 
-            if (dateNums.length > 2) {
-                let monthValue;
-                let dayValue;
-                let yearValue = formatYear(dateNums[2])
-                if (dateFormat === 'month-first') {
-                    monthValue = dateNums[0];
-                    dayValue = dateNums[1];
-                } else {
-                    monthValue = dateNums[1];
-                    dayValue = dateNums[0];
-                }
-                return [`${yearValue}-${monthValue}-${dayValue}`, 'pass']
+            const isBirthdayFormat = validateBirthday(value)
+            if (isBirthdayFormat[1] === 'pass') return isBirthdayFormat
+
+            const dateFormat = 'month-first' //TENANTSETTINGS.locale.date
+
+            let monthPosition;
+            let dayPosition;
+            if (dateFormat === 'month-first') {
+                monthPosition = 0
+                dayPosition = 1
+            } else {
+                monthPosition = 1
+                dayPosition = 0
             }
 
-            // ---------------
+            if (isValidDate(value)) {
+                const datePart = new Date(value).toJSON().match(/\d{4}-\d{2}-\d{2}/)
+                const dateNums = datePart[0].split("-")
+                const returnDate = []
+                returnDate[monthPosition] = dateNums[1]
+                returnDate[dayPosition] = dateNums[2]
+                returnDate[2] = dateNums[0]
+                return [returnDate.join("-"), 'pass']
+            }
+
+            // ------------
+            const dateValue = value.toString()
+            const dateNums = dateValue.match(/\d+/g)
+            // console.log({ dateNums })
+
+            if (!dateNums) return [value, 'fail']
+
+            let yearIndex;
+            yearIndex = dateNums.findIndex(num => num.length === 4)
+            
+            if (yearIndex < 0) yearIndex = dateNums.findIndex(num => parseInt(num) > 31)
+
+            let year = yearIndex >= 0 ? dateNums[yearIndex] : "0000"
+            
+            let yearValue = formatYear(year)
+            // console.log(yearValue)
+
+            let monthValue;
+
+            // -------
 
             let monthIndex;
             const monthSearch = CAL.month.short.some((mon, m) => {
                 monthIndex = m
-                return value.includes(mon)
+                return value.toString().includes(mon)
             })
+            if (dateNums.length < 2 && !monthSearch) return [value, 'fail']
 
-            if (monthSearch) {
-                let yearValue = formatYear(dateNums[1]);
-                return [`${yearValue}-${monthIndex + 1}-${dateNums[0]}`, 'warn']
-            }
-
-            // --------------
-
-            if (dateFormat === 'month-first') {
-                return [`-${dateNums[0]}-${dateNums[1]}`, 'pass']
+            if (monthSearch) { // -- if month is spelled out
+                monthValue = monthIndex + 1;
             } else {
-                return [`-${dateNums[1]}-${dateNums[0]}`, 'pass']
+                monthValue = dateNums[monthPosition]
             }
+
+            let dayValue = dateNums[monthSearch ? 0 : dayPosition]
+
+            let validatedDate = []
+            validatedDate[2] = yearValue
+            validatedDate[monthPosition] = monthValue.toString().padStart(2, "0").substr(-2)
+            validatedDate[dayPosition] = dayValue.toString().padStart(2, "0").substr(-2)
+
+            // console.log("month value:", parseInt(validatedDate[monthPosition]), parseInt(validatedDate[monthPosition]) > 12)
+            let status = 'pass'
+            if (parseInt(validatedDate[monthPosition]) > 12 ||
+                parseInt(validatedDate[dayPosition]) > 31) status = 'fail'
+
+            return [validatedDate.join("-"), status]
 
         case 'date':
             const pattern = /(st|rd|th)/g
@@ -182,7 +208,7 @@ export const validateValue = (value, fieldName, options) => {
                 const dateString = localizeDate(value).toLocaleDateString();
                 return [dateString, 'pass']
             } else if (!isNaN(new Date(value.replace(pattern, "")))) {
-                return [new Date(value.replace(pattern, "")).toLocaleDateString(), 'warn']
+                return [new Date(value.replace(pattern, "")).toLocaleDateString(), 'flag']
             } else {
                 return [value, 'fail'];
             }
@@ -207,7 +233,7 @@ export const validateValue = (value, fieldName, options) => {
 export const readXlsx = async (fileData, ensembleName, optionSets) => {  // value.toString
     
     const records = []
-    const workbook = new Excel.Workbook();
+    const workbook = new Workbook();
     await workbook.xlsx.load(fileData)
         .then(() => {
             const importSheet = workbook.getWorksheet('members');
@@ -235,7 +261,7 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
 
             worksheet.eachRow((row, r) => {
                 if (r > 1) {
-                    const member = { bio: {}, address: {}, membership: {} }
+                    const member = {}
                     const rowValues = {}
                     row.eachCell((cell, c) => {
                         rowValues[c] = cell.value;
@@ -265,41 +291,44 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                                 fieldOptions,
                                 rowValues
                             );
+
+                            member[field] = validatedValue;
     
-                            switch (field) {
-                                case 'email':
-                                    member.email = validatedValue;
-                                    break;
-                                case 'phonenumber':
-                                    member.phonenumber = validatedValue;
-                                    break;
-                                case 'street':
-                                case 'street2':
-                                case 'city':
-                                case 'state':
-                                case 'postalCode':
-                                case 'country':
-                                case 'poBox':
-                                    member.address[field] = validatedValue;
-                                    break;
-                                case 'membershipType':
-                                    // console.log("membership type:", validatedValue)
-                                    member.membership[field] = validatedValue
-                                    break;
-                                case 'membershipStart':
-                                case 'membershipExpires':
-                                    member.membership[field] = validatedValue;
-                                    break;
-                                case 'ensemble':
-                                    // console.log("ensemble:", validatedValue)
-                                    member.ensemble = validatedValue;
-                                    break;
-                                case 'division':
-                                    member.division = validatedValue;
-                                    break;
-                                default:
-                                    member.bio[field] = validatedValue;
-                            }
+                            // switch (field) {
+                            //     case 'email':
+                            //         member.email = validatedValue;
+                            //         break;
+                            //     case 'phonenumber':
+                            //         member.phonenumber = validatedValue;
+                            //         break;
+                            //     case 'street':
+
+                            //     case 'street2':
+                            //     case 'city':
+                            //     case 'state':
+                            //     case 'postalCode':
+                            //     case 'country':
+                            //     case 'poBox':
+                            //         member.address[field] = validatedValue;
+                            //         break;
+                            //     case 'membershipType':
+                            //         // console.log("membership type:", validatedValue)
+                            //         member.membership[field] = validatedValue
+                            //         break;
+                            //     case 'membershipStart':
+                            //     case 'membershipExpires':
+                            //         member.membership[field] = validatedValue;
+                            //         break;
+                            //     case 'ensemble':
+                            //         // console.log("ensemble:", validatedValue)
+                            //         member.ensemble = validatedValue;
+                            //         break;
+                            //     case 'division':
+                            //         member.division = validatedValue;
+                            //         break;
+                            //     default:
+                            //         member.bio[field] = validatedValue;
+                            // }
                         }
 
                     })

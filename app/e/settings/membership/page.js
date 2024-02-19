@@ -63,7 +63,7 @@ export default async function MembershipSettingsPage(context) {
                                     </section>
                                 </article>
                                 <ModalButton
-                                    modalButton={<i>edit</i>}
+                                    renderButton={<i>edit</i>}
                                     buttonClass="fit"
                                     title={`Edit Membership Type ${type.name}`}
                                 >

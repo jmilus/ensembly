@@ -96,7 +96,7 @@ const EventPage = async (context) => {
                             <section className="button-tray">
                                 <ModalButton
                                     title="View Assigned Members"
-                                    modalButton={<><i>groups</i><span>View Assigned Members</span></>}
+                                    renderButton={<><i>groups</i><span>View Assigned Members</span></>}
                                     buttonClass="fit"
                                     dismiss="Close"
                                 >
@@ -123,7 +123,7 @@ const EventPage = async (context) => {
                                 </ModalButton>
                                 <ModalButton
                                     title="Take Attendance"
-                                    modalButton={<><i>checklist_rtl</i><span>Take Attendance</span></>}
+                                    renderButton={<><i>checklist_rtl</i><span>Take Attendance</span></>}
                                     buttonClass="fit"
                                     dismiss="Close"
                                 >

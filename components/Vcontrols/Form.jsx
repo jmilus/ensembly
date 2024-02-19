@@ -55,6 +55,8 @@ const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, fo
         
         if (readOnlyInputs.current.includes(e.target.name)) return null;
 
+        if (e.nativeEvent.submitter.name != "submit") return null;
+
         const formData = new FormData(thisForm.current);
         if (auxData) {
             Object.keys(auxData).forEach(ad => {

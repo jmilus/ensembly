@@ -462,11 +462,9 @@ i.dot.selected {
     display: flex;
     padding: 5px;
 }
-.button-tray > * {
-    flex: 0;
-}
-.button-tray > * {
-    margin-right: 5px;
+.button-tray > *:not(:first-child) {
+    /* flex: 0; */
+    margin-left: 5px;
 }
 
 .verdant-control.checkbox {
@@ -521,7 +519,7 @@ i.dot.selected {
 
 .checkbox i {
     font-size: 1.5em;
-    color: gray;
+    color: inherit;
 }
 
 .checkbox span {
@@ -536,7 +534,6 @@ i.dot.selected {
     display: flex;
     align-items: center;
     width: 100%;
-    color: black;
     margin: auto 5px;
 }
 

@@ -209,7 +209,7 @@ const EventModelPage = async (context) => {
                     <section className="button-tray">
                         <ModalButton
                             title="Add Event to Model"
-                            modalButton={<><i>event</i><span>Add Event</span></>}
+                            renderButton={<><i>event</i><span>Add Event</span></>}
                             buttonClass="fit"
                         >
                             <Form id="new-event-modal-form" APIURL={`/api/calendar/event/model/${model.id}`} METHOD="POST" auxData={{exception: true}} >
@@ -227,7 +227,7 @@ const EventModelPage = async (context) => {
                         </ModalButton>
                         <ModalButton
                             title="Create Supporting Event"
-                            modalButton={<><i>add_box</i><span>Create Supporting Event</span></>}
+                            renderButton={<><i>add_box</i><span>Create Supporting Event</span></>}
                             buttonClass="fit"
                         >
                             <Form id="new-supporting-event-form" METHOD="POST" APIURL="/api/calendar/event/model" auxData={{ parent: model.id }}>
@@ -245,7 +245,7 @@ const EventModelPage = async (context) => {
                         </ModalButton>
                         <ModalButton
                             title="Set Recurrence"
-                            modalButton={<><i>event</i><span>Set Recurrence</span></>}
+                            renderButton={<><i>event</i><span>Set Recurrence</span></>}
                             buttonClass="fit"
                         >
                             <Form id="event-recurrence" METHOD="PUT" debug >
@@ -275,7 +275,7 @@ const EventModelPage = async (context) => {
                         <LineupsGrid model={model} allLineups={lineups}/>
                         <ModalButton
                             title="View Assigned Members"
-                            modalButton={<><i>groups</i><span>View Assigned Members</span></>}
+                            renderButton={<><i>groups</i><span>View Assigned Members</span></>}
                             buttonClass="fit"
                         >
                             <FilterContainer

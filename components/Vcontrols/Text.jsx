@@ -2,29 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { CAL } from 'utils/constants';
 import { validateEmail } from 'utils';
 
 // import './Vstyling.css';
 
 const EditText = (props) => {
-    const { id, name, label, value="", placeholder, extraAction, format, limit, style, innerStyle, hero, isRequired=false, children, pattern, clear, readonly, debug } = props;
+    const { id, name, label, value="", placeholder, extraAction, format, limit, style, innerStyle, hero, isRequired=false, children, pattern, clear, readonly, validateOnBlur=false, validationFunction, debug } = props;
     const [controlValue, setControlValue] = useState(value === null ? "" : value)
-    const [displayValue, setDisplayValue] = useState(formatValue(controlValue) || "")
 
-    if (debug) console.log(name, { props }, { controlValue }, { displayValue });
+    if (debug) console.log(name, { props }, { controlValue });
 
     let isValid = true;
     if (format === "email") isValid = controlValue != "" ? validateEmail(controlValue) : true;
 
     useEffect(() => {
-        setDisplayValue(formatValue(controlValue))
         setControlValue(value === null ? "" : value);
     }, [value])
 
     let textType;
     switch (format) {
-        // case "date":
+        case "date":
         case "phone":
         case "phonenumber":
             textType = "text"
@@ -36,9 +33,29 @@ const EditText = (props) => {
             textType = format
     }
 
+    const formatDate = (d) => {
+        const dateNums = d.split("-");
+        let year = dateNums[0]
+        let month = dateNums[1].padStart(2, "0")
+        let day = dateNums[2].padStart(2, "0")
+
+        if (year === "") {
+            year = "0000"
+        } else {
+            if (year.length > 4) year = year.substr(-4)
+            let yearInt = parseInt(year)
+            if (year.length < 4) yearInt += 2000
+            if (yearInt > new Date().getFullYear()) yearInt = yearInt - 100
+            year = yearInt.toString()
+        }
+        
+        return `${year}-${month}-${day}`
+    }
+
     function formatValue(v) {
         if (v === null) return ""
         let workingValue = v.toString();
+
         switch (format) {
             case "phone":
             case "phonenumber":
@@ -56,32 +73,26 @@ const EditText = (props) => {
                     workingValue = workingValue.slice(0, -4) + "-" + workingValue.slice(-4);
                 }
                 break;
-            // case "datey":
-            //     const dateFormat = 'month-first' //TENANTSETTINGS.locale.date
-            //     if (v.includes("-")) {
-            //         const nums = v.split("-");
-            //         workingValue = CAL.month.short[parseInt(nums[1])]
-            //         if (dateFormat === 'month-first') {
-            //             workingValue = `${workingValue} ${nums[2]}`
-            //         } else {
-            //             workingValue = `${nums[2]} ${workingValue}`
-            //         }
-            //         if (nums[0]) workingValue += `, ${nums[0]}`
-            //     }
-            //     break;
             case "email":
-
             default:
                 workingValue = v;
                 break;
         }
-        return workingValue
+        
+        return workingValue;
     }
 
     const handleControlValueChange = (input) => {
-        // const v = formatValue(input)
-        if (extraAction) extraAction(input);
+        // console.log(input)
+        if (extraAction && !validateOnBlur) extraAction(input);
         setControlValue(input);
+    }
+
+    const handleBlur = (e) => {
+        if (validateOnBlur) {
+            const validation = validationFunction(controlValue)
+            if (extraAction) extraAction(validation[0]);
+        }
     }
 
     const handleChildren = () => {
@@ -94,7 +105,7 @@ const EditText = (props) => {
 
     const clearbutton = clear && <i id={`${id}-clear-button`} className={`input-clear-button${controlValue ? " show" : ""}`} onClick={() => handleControlValueChange("")}>close</i>
 
-    // const displayValue = formatValue(controlValue)
+    const displayValue = formatValue(controlValue)
 
     const inputProps = {
         id,
@@ -105,6 +116,7 @@ const EditText = (props) => {
         className: `control-surface text-input${clear ? " clearable" : ""}${isValid ? "" : " not-valid"}`,
         style: innerStyle,
         onChange: (e) => handleControlValueChange(e.target.value),
+        onBlur: handleBlur,
         required: isRequired,
         autoComplete: "do-not-autofill",
         maxLength: limit,

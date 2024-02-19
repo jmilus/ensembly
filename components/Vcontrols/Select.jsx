@@ -14,9 +14,10 @@ const EditSelect = (props) => {
     const [showPopup, setShowPopup] = useState(false);
     const [searchString, setSearchString] = useState("")
     const controlRef = useRef();
-    const [inputRef, emitEvent] = useEvent('change', (e) =>
-        console.log('Event fired', e, e.target)
-    );
+    const [inputRef, emitEvent] = useEvent('change', (e) => {
+        setSearchString("")
+        // console.log('Event fired', e, e.target)
+    });
 
     let controlOptions = packageOptions(options, value)
 

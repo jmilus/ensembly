@@ -76,7 +76,7 @@ export function LineupsGrid({ model, allLineups}) {
     return (
         <ModalButton
             title="Manage Lineups"
-            modalButton={<><i>view_list</i><span>Manage Lineups</span></>}
+            renderButton={<><i>view_list</i><span>Manage Lineups</span></>}
             buttonClass="fit"
         >
             <div id="event-lineup-grid">

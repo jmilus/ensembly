@@ -20,7 +20,7 @@ export default async function EnsembleGeneralPage({params}) {
                 <fieldset style={{ height: "100%" }}>
                     <legend>Members</legend>
                     <ModalButton
-                        modalButton={<><i>person_add</i><span>New Member</span></>}
+                        renderButton={<><i>person_add</i><span>New Member</span></>}
                         buttonClass="fit"
                         title="Create New Member"
                         buttonStyle={{width: "100%", marginBottom: "10px"}}
@@ -68,7 +68,7 @@ export default async function EnsembleGeneralPage({params}) {
                 <fieldset style={{ height: "100%" }}>
                     <legend>Lineups</legend>
                     <ModalButton
-                        modalButton={<><i>add_circle</i><span>Create Lineup</span></>}
+                        renderButton={<><i>add_circle</i><span>Create Lineup</span></>}
                         buttonClass="fit"
                         title="Create New Lineup"
                         buttonStyle={{width: "100%", marginBottom: "10px"}}
@@ -99,7 +99,7 @@ export default async function EnsembleGeneralPage({params}) {
                                         >
                                             {!lineup.is_primary && 
                                                 <ModalButton
-                                                    modalButton={<i class="switch" style={{['--icon1']:"'delete_outline'", ['--icon2']:"'delete'"}}></i>}
+                                                    renderButton={<i class="switch" style={{['--icon1']:"'delete_outline'", ['--icon2']:"'delete'"}}></i>}
                                                     title="Delete Lineup?"
                                                     modalClasses="warning"
                                                     buttonStyle={{['--edge-color']: "0 90% 50%", marginLeft: "auto"}}

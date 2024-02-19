@@ -60,7 +60,7 @@ const EventsPage = async (context) => {
         <ModalButton
             key="modal-button-new-event"
             title="Create New Event"
-            modalButton={<><i>event</i><span>New Event</span></>}
+            renderButton={<><i>event</i><span>New Event</span></>}
             buttonClass="fit"
         >
             <Form id="new-event-modal-form" METHOD="POST" APIURL="/api/calendar/event/model" followPath="/e/calendar/event/model/$slug$" >

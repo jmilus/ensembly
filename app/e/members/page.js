@@ -21,7 +21,7 @@ const MembersPage = async () => {
     const navButtons = [
         <ModalButton
             key="modal-button-new-member"
-            modalButton={<><i>person_add</i><span>New Member</span></>}
+            renderButton={<><i>person_add</i><span>New Member</span></>}
             title="Create New Member"
             buttonClass="fit"
         >
@@ -40,7 +40,7 @@ const MembersPage = async () => {
         </Link>
         // <ModalButton
         //     key="modal-button-upload-members"
-        //     modalButton={<><i>upload</i><span>Upload Members</span></>}
+        //     renderButton={<><i>upload</i><span>Upload Members</span></>}
         //     title="Upload Members from Excel File"
         //     buttonClass="fit"
         // >

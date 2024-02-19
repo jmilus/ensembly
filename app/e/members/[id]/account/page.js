@@ -6,7 +6,6 @@ import { cookies } from 'next/headers';
 import { getMemberUserProfile } from '@/api/auth/route';
 import { getMemberEmails } from '@/api/members/[id]/email/route';
 
-import ModalButton from 'components/ModalButton';
 import { Form, Text, Collection } from 'components/Vcontrols';
 import { getSecurityRoles } from '@/api/security/route';
 

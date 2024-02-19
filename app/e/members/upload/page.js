@@ -6,8 +6,10 @@ import { getBioOptions } from '@/api/members/bio/route';
 import { getManyMembershipTypes } from '@/api/membership/types/route';
 import { getManyEnsembles } from '@/api/ensembles/route';
 import { getAllDivisions } from '@/api/ensembles/division/route';
+import { getAllMembers } from '@/api/members/route';
 
 export default async function UploadMembersPage() {
+    const members = await getAllMembers()
     const bioOptions = await getBioOptions();
     const membershipTypes = await getManyMembershipTypes()
     const ensembles = await getManyEnsembles()
@@ -23,6 +25,6 @@ export default async function UploadMembersPage() {
         division: divisions.map(div => { return {...div, value: div.name } })
     }
     return (
-        <Importer optionSets={optionSets} />
+        <Importer optionSets={optionSets} members={members} />
     )
 }

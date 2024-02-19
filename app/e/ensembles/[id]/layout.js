@@ -20,7 +20,7 @@ export default async function EnsembleRecordLayout(context) {
         general: [
             <ModalButton
                 key="upload"
-                modalButton={<><i>upload</i><span>Upload Members</span></>}
+                renderButton={<><i>upload</i><span>Upload Members</span></>}
                 buttonClass="fit"
                 title="Upload Members From Excel File"
             >
@@ -35,7 +35,7 @@ export default async function EnsembleRecordLayout(context) {
         lineup: [
             <ModalButton
                 key="duplicate-lineup"
-                modalButton={<><i>library_add</i><span>Duplicate Lineup</span></>}
+                renderButton={<><i>library_add</i><span>Duplicate Lineup</span></>}
                 buttonClass="fit"
                 title="Duplicate Lineup"
             >

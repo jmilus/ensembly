@@ -25,7 +25,7 @@ export default async function SettingsLayout(params) {
         membership: [
             <ModalButton
                 key="create-type"
-                modalButton={<span>Create Membership Type</span>}
+                renderButton={<span>Create Membership Type</span>}
                 buttonClass="fit"
                 title="Create Membership Type"
             >

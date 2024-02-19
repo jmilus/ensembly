@@ -26,7 +26,7 @@ const CheckBox = (props) => {
             checkButton = <div className={`check-button ${controlValue ? "checked" : ""}`}><div></div></div>
             break;
         default:
-            checkButton = <i>{controlValue ? "check_box" : "check_box_outline_blank"}</i>
+            checkButton = <i style={{color: style?.color}}>{controlValue ? "check_box" : "check_box_outline_blank"}</i>
             break;
     }
 
