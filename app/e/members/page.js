@@ -35,7 +35,7 @@ const MembersPage = async () => {
                 <button name="submit" className="fit" form="new-member-modal-form">Create Member</button>
             </section>
         </ModalButton>,
-        <Link href="/e/members/upload">
+        <Link key="upload-link" href="/e/members/upload">
             <button className="fit"><i>upload</i><span>Upload Members</span></button>
         </Link>
     ]

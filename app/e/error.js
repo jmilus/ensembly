@@ -25,7 +25,7 @@ export default function Error({ error, reset }) {
                     <i style={{fontSize: "4em", color: "red", marginRight: "20px"}}>error_outline</i>
                     <h2>Something went wrong!</h2>
                 </div>
-                <p>The app has encountered an error. We'll get to work on it right away, but in the meantime, you could:</p>
+                <p>{`The app has encountered an error. We'll get to work on it right away, but in the meantime, you could:`}</p>
                 <button
                     className="fat"
                     style={{['--edge-color']: 'var(--color-h2)'}}

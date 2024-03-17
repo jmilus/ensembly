@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { readXlsxFile, validateValue, FIELDS } from 'utils/importFromExcel';
-import { Form, Text, Number, File, Select, CheckBox } from 'components/Vcontrols';
+import { Form, Text, Number, File, Select, CheckBox, Collection } from 'components/Vcontrols';
 import SubNav from 'components/SubNav';
 
 import useStatus from 'hooks/useStatus';
@@ -558,11 +558,13 @@ const Importer = ({optionSets, members}) => {
             <div style={{ flex: 1, padding: "0 50px", minWidth: "400px" }}>
                 <h1>Import Members</h1>
                 <p>
+                    {`
                     Use this tool to import a membership roster from an Excel (.xlsx) file.
                     Once imported, you will have an opportunity to review the imported records and repair any improperly formatted values.
+                    `}
                 </p>
                 <p>
-                    Note that All members must have a unique name. If two or more members are named similarly ("John Smith"), consider adding a middle name, or suffix.
+                    {`Note that All members must have a unique name. If two or more members are named similarly ("John Smith"), consider adding a middle name, or suffix.`}
                 </p>
                 <p>
                     Your import file may include the below fields. Other fields will be ignored.
