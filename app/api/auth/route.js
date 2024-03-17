@@ -8,11 +8,11 @@ import { redirect } from 'next/navigation';
 export async function getMemberUserProfile(member) {
     // console.log("getMemberUserProfile member:",{member})
     const supabase = createClient();
-    const { userData, userError } = await supabase.auth.getUser()
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
 
-    console.log({userData})
+    console.log({user})
 
-    if (!userData?.user) {
+    if (!user || userError) {
         throw userError;
         // return { email: "", member: {}, memberId: null, roles: [] };
     }
@@ -32,7 +32,7 @@ export async function getMemberUserProfile(member) {
         query = query.eq('member', member)
     } else {
         // console.log("getting profile by email:", session.user.email)
-        query = query.eq('email', userData.email)
+        query = query.eq('email', user.email)
     }
 
     const { data: profile, error } = await query;
