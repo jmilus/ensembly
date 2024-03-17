@@ -42,9 +42,9 @@ export async function getMemberUserProfile(member) {
         return new Error(`failed to fetch member user profile: ${error.message}`);
     }
     
-    // console.log({ profile });
+    console.log({ profile });
 
-    return profile;
+    return profile[0];
 }
 
 export async function GET(request) {
