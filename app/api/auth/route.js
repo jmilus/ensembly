@@ -1,7 +1,6 @@
 import 'server-only';
 
 import { createClient } from 'utils/supabase/server';
-import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 import { redirect } from 'next/navigation';
