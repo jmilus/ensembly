@@ -23,7 +23,7 @@ export default function Error({ error, reset }) {
                 }}>
                 <div style={{ display: "flex" }}>
                     <i style={{fontSize: "4em", color: "red", marginRight: "20px"}}>error_outline</i>
-                    <h2>{error.message}</h2>
+                    <h2>Invalid Credentials</h2>
                 </div>
                 <p>{`Something wasn't quite right with your email or password.`}</p>
                 <button
