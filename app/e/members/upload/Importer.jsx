@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { readXlsxFile, validateValue, FIELDS } from 'utils/importFromExcel';
 import { Form, Text, Number, File, Select, CheckBox, Collection } from 'components/Vcontrols';
-import { getEnsembleTypes, getCapacities } from './actions';
 
 import useStatus from 'hooks/useStatus';
 import { getDashedValue, validateBirthday } from 'utils/calendarUtils';
@@ -202,6 +201,8 @@ const Importer = ({optionSets, members, ensembleTypes, capacities}) => {
     const recordsDisplay = useRef()
     const router = useRouter()
     const status = useStatus()
+
+    console.log({ optionSets }, { members }, { ensembleTypes }, {capacities})
 
     console.log({ importedMembers }, { members }, { FIELDS })
 
