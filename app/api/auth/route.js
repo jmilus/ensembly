@@ -1,15 +1,14 @@
 import 'server-only';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { createClient } from '@supabase/supabase-js';
-import { cookies, headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 import { redirect } from 'next/navigation';
 
 export async function getMemberUserProfile(member) {
     // console.log("getMemberUserProfile member:",{member})
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     const { userData, userError } = await supabase.auth.getUser()
 
     console.log({userData})
@@ -60,7 +59,7 @@ export async function GET(request) {
 
 
 export async function Signup(data) {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     console.log(data);
     const { orgName, firstName, lastName, email, code } = data;
 
