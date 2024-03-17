@@ -28,11 +28,15 @@ const DropDownMenu = () => {
     const ddTop = windowHeight > ddBottom ?
         dim.y + dim.h :
         dim.y - (Math.min(optionCount - value.length, 5.5) * 36);
+    
+    const ddPlacement = windowHeight > ddBottom ?
+        { top: dim.y + dim.h } :
+        { bottom: dim.y}
 
     if (optionCount > 0) {
         return (
             <div id="dropdown-area" onKeyDown={(e) => console.log(e.target.value)}>
-                <div className="option-set" style={{left: dim.x, top: ddTop, minWidth: dim.w}}>
+                <div className="option-set" style={{ ...ddPlacement, left: dim.x, minWidth: dim.w}}>
                     {
                         Object.keys(options).map(key => {
                             const option = options[key];

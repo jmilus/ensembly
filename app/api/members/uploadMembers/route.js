@@ -3,40 +3,45 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
-import { updateOneMember } from '../[id]/route';
-
 import _ from 'lodash';
 
-import { memberImportFromExcel } from 'utils/importFromExcel'; // warnings
-
-
-const importMember = async (data) => {
+const importMember = async (member) => {
     const supabase = createServerComponentClient({ cookies });
-    let { data: existingMember, error: existingMemberError } = await supabase
-        .from("Member")
-        .select()
-        .eq('firstName', data.firstName || "")
-        .eq('middleName', data.middleName || "")
-        .eq('lastName', data.lastName || "")
-        .eq('suffix', data.suffix || "")
-    
-    if (existingMemberError) {
-        console.error("there was a problem fetching the member:", existingMemberError)
-        return new Error(`fetch member error: ${existingMemberError}`)
-    }
-    
-    if (!_.isEmpty(existingMember)) {
-        console.log("member exists", existingMember);
-        let updatedMember = await updateOneMember({ ...data, id: existingMember[0].id })
-        updatedMember.warnings = ["firstName", "middleName", "lastName", "suffix"]
-        updatedMember.alerts = []
-        return updatedMember
-    } 
 
-    // -------------- no matching members found -----------------
+    const {
+        id,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        aka,
+        birthday,
+        sex,
+        height,
+        weight,
+        race,
+        ethnicity,
+        hair,
+        eyes
+    } = member;
     
     const { data: newMember, error: newMemberError } = await supabase
-            .from("Member").insert(data).select();
+        .from("Member").upsert({
+            id: id === "new" ? undefined : id,
+            firstName: firstName,
+            middleName: middleName,
+            lastName: lastName,
+            suffix: suffix,
+            aka: aka ? aka : `${firstName} ${lastName} ${suffix || ""}`,
+            birthday: birthday,
+            sex: sex,
+            height: parseInt(height),
+            weight: parseInt(weight),
+            race: race,
+            ethnicity: ethnicity,
+            hair: hair,
+            eyes: eyes
+        }).select();
         
     if (newMemberError) {
         console.error("there was a problem creating a member from the upload:", newMemberError.message)
@@ -45,19 +50,19 @@ const importMember = async (data) => {
 
     // console.log({ newMember })
 
-    return { ...newMember[0], warnings: [], alerts: [] };
+    return newMember[0];
 }
 
 const importEmail = async (email, memberId) => {
     if (email === null || email === undefined ||  email === "") return "";
     const supabase = createServerComponentClient({ cookies });
 
-    let { data: existingEmail, error: existingEmailError } = await supabase
-        .from("EmailAddress").select().eq('email', email).eq('member', memberId);
+    // let { data: existingEmail, error: existingEmailError } = await supabase
+    //     .from("EmailAddress").select().eq('email', email).eq('member', memberId);
     
-    console.log({existingEmail})
+    // console.log({existingEmail})
     
-    if (!_.isEmpty(existingEmail)) return existingEmail[0]
+    // if (!_.isEmpty(existingEmail)) return existingEmail[0]
 
     // --------------- no matching emails found -------------------
 
@@ -75,64 +80,93 @@ const importEmail = async (email, memberId) => {
 }
 
 const importPhone = async (phone, memberId) => {
-    console.log("phone value:", phone)
+    console.log("phone value:", phone, memberId)
     if (phone === null || phone === undefined || phone === "") return "";
     const supabase = createServerComponentClient({ cookies });
 
-    let { data: existingPhone, error: existingPhoneError } = await supabase
-        .from("PhoneAddress").select().eq('phone', phone).eq('member', memberId);
+    // let { data: existingPhone, error: existingPhoneError } = await supabase
+    //     .from("PhoneAddress").select().eq('phone', phone).eq('member', memberId);
     
-    if (existingPhone !== null) return existingPhone[0]
+    // if (existingPhone !== null) return existingPhone[0]
 
     // --------------- no matching phones found -------------------
 
     const { data: newPhone, error: phoneError } = await supabase
-        .from("PhoneAddress").insert({ phonenumber: phone, type: "Primary", member: memberId }).select()
+        .from("PhoneNumber").insert({ number: phone, type: "Primary", member: memberId }).select()
     
     if (phoneError) {
-        console.error("there was a problem creating a new phone:", phoneError)
+        console.error("there was a problem creating a new phone:", phoneError.message)
         return "";
     }
 
     return newPhone[0]
 }
 
-const importAddress = async (address, memberId) => {
-    if (_.isEmpty(address)) return {}
-    const isEmpty = Object.keys(address).every(a => {
-        return address[a] === "" || address[a] === undefined || address[a] === null
-    })
-    if (isEmpty) return {alerts: [], warnings: []}
+const importAddress = async (member) => {
+    const {
+        id,
+        street,
+        street2,
+        city,
+        state,
+        postalCode,
+        country,
+        poBox,
+        addressType
+    } = member;
+
+    if (!city && !street || !poBox) return {}
+
+    let thisAddressType = addressType || "Home"
 
     const supabase = createServerComponentClient({ cookies });
 
+    const { data: existingAddress, error: existingAddressErr } = await supabase
+        .from("Address")
+        .select('id')
+        .eq('member', id)
+        .eq('type', thisAddressType)
+    
+    console.log({existingAddress}, {existingAddressErr})
+
+    if (existingAddressErr) thisAddressType = 'new'
+
     const { data: newAddress, error: addressError } = await supabase
-        .from("Address").insert({ ...address, type: "Home", member: memberId }).select()
+        .from("Address").insert({
+            id: existingAddress,
+            member: id,
+            street,
+            street2,
+            city,
+            state,
+            postalCode,
+            country,
+            poBox,
+            type: thisAddressType
+        }).select()
     
     if (addressError) {
         console.error("there was a problem creating a new address:", addressError.message)
         return Error(addressError.message);
     }
 
-    return { ...newAddress[0], alerts: [], warnings: [] }
+    return newAddress[0]
 }
 
-const insertMembership = async (membership, ensembleId, memberId) => {
-    let thisMembership = { alerts: [], warnings: [] }
-    if (membership.membershipType) {
+const insertMembership = async (member, ensembleId, memberId) => {
+    console.log(member, ensembleId, memberId)
+    if (member.membershipType) {
         const supabase = createServerComponentClient({ cookies });
 
         console.log("adding membership")
         const { data: memType, error: memTypeError } = await supabase
             .from("MembershipType")
             .select("id, name")
-            .eq('name', membership.membershipType)
+            .eq('name', member.membershipType)
         //
         if (memTypeError || _.isEmpty(memType)) {
             console.error('problem finding matching membership type:', memTypeError)
-            thisMembership = { ...membership }
-            thisMembership.alerts = ["membershipType"]
-            return thisMembership;
+            return memTypeError;
         }
         console.log({ memType })
 
@@ -152,36 +186,39 @@ const insertMembership = async (membership, ensembleId, memberId) => {
         }
 
         //
+        const membershipToInsert = {
+            ensemble: ensembleId,
+            member: memberId,
+            status: "Active",
+            membership_type: memType[0].id,
+            membership_start: member.membershipStart != "" ? new Date(member.membershipStart) : new Date()
+        }
+        if (member.membershipExpires && member.membershipExpires != "") {
+            membershipToInsert['membership_expires'] = new Date(member.membershipExpires)
+        }
+
         if (_.isEmpty(existingMembership)) {
+            console.log({membershipToInsert})
+            
             const { data: newMembership, error: membershipError } = await supabase
                 .from("EnsembleMembership")
-                .insert({
-                    ensemble: ensembleId,
-                    member: memberId,
-                    status: "Active",
-                    membership_type: memType[0].id,
-                    membership_start: membership.membershipStart || new Date(),
-                    membership_expires: membership.membershipExpires || null
-                })
+                .insert(membershipToInsert)
                 .select()
             
             console.log({ newMembership }, { membershipError })
             
             //
             if (membershipError || newMembership.length === 0) {
-                console.error('problem inserting ensemble a new membership:', membershipError?.message);
-                thisMembership.alerts.push("membership")
-                return thisMembership;
+                console.log(member.membershipStart)
+                console.error('problem inserting a new membership:', membershipError?.message);
+                return new Error(membershipError?.message);
             }
             
-            thisMembership = { ...thisMembership, ...newMembership[0] }
+            return newMembership[0]
         } else {
-            thisMembership = { ...thisMembership, ...existingMembership[0] }
+            return existingMembership[0]
         }
-        
-        thisMembership.type = memType[0].name
-        //
-        return thisMembership;
+    
     }
 
     return {}
@@ -189,22 +226,25 @@ const insertMembership = async (membership, ensembleId, memberId) => {
 
 const insertAssignment = async (division, ensembleId, membershipId) => {
     console.log({ division }, { ensembleId }, { membershipId })
-    let thisAssignment = { alerts: [], warnings: [] }
     if (division) {
         const supabase = createServerComponentClient({ cookies });
 
-        const { data: primeLineup, error: lineupError } = await supabase.from("Lineup").select("id, name").eq('ensemble', ensembleId).is('is_primary', true)
+        const { data: primeLineup, error: lineupError } = await supabase
+            .from("Lineup")
+            .select("id, name")
+            .eq('ensemble', ensembleId)
+            .is('is_primary', true)
 
         if (lineupError || primeLineup.length === 0) {
             return new Error('problem finding primary lineup:', lineupError);
         }
         
-        const { data: existingDivision, error: existingDivisionError } = await supabase.from("Division").select("id, name").eq('name', division).eq('ensemble', ensembleId)
+        const { data: existingDivision, error: existingDivisionError } = await supabase
+            .from("Division").select("id, name").eq('name', division).eq('ensemble', ensembleId)
         
         if (existingDivisionError || existingDivision.length === 0) {
             console.error('problem finding matching division for', division, existingDivisionError);
-            thisAssignment.alerts.push("division")
-            return thisAssignment;
+            return new Error(existingDivisionError.message);
         }
 
         const { data: existingAssignment, error: existingAssignmentError } = await supabase
@@ -216,10 +256,9 @@ const insertAssignment = async (division, ensembleId, membershipId) => {
         
         if (existingAssignmentError) {
             console.error(`problem checking for an existing assignment for membership ${membershipId} to division ${division}`, existingAssignmentError)
-            return thisAssignment;
+            return new Error(`problem checking for an existing assignment for membership ${membershipId} to division ${division}: ${existingAssignmentError.message}`);
         }
-        if (existingAssignment.length > 0)
-            return { ...thisAssignment, ...existingAssignment[0] }
+        if (existingAssignment.length > 0) return existingAssignment[0]
 
         console.log("creating assignment with", primeLineup[0].name, existingDivision[0].name)
         const { data: lineupAssignment, error: assignmentError } = await supabase
@@ -231,89 +270,80 @@ const insertAssignment = async (division, ensembleId, membershipId) => {
         if (assignmentError) {
             return new Error(`trouble creating prime lineup assignment: ${assignmentError}`); // returnedMember
         }
-        thisAssignment = {...thisAssignment, ...lineupAssignment[0]}
+        return lineupAssignment[0]
     }
 
-    return thisAssignment;
 }
 
 
-export const importHandler = async (data) => {
-    const { ensembleId, members } = data;
+export const importHandler = async (members) => {
+    // console.log({ members })
+    // return true;
+
     const supabase = createServerComponentClient({ cookies });
-    console.log({ data })
 
     // const importableData = await memberImportFromExcel(members);
     // console.log({importableData})
 
-    const importResult = await Promise.all(members.map(async importRecord => {
-        console.log({ importRecord })
-        let thisMember = { alerts: [], warnings: [] }
+    const importResult = await Promise.all(members.map(async member => {
+        // console.log({ member })
+        let thisMember = { }
 
         //
-        const returnedMember = await importMember(importRecord.bio);
+        const returnedMember = await importMember(member);
+        console.log({returnedMember})
         if (returnedMember instanceof Error) return returnedMember;
-        thisMember.bio = returnedMember;
-        thisMember.warnings = [...thisMember.warnings, ...returnedMember.warnings]
-        thisMember.alerts = [...thisMember.alerts, ...returnedMember.alerts]
+        thisMember = { ...returnedMember }
+        //
+
+        let memberEmail;
+        if (member.email) memberEmail = await importEmail(member.email, returnedMember.id);
+        thisMember.email = memberEmail
 
         //
-        const memberEmail = await importEmail(importRecord.email, thisMember.bio.id);
-        thisMember.email = memberEmail;
-        thisMember.warnings = [...thisMember.warnings, "email"]
-        thisMember.alerts = [...thisMember.alerts, "email"]
-        
+        let memberPhone;
+        if (member.phonenumber) memberPhone = await importPhone(member.phonenumber, returnedMember.id);
+        thisMember.phonenumber = memberPhone
+
         //
-        const memberPhone = await importPhone(importRecord.phonenumber, thisMember.bio.id);
-        thisMember.phone = memberPhone;
-        thisMember.warnings = [...thisMember.warnings, "phonenumber"]
-        thisMember.alerts = [...thisMember.alerts, "phonenumber"]
-        
-        //
-        const memberAddress = await importAddress(importRecord.address, thisMember.bio.id);
-        if (memberAddress instanceof Error) return thisMember;
+        let memberAddress;
+        if (member.street ||
+            member.street2 ||
+            member.city ||
+            member.state ||
+            member.postalCode ||
+            member.country ||
+            member.poBox)
+            memberAddress = await importAddress(member);
+            // if (memberAddress instanceof Error) return thisMember;
         thisMember.address = memberAddress;
-        thisMember.warnings = [...thisMember.warnings, ...memberAddress.warnings]
-        thisMember.alerts = [...thisMember.alerts, ...memberAddress.alerts]
-
-        //
-        if (_.isEmpty(importRecord.membership)) return thisMember;
-
 
         //
         let thisMembership = {}
-        if (importRecord.ensemble) {
-            const { data: ensId, error: ensError } = await supabase.from("Ensemble").select("id").eq('name', importRecord.ensemble);
-            if (ensError || ensId.length === 0) {
-                console.error(`problem finding matching ensemble: ${ensError}`)
-                thisMember.alerts.push("ensemble")
-                
-            } else {
-                console.log({ensId})
-                thisMembership = await insertMembership(importRecord.membership, ensId[0].id, thisMember.bio.id)
-            }
-
-        } else if (ensembleId) {
-            thisMembership = await insertMembership(importRecord.membership, ensembleId, thisMember.bio.id)
-
+        const { data: ensembleId, error: ensembleError } = await supabase
+            .from("Ensemble").select("id").eq('name', member.ensemble);
+        
+        if (ensembleError) {
+            console.error(`problem finding matching ensemble: ${ensembleError.message}`)   
         }
-        thisMembership.ensemble = importRecord.ensemble;
+        thisMembership = await insertMembership(member, ensembleId[0].id, returnedMember.id)
+
         thisMember.membership = thisMembership
-        thisMember.warnings = [...thisMember.warnings, ...thisMembership.warnings]
-        thisMember.alerts = [...thisMember.alerts, ...thisMembership.alerts]
+
+        if (!member.division) return thisMember
 
         if (!_.isEmpty(thisMembership)) {
-            const assignment = await insertAssignment(importRecord.division, ensembleId, thisMembership.id)
-            console.log("here's the assignment we landed on:", assignment)
+            const assignment = await insertAssignment(member.division, ensembleId[0].id, thisMembership.id)
+            // console.log("here's the assignment we landed on:", assignment)
             thisMember.assignment = assignment
-            thisMember.assignment.division = importRecord.division
-            thisMember.warnings = [...thisMember.warnings, ...assignment.warnings]
-            thisMember.alerts = [...thisMember.alerts, ...assignment.alerts]
+            thisMember.assignment.division = member.division
         }
 
         //
         return thisMember;
     }))
+
+    console.log({importResult})
 
     return importResult;
 }

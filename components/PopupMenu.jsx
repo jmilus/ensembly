@@ -40,7 +40,19 @@ const PopupMenu = ({ id, parentRef, hideMe, position, matchParentWidth=false, di
         switch (direction) {
             case "down":
                 popupPosition.left = cutoffs.right ? parentPos.x - (menuPos.width - parentPos.width) : parentPos.x
-                popupPosition.top = cutoffs.bottom ? parentPos.y - menuPos.height : parentPos.y + parentPos.height;
+                if (cutoffs.bottom) {
+                    popupPosition.bottom = window.innerHeight - parentPos.y
+                } else {
+                    popupPosition.top = parentPos.y + parentPos.height;
+                }
+                break;
+            case "down left":
+                popupPosition.left = cutoffs.left ? parentPos.x : parentPos.x - (menuPos.width - parentPos.width)
+                if (cutoffs.bottom) {
+                    popupPosition.bottom = window.innerHeight - parentPos.y
+                } else {
+                    popupPosition.top = parentPos.y + parentPos.height;
+                }
                 break;
             case "up":
                 popupPosition.left = parentPos.x;

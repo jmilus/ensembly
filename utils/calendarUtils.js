@@ -109,10 +109,10 @@ export const validateBirthday = (value) => {
         let status = 'pass'
         if (!isValidDate(`${new Date().getFullYear()}-${myNums[monthPosition]}-${myNums[dayPosition]}`)) status = 'fail'
         
-        return [myDate, status]
+        return { value: myDate, valid: status }
     }
     
-    return [value, 'fail']
+    return { value, valid: 'fail' };
 }
 
 const CALENDAR = {

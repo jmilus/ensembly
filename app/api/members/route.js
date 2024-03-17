@@ -8,7 +8,15 @@ export const getAllMembers = async () => {
 
     const { data, error } = await supabase
         .from('Member')
-        .select('*')
+        .select(`
+        *,
+        phonenumber:PhoneNumber!left(number),
+        email:EmailAddress!left(email),
+        address:Address!left(street, street2, city, state, postalCode, country, poBox)
+        `)
+        .eq('PhoneNumber.type', 'Primary')
+        .eq('EmailAddress.type', 'Primary')
+        .eq('Address.type', 'Home')
     
     if (error) console.error("fetch all members error:", error);
     // console.log("fetched all members:", data)
@@ -19,7 +27,7 @@ export const getAllMembers = async () => {
 export async function GET(request) {
     const req = await request.json()
     console.log("get all members:", { req })
-    const res = await getAllMembers()
+    const res = await getAllMembers(req)
     return NextResponse.json({res})
 }
 

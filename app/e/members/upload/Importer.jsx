@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { readXlsxFile, validateValue, FIELDS } from 'utils/importFromExcel';
 import { Form, Text, Number, File, Select, CheckBox } from 'components/Vcontrols';
 import SubNav from 'components/SubNav';
@@ -8,22 +9,31 @@ import SubNav from 'components/SubNav';
 import useStatus from 'hooks/useStatus';
 import { getDashedValue, validateBirthday } from 'utils/calendarUtils';
 import ModalButton from 'components/ModalButton';
+import PopupMenu from 'components/PopupMenu';
+
+import { cloneDeep, isEmpty } from 'lodash';
 
 const validityStyling = {
-    flag: { backgroundColor: 'hsl(var(--color-h2) / 0.25)', ['--edge-color']: 'var(--color-h2)', color: 'hsl(var(--color-h2))' },
+    match: { backgroundColor: 'hsl(var(--color-h2) / 0.25)', ['--edge-color']: 'var(--color-h2)', color: 'hsl(var(--color-h2))', fontStyle: 'italic' },
     fail: { backgroundColor: 'hsl(0 100% 50% / 0.25)', ['--edge-color']: '0 100% 50%', color: 'red' },
+    dupe: { backgroundColor: 'hsl(270 100% 50% / 0.25)', ['--edge-color']: '270 100% 50%', color: 'hsl(270 100% 50%)'},
+    flag: { backgroundColor: 'hsl(30 100% 50% / 0.25)', ['--edge-color']: '30 100% 50%', color: 'hsl(30 100% 50%)' },
     ready: { backgroundColor: 'hsl(var(--color-p) / 0.15)', ['--edge-color']: 'var(--color-p)', color: 'hsl(var(--color-p))' },
-    sleep: { backgroundColor: 'hsl(var(--grayx) 83% / 0.15)', ['--edge-color']: 'var(--grayx) 83%', color: 'hsl(var(--grayx) 50%)' }
+    sleep: { backgroundColor: 'hsl(var(--grayx) 50% / 0.15)', ['--edge-color']: 'var(--grayx) 50%', color: 'hsl(var(--grayx) 50%)', fontStyle: 'italic' },
+    select: { backgroundColor: 'hsl(var(--gray0) / 0.25)', ['--edge-color']: 'var(--grayx) 50%', color: 'var(--gray9)' }
 }
 
-const ImportRow = ({ row, r, selectRow, updateFieldValue }) => {
+
+const ImportRow = ({ row, r, selectRow, updateFieldValue, handleMatch }) => { // 'sleep'
+    const [showPopup, setShowPopup] = useState(false)
+    const menuRef = useRef()
 
     // console.log({ optionSets })
     // console.log({row})
 
-    const getInputControl = (field, value, validState, options, rowIndex) => {
+    const getInputControl = (field, value, validState, options, rowIndex, readonly) => {
         // console.log("getting input controls:", { field }, { value })
-        const props = { id: `${rowIndex}-${field}`, name: field, value: value, style: validityStyling[validState], extraAction: (v) => updateFieldValue(r, field, v, options) }
+        const props = { id: `${rowIndex}-${field}`, name: field, value: value, style: readonly ? validityStyling.sleep : validityStyling[validState], extraAction: (v) => updateFieldValue(r, field, v, options), readonly: readonly}
 
         switch (field) {
             
@@ -35,7 +45,7 @@ const ImportRow = ({ row, r, selectRow, updateFieldValue }) => {
             case "hair":
             case "eyes":
             case "race":
-                return <Select {...props} options={options} promptText={value} />
+                return <Select {...props} options={options} promptText={value} extraAction={(v) => updateFieldValue(r, field, v.caption, options)} />
             
             case "email":
             case "phonenumber":
@@ -70,154 +80,421 @@ const ImportRow = ({ row, r, selectRow, updateFieldValue }) => {
     }
 
 
-    let rowValid = "";
-    Object.values(row).some(col => {
-        if (Array.isArray(col)) {
-            if (col[1] === 'fail') {
-                rowValid = 'fail'
-                return true
-            }
-            if (rowValid === '') rowValid = col[1]
-        }
-    })
+    let rowValid = 'ready'
+    if (!row.ignore) {
+        if (row.flag) rowValid = 'flag'
+        if (row.match) rowValid = 'match'
+        if (row.dupe) rowValid = 'dupe'
+        if (row.fail) rowValid = 'fail'
+    }
 
-    const checkboxStyle = { fontSize: "1.5em", position: "sticky", left: "0px", background: "var(--gray2)" }
+
+    let checkboxStyle = { fontSize: "1.5em", position: "sticky", left: "0px", backgroundColor: 'var(--gray2)' }
+    if (row.match) checkboxStyle = {...checkboxStyle, borderRadius: "15px 0 0 15px", overflow: "hidden", minWidth: "44px" }
     const rowValidStyling = validityStyling[rowValid]
 
     return (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex" }} className={row.match ? "double" : ""}>
             <div style={checkboxStyle} >
-                <CheckBox id={`row-${r}-select`} name={`select-${r}`} value={row.selected} extraAction={selectRow} style={{...rowValidStyling, height: "100%"}} />
+                {row.needsAttention ? 
+                    <>
+                        <div ref={menuRef} style={{ ...validityStyling.match, height: "100%", width: "44px", display: "flex" }}>
+                            <i style={{ margin: "auto" }} onClick={() => setShowPopup(true)}>pending</i>
+                        </div>
+                        {showPopup &&
+                            <PopupMenu id={`row-${r}-menu`} parentRef={menuRef} hideMe={() => setShowPopup(false)} >
+                                <div className="select-option" style={{ ['--hover-color']: 'var(--mint5)', padding: "10px 15px" }} onClick={() => handleMatch(r, 'create-new')} title="Create a new member and keep the existing record.">Create New Member</div>
+                                <div className="select-option" style={{ ['--hover-color']: 'var(--mint5)', padding: "10px 15px" }} onClick={() => handleMatch(r, 'merge')} title="For fields in the existing record that are blank, update to the new values.">Merge Into Member</div>
+                                <div className="select-option" style={{ ['--hover-color']: 'var(--mint5)', padding: "10px 15px" }} onClick={() => handleMatch(r, 'overwrite')} title="Update the existing record with the new values (blanks are ignored).">Overwrite Member</div>
+                                <div className="select-option" style={{ ['--hover-color']: 'var(--mint5)', padding: "10px 15px" }} onClick={() => handleMatch(r, 'discard')} title="Remove this duplicate record from the import list.">Discard Duplicate</div>
+                            </PopupMenu>
+                        }
+                    </>
+                    :
+                    <>
+                        {!row.match && !row.ignore ?
+                            <CheckBox id={`row-${r}-select`} name={`select-${r}`} value={row.select} extraAction={selectRow} style={{ backgroundColor: "var(--gray2)", ...rowValidStyling, height: "100%", width: "44px" }} boxStyle={{color: rowValidStyling.color}} />
+                            :
+                            <div style={{ height: "100%", width: "44px", display: "flex" }}>
+                            
+                            </div>
+                        }
+                    </>
+                }
             </div>
             {
                 Object.keys(FIELDS).map((field, c) => {
+                    // console.log("row field:", field, row[field])
                     if (FIELDS[field].show) {
-                        const [value, valid] = row[field]
-                        const options = row[field][2] ? row[field][2] : []
-                        const cell = getInputControl(field, value, valid, options, r)
+                        const { value, dupe, valid } = row[field]
+                        const options = row[field].options ? row[field].options : []
+                        const displayValue = dupe ? dupe : value;
+                        const matchValid = row.match ? 'match' : valid;
+                        const cell = getInputControl(field, displayValue, matchValid, options, r, row.ignore)
+                        const ogCell = row.match ? getInputControl(field, row.match[field], 'match', [], r, true) : null
                         return (
                             <div key={c} className={`col-${field}`} style={{ marginBottom: 0, minWidth: FIELDS[field].width }}>
-                                { cell }
+                                {cell}
+                                {ogCell &&
+                                    ogCell
+                                }
                             </div>
                         )
                     }
                 })
             }
-
+            
         </div>
     )
 }
 
-const MultiUpdateForm = ({ updateRows, selectedCount }) => {
-    const [fieldList, setFieldList] = useState([])
 
-    // console.log(fieldList, selectedCount)
+const HeaderCell = ({ field, updateColumn, sortRows, hasSelected }) => {
+    const [showMenu, setShowMenu] = useState(false)
+    const headerRef = useRef()
 
-    const availableFields = Object.keys(FIELDS).filter(field => {
-        if (FIELDS[field].conform) return false;
-        const fields = fieldList.map(listItem => listItem.field)
-        return !fields.includes(field)
-    })
-
-    const updateFieldList = (key, field, value) => {
-        const newFieldList = [...fieldList];
-        const changedIndex = newFieldList.findIndex(item => item.field === field);
-        newFieldList[changedIndex][key] = value;
-        setFieldList(newFieldList);
+    const handleSubmit = (input) => {
+        updateColumn(input, field)
+        setShowMenu(false)
     }
 
-    const addField = () => {
-        const newFieldList = [...fieldList];
-        newFieldList.push({ field: "", value: "" })
-        setFieldList(newFieldList)
-    }
-
-    const submit = () => {
-        updateRows(fieldList)
-        setFieldList([])
-    }
-
-    const remove = (field) => {
-        const newFieldList = fieldList.filter(item => item.field != field)
-        setFieldList(newFieldList)
+    const handleSort = (field, dir) => {
+        sortRows(field, dir)
+        setShowMenu(false)
     }
 
     return (
-        <>
-            <Form
-                id="multi-update-form"
-                altSubmit={submit}
-                style={{padding: "20px 20px 10px", width: "600px"}}
-            >
-                <div>{`Update ${selectedCount} ${selectedCount > 1 ? 'rows' : 'row'}`}</div>
-                {
-                    fieldList.map((item, i) => {
-                        return (
-                            <section key={i} className="inputs" style={{alignItems: "center"}}>
-                                <Select key={i} id={`multi-update-${item.field}-field`} value={item.field} options={[...availableFields, item.field]} extraAction={(v) => updateFieldList("field", item.field, v)} />
-                                <Text id={`update-${item}-value`} name={item.field} value={item.value} extraAction={(v) => updateFieldList("value", item.field, v)}/>
-                                <button onClick={() => remove(item.field)}><i>close</i></button>
-                            </section>
-                        )
-                    })
+        <div className={`col-${field}`} style={{ minWidth: FIELDS[field].width, padding: "0 10px", display: "flex", alignItems: "center" }}>
+            <div ref={headerRef} className={`column-header ${field}`}>
+                <div className={`column-header-button${showMenu ? " show" : ""}`} onClick={() => setShowMenu(true)}>
+                    <i style={{color: "white"}}>arrow_drop_down</i>
+                </div>
+                { showMenu &&
+                    <PopupMenu id={`column-${field}-menu`} parentRef={headerRef} hideMe={() => setShowMenu(false)} direction="down left" >
+                        <div className="select-option" style={{ ['--hover-color']: 'var(--mint6)', padding: "10px"}} onClick={() => handleSort(field, 'asc')}><i>vertical_align_top</i><span>Sort Ascending</span></div>
+                        <div className="select-option" style={{ ['--hover-color']: 'var(--mint6)', padding: "10px"}} onClick={() => handleSort(field, 'desc')}><i>vertical_align_bottom</i><span>Sort Descending</span></div>
+                        {hasSelected
+                            ? 
+                            <Form id="mass-update-form" altSubmit={handleSubmit} >
+                                <div style={{ display: "flex", alignItems: "center", background: "var(--gray0)", padding: "0 3px 3px" }} >
+                                    <Text id="mass-update-input" name="value" label="Bulk Update" placeholder="Update selected to..." innerStyle={{ padding: "5px 10px", height: "2em", borderBottom: "none" }} autofocus={true} />
+                                    <button name="submit" style={{ margin: "17px 0 0 1px", ['--edge-color']: "var(--mintx) 60%", borderRadius: "0 5px 5px 0", height: "2em" }}><i>arrow_forward</i></button>
+                                </div>
+                            </Form>
+                            :
+                            <div className="select-option" style={{ ['--hover-color']: 'var(--mint6) 60%'}} >
+                                <Text label="Bulk Update" value="No rows selected" innerStyle={{ padding: "5px 10px", height: "2em", borderBottom: "none", fontStyle: "italic", color: "var(--gray5)" }} readonly />
+                            </div>
+                        }
+                        
+                    </PopupMenu>
                 }
-                <section style={{justifyContent: "center", marginTop: "20px"}}>
-                    <button name="add-field" onClick={() => addField()} className="fit" style={{flex: 1}}><i>add</i><span>Add Field</span></button>
-                </section>
-            </Form>
-        </>
+                <span>{FIELDS[field].caption}</span>
+            </div>
+        </div>
     )
 }
 
+
 const Importer = ({optionSets, members}) => { 
     const [importedMembers, setImportedMembers] = useState([]);
+    const [filter, setFilter] = useState({})
+    const recordsDisplay = useRef()
+    const router = useRouter()
     const status = useStatus()
 
-    console.log({ importedMembers })
+    console.log({ importedMembers }, { members }, { FIELDS })
+
+    const filterMembers = (key) => {
+        const newFilter = { ...filter }
+        if (newFilter[key]) {
+            delete newFilter[key]
+        } else {
+            const filterArray = importedMembers.map((member, m) => {
+                if (member[key]) return member.index
+            })
+            newFilter[key] = filterArray
+        }
+        setFilter(newFilter)
+    }
+
+    const sortRows = (field, dir) => {
+        const newImportedMembers = [...importedMembers]
+
+        newImportedMembers.sort((m1, m2) => {
+            if (['height', 'int', 'date'].includes(FIELDS[field].type)) {
+                return m1[field].value - m2[field].value;
+            } else {
+                return m1[field].value.localeCompare(m2[field].value)
+            }
+        })
+
+        if (dir === 'desc') newImportedMembers.reverse()
+        setImportedMembers(newImportedMembers)
+    }
+
+    const validateImportedMembers = (newMembers) => { //match
+
+        const uniqueNames = newMembers.map(member => member.uniqueName)
+
+        newMembers.forEach((member, m) => {
+            // console.log({ member })
+            
+            const uniqueNamesCopy = [...uniqueNames]
+            uniqueNamesCopy.splice(m, 1)
+            member.dupe = uniqueNamesCopy.includes(member.uniqueName) ? true : false
+
+            if (member.ignore) return;
+
+            member.flag = false;
+            member.fail = false;
+    
+            Object.keys(FIELDS).forEach(field => {
+                let fieldValue = member[field]
+    
+                if (field.conform) return;
+                if (fieldValue) {
+                    FIELDS[field].show = true
+                    const thisEnsemble = optionSets.ensemble.find(ens => ens.name === member.ensemble.value)
+                    switch (field) {
+                        case 'ensemble':
+                            fieldValue.valid = thisEnsemble ? 'pass' : 'fail';
+                            fieldValue.options = optionSets.ensemble
+                            break;
+                        case 'membershipType':
+                            const membershipOptions = optionSets.membershipType.filter(option => {
+                                return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
+                            })
+                            fieldValue.options = membershipOptions;
+                            // console.log({membershipOptions})
+                            const membershipMatch = membershipOptions.some(mem => mem.name === fieldValue.value)
+                            fieldValue.valid = membershipMatch ? 'pass' : 'fail'
+                            break;
+                        case 'division':
+                            const thisMembershipType = optionSets.membershipType.find(mem => mem.name === member.membershipType.value)
+                            const divisionOptions = optionSets.division.filter(div => {
+                                if (!thisEnsemble || !thisMembershipType) return false
+                                if (div.ensemble != thisEnsemble.id) return false
+                                if (thisMembershipType.capacity.includes(div.capacity)) return true
+                                
+                            })
+                            fieldValue.options = divisionOptions
+                            // console.log({ divisionOptions })
+                            const thisDivision = divisionOptions.find(div => div.name === fieldValue.value);
+                            let divInEnsemble = false;
+                            let divCapMatch = false;
+                            if (thisDivision) {
+                                divInEnsemble = thisDivision.ensemble === thisEnsemble.id;
+                                divCapMatch = thisMembershipType.capacity.includes(thisDivision.capacity)
+                            }
+                            fieldValue.valid = divInEnsemble && divCapMatch ? 'pass' : 'fail'
+                            break;
+                        case 'firstName':
+                        case 'middleName':
+                        case 'lastName':
+                        case 'suffix':
+                            fieldValue.valid = member.dupe && !member.match ? 'dupe' : 'pass'
+                            break;
+                        default:
+                            if (optionSets[field]) {
+                                const isRequired = FIELDS[field].required
+                                const isInOptionsSet = optionSets[field].includes(fieldValue.value)
+                                const isEmpty = fieldValue.value === "" || fieldValue.value === null
+                                fieldValue.valid = isInOptionsSet || !isRequired && isEmpty ? 'pass' : 'fail'
+                                fieldValue.options = optionSets[field]
+                            }
+                            break;
+
+                    }
+                    
+                    
+                    if (fieldValue.valid === 'flag') member.flag = true
+                    if (fieldValue.valid === 'fail') member.fail = true
+                    member.ready = !member.flag && !member.fail && !member.dupe
+                    member[field] = fieldValue || [];
+                } else {
+                    FIELDS[field].show = false;
+                }
+            })
+        })
+
+        setImportedMembers(newMembers)
+
+    }
 
     const updateFieldValue = (rowIndex, field, value, options) => {
         const newImportedMembers = [ ...importedMembers ]
         const newRowValues = { ...newImportedMembers[rowIndex] };
         
         newRowValues[field] = validateValue(value, field, options);
+        if (field === 'firstName' ||
+            field === 'middleName' ||
+            field === 'lastName' ||
+            field === 'suffix') newRowValues.uniqueName = (newRowValues.firstName?.value || "") + '-' + (newRowValues.middleName?.value || "") + '-' + (newRowValues.lastName?.value || "") + '-' + (newRowValues.suffix?.value || "")
         newImportedMembers[rowIndex] = newRowValues
-        setImportedMembers(newImportedMembers);
+        validateImportedMembers(newImportedMembers);
     }
-    
+
+    const updateColumn = (formData, field) => {
+        const value = formData.get('value')
+        console.log(field, value)
+        const newImportedMembers = [...importedMembers]
+        newImportedMembers.forEach(member => {
+            if (member.select) member[field] = validateValue(value, field, member[field].options);
+        })
+        validateImportedMembers(newImportedMembers);
+    }
+
+    const handleMatch = (index, mode) => {
+        const dupeMember = { ...importedMembers[index] };
+        dupeMember.needsAttention = false;
+        const newMember = cloneDeep(dupeMember)
+        const newImportedMembers = [...importedMembers]
+        delete newMember.match
+        newMember.select = false;
+
+        switch (mode) {
+            case 'create-new':
+                const ogMember = cloneDeep(dupeMember.match)
+
+                Object.keys(FIELDS).forEach(field => {
+                    if (FIELDS[field].type) {
+                        const tempValue = ogMember[field]
+                        ogMember[field] = {value: tempValue}
+                        ogMember[field].valid = 'pass'
+                    }
+                    if (newMember[field] && typeof newMember[field] === 'object') newMember[field] = validateValue(newMember[field].value, field, newMember[field].options)
+                })
+                ogMember.ignore = true;
+                newImportedMembers.splice(index, 1, ogMember, newMember)
+                setFilter("")
+                recordsDisplay.current.scrollTo({
+                    top: index * 39,
+                    behavior: 'smooth'
+                })
+                break;
+            case 'merge':
+            case 'overwrite':
+                Object.keys(FIELDS).forEach(field => {
+                    if (FIELDS[field].type) {
+                        if (dupeMember.match[field] && typeof newMember[field] === 'object') {
+                            let handledValue = dupeMember.match[field];
+                            if (mode === 'overwrite' || dupeMember.match[field] === "" || dupeMember.match[field] === null) {
+                                handledValue = newMember[field].value
+                            } 
+                            newMember[field] = validateValue(handledValue, field, newMember[field].options)
+                        }
+                    }
+                })
+                newMember.id = dupeMember.match.id
+
+                newImportedMembers.splice(index, 1, newMember)
+                break;
+            case 'discard':
+                newImportedMembers.splice(index, 1)
+                break;
+            default:
+                break;
+        }
+
+        // console.log({ importedMembers }, {newImportedMembers})
+        validateImportedMembers(newImportedMembers)
+        
+    }
+
     const processFile = async (f) => {
-        status.loading()
-        const members = await readXlsxFile(f, optionSets);
-        // console.log("processed data:", members)
-        status.saved({caption: "Successfully read file"})
-        setImportedMembers(members)
-        // const data = { ensembleId: f.get('ensembleId'), members}
-    
+        status.loading({caption: "importing Data..."})
+        const newMembers = await readXlsxFile(f, optionSets);
+        // console.log("processed data:", newMembers)
+        status.saved({ caption: "Successfully read file" })
+        
+        const newImportedMembers = newMembers.map(newMember => {
+            const matchingIndex = members.findIndex(matchingMember => {
+                return matchingMember.uniqueName === newMember.uniqueName
+            })
+
+            if (matchingIndex >= 0) {
+                newMember.match = members[matchingIndex];
+                newMember.needsAttention = true;
+            } else {
+                newMember.select = false;
+            }
+            
+            return newMember;
+        })
+        validateImportedMembers(newImportedMembers);
     }
 
     const selectRow = (r, v) => {
         const selectedMembers = [...importedMembers]
-        selectedMembers[r].selected = v
-        setImportedMembers(selectedMembers)
+        selectedMembers[r].select = v
+        if (selectedMembers[r].hasOwnProperty('select')) setImportedMembers(selectedMembers)
+    }
+
+    const areAllSelected = () => {
+        const filteredMembers = importedMembers.filter(im => {
+            if (!im.hasOwnProperty('select')) return false;
+            if (isEmpty(filter)) return true;
+            return Object.values(filter).every(f => f.includes(im.index))
+        })
+
+        if (filteredMembers.length === 0) return false;
+        return filteredMembers.every(fm => fm.select)
     }
 
     const selectAll = () => {
-        const allSelected = importedMembers.every(im => im.selected)
+        const allSelected = areAllSelected()
+        console.log({ allSelected })
         const membersCopy = [...importedMembers]
-        membersCopy.forEach(member => member.selected = !allSelected)
+        membersCopy.forEach(member => {
+            if (member.hasOwnProperty('select')) {
+                if (isEmpty(filter)) {
+                    member.select = !allSelected
+                } else {
+                    if (Object.values(filter).every(f => f.includes(member.index))) member.select = !allSelected
+                }
+            }
+                
+        })
         setImportedMembers(membersCopy);
     }
 
-    const uploadMembers = async () => {
+    const removeSelectedMembers = () => {
+        console.log("removing!")
+        const newImportedMembers = importedMembers.filter(member => !member.select)
+        setImportedMembers(newImportedMembers);
+    }
+
+    const uploadMembers = async (mode) => {
+        const uploadableMembers = importedMembers.map(member => {
+            if (mode === 'selected' && !member.select) return null;
+            const memberObj = {}
+            Object.keys(member).forEach(field => {
+                let fieldValue = member[field];
+                if (typeof member[field] === 'object') {
+                    fieldValue = member[field].value
+                }
+                memberObj[field] = fieldValue
+            })
+            return memberObj;
+        }).filter(member => member != null).filter(member => !member.ignore)
+        console.log({ uploadableMembers })
+        status.loading({caption: "Uploading..."})
         //
         const importResults = await fetch('/api/members/uploadMembers', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify(data)
+            body: JSON.stringify(uploadableMembers)
         })
         .then(response => response.json())
             .then(res => {
                 if (res.error) throw res.error;
                 status.saved({ caption: "Success!" })
+                if (mode === 'selected') {
+                    removeSelectedMembers()
+                } else {
+                    router.push('/e/members')
+                }
                 return res;
             })
             .catch(error => {
@@ -228,169 +505,260 @@ const Importer = ({optionSets, members}) => {
         console.log({importResults})
     }
 
-    const rows = importedMembers.map(member => {
-        // console.log({ member })
-        const cells = { selected: member.selected, flags: false, failures: false };
-        Object.keys(FIELDS).forEach(field => {
-            if (!field.conform && member[field]) {
-                let fieldValue = member[field]
-                if (fieldValue) {
-                    FIELDS[field].show = true
-                    const thisEnsemble = optionSets.ensemble.find(ens => ens.name === member.ensemble[0])
-                    switch (field) {
-                        case 'ensemble':
-                            fieldValue[1] = thisEnsemble ? 'pass' : 'fail';
-                            fieldValue[2] = optionSets.ensemble
-                            break;
-                        case 'membershipType':
-                            const membershipOptions = optionSets.membershipType.filter(option => {
-                                return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
-                            })
-                            fieldValue[2] = membershipOptions;
-                            // console.log({membershipOptions})
-                            const membershipMatch = membershipOptions.some(mem => mem.name === fieldValue[0])
-                            fieldValue[1] = membershipMatch ? 'pass' : 'fail'
-                            break;
-                        case 'division':
-                            const thisMembershipType = optionSets.membershipType.find(mem => mem.name === member.membershipType[0])
-                            const divisionOptions = optionSets.division.filter(div => {
-                                if (!thisEnsemble || !thisMembershipType) return false
-                                if (div.ensemble != thisEnsemble.id) return false
-                                if (thisMembershipType.capacity.includes(div.capacity)) return true
-                                
-                            })
-                            fieldValue[2] = divisionOptions
-                            // console.log({ divisionOptions })
-                            const thisDivision = divisionOptions.find(div => div.name === fieldValue[0]);
-                            let divInEnsemble = false;
-                            let divCapMatch = false;
-                            if (thisDivision) {
-                                divInEnsemble = thisDivision.ensemble === thisEnsemble.id;
-                                divCapMatch = thisMembershipType.capacity.includes(thisDivision.capacity)
-                            }
-                            fieldValue[1] = divInEnsemble && divCapMatch ? 'pass' : 'fail'
-                            break;
-                        default:
-                            if (optionSets[field]) {
-                                fieldValue[1] = optionSets[field].includes(fieldValue[0]) || fieldValue[0] === "" ? 'pass' : 'fail'
-                                fieldValue[2] = optionSets[field]
-                            }
-                            break;
-
-                    }
-                    if (fieldValue[1] === 'flag') cells.flags = true
-                    if (fieldValue[1] === 'fail') cells.failures = true
+    const changeFields = (field, show) => {
+        const newImportedMembers = [...importedMembers]
+        Object.values(newImportedMembers).forEach(member => {
+            if (show) {
+                if (!member[field]) {
+                    member[field] = { value: "", valid: 'pass' }
+                    // if (member.match) {
+                    //     const matchingMember = members.find(matchingMember => matchingMember.id === member.match.id)
+                    //     member[field].value = matchingMember[field] || null
+                    // }
                 }
-                cells[field] = fieldValue || [];
+            } else {
+                if (member[field]) delete member[field]
             }
         })
-        return cells
-    })
-
-    let selectionSafe = true;
-    let selectedCount = 0;
-    let flagsCount = 0;
-    let failuresCount = 0;
-    rows.forEach(row => {
-        if (row.selected && row.failures > 0) selectionSafe = false
-        selectedCount += (row.selected ? 1 : 0)
-        flagsCount += (row.flags ? 1 : 0)
-        failuresCount += (row.failures ? 1 : 0)
-    })
-
-    const updateRows = (fieldsToUpdate) => {
-        const newImportedMembers = [...importedMembers];
-        newImportedMembers.forEach(member => {
-            fieldsToUpdate.forEach(fv => {
-                if (!member[fv.field]) member[fv.field] = ['', 'pass']
-                if (member.selected) {
-                    member[fv.field] = [fv.value, 'pass']
-                }
-            })
-        })
-        setImportedMembers(newImportedMembers);
+        validateImportedMembers(newImportedMembers)
     }
 
+
+    let allSafe = true;
+    let filterSafe = true;
+    let selectionSafe = true;
+
+    const counters = {
+        select: { num: 0, icon: "check_circle", caption: "Selected", message: "" },
+        fail: { num: 0, icon: "cancel", caption: "Errors", message: "Rows with errors must be repaired in order to upload." },
+        dupe: { num: 0, icon: "toll", caption: "Duplicate", message: "Fields that must be unique cannot be found in more than one row." },
+        match: { num: 0, icon: "join_full", caption: "Match", message: "Rows that have matching records can be merged, modified or discarded." },
+        flag: { num: 0, icon: "flag_circle", caption: "Flags", message: "Rows with flag can be imported, but review is recommended." },
+        ready: { num: 0, icon: "recommend", caption: "Ready", message: "" },
+    }
+    
+    importedMembers.forEach((member, m) => {
+        const notSafe = member.fail || member.dupe || member.needsAttention
+
+        if (notSafe) allSafe = false;
+
+        Object.keys(counters).forEach(counterKey => {
+            counters[counterKey].num += member[counterKey] ? 1 : 0
+            if(filter === counterKey && notSafe) filterSafe = false
+        })
+
+        if (member.select && notSafe) selectionSafe = false
+
+    })
+
+    console.log({counters})
+
     const uploadControls = 
-        <div style={{ width: "500px", padding: "40px", margin: "auto" }}>
-            <Form id="upload-members-form" altSubmit={(f) => processFile(f)} >
-                <article >
-                    <File id="file-selector" name="members" label="Select .xlsx File" fileTypes="xlsx" isRequired />
-                    <Select id="ensemble-select" name="ensembleName" label="Ensemble" options={optionSets.ensemble} />
-                    <section style={{marginTop: "10px", justifyContent: "flex-end"}}>
-                        <button name="submit" className="fit">Import</button>
-                    </section>
-                </article>
-            </Form>
+        <div style={{flex: "unset", display: "flex", flexWrap: "wrap"}}>
+            <div style={{ flex: 1, padding: "0 50px", minWidth: "400px" }}>
+                <h1>Import Members</h1>
+                <p>
+                    Use this tool to import a membership roster from an Excel (.xlsx) file.
+                    Once imported, you will have an opportunity to review the imported records and repair any improperly formatted values.
+                </p>
+                <p>
+                    Note that All members must have a unique name. If two or more members are named similarly ("John Smith"), consider adding a middle name, or suffix.
+                </p>
+                <p>
+                    Your import file may include the below fields. Other fields will be ignored.
+                </p>
+                <ul>
+                    <li>First Name  <span style={{color: "red"}}>(required)</span></li>
+                    <li>Middle Name</li>
+                    <li>Last Name <span style={{color: "red"}}>(required)</span></li>
+                    <li>Suffix</li>
+                    <li>AKA (a nickname or display name)</li>
+                    <li>Birthday</li>
+                    <li>Sex</li>
+                    <li>Height</li>
+                    <li>Weight</li>
+                    <li>Race</li>
+                    <li>Ethnicity</li>
+                    <li>Hair</li>
+                    <li>Eyes</li>
+                    <li>Email</li>
+                    <li>Phone Number</li>
+                    <li>Street</li>
+                    <li>Unit</li>
+                    <li>City</li>
+                    <li>State</li>
+                    <li>Postal code</li>
+                    <li>Country</li>
+                    <li>PO Box</li>
+                    <li>Address Type (Options: Home, Work, Temporary, Secondary, Old)</li>
+                    <li>Ensemble (if other than what you indicate in the drop down on the right)</li>
+                    <li>Membership Type</li>
+                    <li>Division</li>
+                    <li>Membership Start (will default to today if omitted)</li>
+                    <li>Membership Expires (if required by Membership Type, will default to the soonest expiration period)</li>
+                </ul>
+            </div>
+            <div style={{ flex: 0, height: "75%", border: "0.5px solid black", margin: "auto"}}></div>
+            <div style={{ flex: 1, padding: "10px", display: "flex", justifyContent: "center", alignItems: "center", minWidth: "400px" }}>
+                {optionSets.ensemble.length > 0 && optionSets.membershipType.length > 0
+                    ?
+                    <div style={{ width: "500px", padding: "40px", margin: "auto" }}>
+                        <Form id="upload-members-form" altSubmit={(f) => processFile(f)} >
+                            <article >
+                                <File id="file-selector" name="members" label="Select .xlsx file" fileTypes="xlsx" isRequired />
+                                <Select id="ensemble-select" name="ensembleName" label="Ensemble" options={optionSets.ensemble} />
+                                <section style={{marginTop: "10px", justifyContent: "flex-end"}}>
+                                    <button name="submit" className="fit">Import</button>
+                                </section>
+                            </article>
+                        </Form>
+                    </div>
+                    :
+                    <div>
+                        <p>
+                            Before importing members, you must:
+                        </p>
+                        <ol>
+                            {ensembles.length === 0 &&
+                                <li>
+                                    <ModalButton
+                                        renderButton="Create an Ensemble"
+                                        title="Create New Ensemble"
+                                        buttonClass="link-like-button"
+                                    >
+                                        <Form id="create-new-ensemble-form" METHOD="POST" followPath="/e/ensembles/$slug$" >
+                                            <section className="modal-fields inputs">
+                                                <Text id="newEnsembleName" name="name" label="Ensemble Name" />
+                                                <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ensembleTypes} />
+                                            </section>
+                                        </Form>
+                                        <section className="modal-buttons">
+                                            <button name="submit" className="fit" form="create-new-ensemble-form">Create Ensemble</button>
+                                        </section>
+                                    </ModalButton>
+                                </li>
+                            }
+                            {membershipTypes.length === 0 &&
+                                <li>
+                                    <ModalButton
+                                        renderButton="Create a Membership Type"
+                                        title="Create Membership Type"
+                                        buttonClass="link-like-button"
+                                    >
+                                        <Form id="membership-type-form" APIURL="/api/membership/types" METHOD="PUT" debug>
+                                            <Text id="membership-typ-name" name="name" label="Type Name" value="" isRequired />
+                                            <section className="inputs">
+                                                <Number id="membership-term-length" name="term_length" label="Expires in" value={1} style={{ flex: 1 }} isRequired />
+                                                <Select id="memberhsip-term-period" name="term_period" label="" options={termPeriod} value={3} style={{ flex: 5 }} isRequired />
+                                            </section>
+                                            <Collection id="membership-capacities" name="capacity" label="Capacities" options={capacities} isRequired />
+                                            <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={ensembles} isRequired />
+                                        </Form>
+                                        <section className="modal-buttons">
+                                            <button name="submit" className="fit" form="membership-type-form">Create</button>
+                                        </section>
+                                    </ModalButton>
+                                </li>
+                            }
+                        </ol>
+                    </div>
+                }
+            </div>
         </div>
     
     
     const importedResultsGrid =
         <article style={{ width: "100%", overflow: "hidden"}}>
             <section style={{ padding: "20px 0" }}>
-                <section className="space-children">
-                    <div className="info-flag" style={{...validityStyling[rows.length - failuresCount > 0 ? 'ready' : 'sleep'], display: "flex", alignItems: "center" }}><i className="big" style={{ marginRight: "10px" }}>check_circle</i><span>Ready for Upload:</span> <span>{rows.length - failuresCount}</span></div>
-                    {flagsCount > 0 && 
-                        <div className="info-flag" style={{...validityStyling['flag'], display: "flex", alignItems: "center" }}><i className="big" style={{ marginRight: "10px" }}>flag_circle</i><span>Rows with Flags:</span> <span>{flagsCount}</span></div>
-                    }
-                    {failuresCount > 0 &&
-                        <div className="info-flag" style={{...validityStyling['fail'], display: "flex", alignItems: "center" }} title="Records with errors must be repaired in order to upload."><i className="big" style={{ marginRight: "10px" }}>error</i><span>Rows with Errors:</span> <span>{failuresCount}</span></div>
+                <section className="space-children" style={{marginLeft: "44px"}}>
+                    {
+                        Object.keys(counters).map((counterKey, c) => {
+                            const counter = counters[counterKey]
+                            const hasCount = counter.num > 0
+                            const isReady = counterKey === 'ready'
+                            const isFiltering = Object.keys(filter).includes(counterKey)
+                            let colorStyleName = hasCount ? counterKey : 'sleep'
+                            
+                            return (
+                                <div key={c} className={`info-flag${Object.keys(filter).includes(counterKey) ? " on" : ""}${hasCount || isReady || isFiltering ? " show" : ""}`} style={{ ['--edge-color']: validityStyling[colorStyleName]['--edge-color'], display: "flex", alignItems: "center" }} onClick={() => filterMembers(counterKey)} title={counter.message}>
+                                    <i className="big">{counter.icon}</i><span>{`${counterKey === 'match' && counter.num > 1 ? "Matches" : counter.caption}: ${counter.num}`}</span>
+                                </div>
+                            )
+                        })
                     }
                 </section>
                 <div id="import-options" className="button-tray" style={{ marginLeft: "auto" }}>
-                    {
-                        selectedCount > 0 ?
-                            <ModalButton
-                                key="update"
-                                renderButton={<><i>checklist</i><span>Mass Update</span></>}
-                                title="Multi-Row Update"
-                                buttonClass="fit"
-                                buttonStyle={{['--edge-color']: 'var(--color-h2)'}}
-                            >
-                                <MultiUpdateForm updateRows={updateRows} selectedCount={selectedCount} />
-                                <section className="modal-buttons">
-                                    <button name="submit" className="fit" form="multi-update-form">Update</button>
-                                </section>
-                            </ModalButton>
-                            :
-                            <button className="fit sleeping">Multi-Row Update</button>
-                    }
+                    <ModalButton
+                        key="manage-columns"
+                        renderButton={<><i>view_list</i><span>Manage Columns</span></>}
+                        title="Manage Columns"
+                        buttonClass="fit"
+                    >
+                        <article className="scroll column" style={{ gridTemplateColumns: "1fr 1fr"}}>
+                            {
+                                Object.keys(FIELDS).map((fieldKey, f) => {
+                                    const field = FIELDS[fieldKey]
+                                    if (field.conform) return;
+                                    return <CheckBox key={f} label={field.caption} value={field.show} extraAction={(v) => changeFields(fieldKey, v)} readonly={fieldKey === 'firstName' || fieldKey === 'lastName' || (fieldKey === 'middleName' && field.show) || (fieldKey === 'suffix' && field.show)}/>
+                                })
+                            }
+                        </article>
+                    </ModalButton>
+                    <ModalButton
+                        key="remove-selected"
+                        renderButton={<><i>remove_done</i><span>Remove Selected</span></>}
+                        title="Remove Selected Rows?"
+                        buttonClass="fit angry"
+                        disabled={counters.select.num < 1}
+                    >
+                        <p>
+                            Do you want to remove the selected rows from this import?
+                        </p>
+                        <div className="modal-buttons">
+                            <button name="close_modal" className="fit angry" onClick={() => removeSelectedMembers()}>Remove</button>
+                        </div>
+                    </ModalButton>
                     <button
                         key="upload-selected"
                         name="upload-selected"
-                        className={`fit ${selectionSafe && selectedCount > 0 ? '' : 'sleeping'}`}
-                        style={{['--edge-color']: 'var(--color-h2)'}}
+                        className="fit"
+                        onClick={() => uploadMembers('selected')}
+                        disabled={!selectionSafe || counters.select.num < 1}
                     >
-                        Upload Selected
+                        <i>file_download_done</i><span>Upload Selected</span>
                     </button>
                     <button
                         key="upload-all"
                         name="upload-all"
-                        className={`fit ${failuresCount > 0 ? 'sleeping' : ''}`}
-                        onClick={failuresCount > 0 ? null : () => console.log(importedMembers)}
+                        className="fit callout"
+                        onClick={() => uploadMembers()}
+                        disabled={!allSafe || (filter != "" && !filterSafe)}
                     >
                         <i>upload</i><span>Upload All</span>
-                    </button>
-                    
-                    
+                    </button> 
                 </div>
             </section>
-            <article style={{overflow: "scroll", flex: 1}}>
-                <div style={{ display: "flex", position: "sticky", top: "0px", background: "var(--gray1)", width: "fit-content", zIndex: 1 }}>
-                    <CheckBox id="select-all" value={importedMembers.every(im => im.selected)} extraAction={selectAll} style={{ fontSize: "1.5em", position: "sticky", left: "0px", background: "var(--gray1)" }}/>
+            <article ref={recordsDisplay} style={{overflow: "scroll", flex: 1}}>
+                <div style={{ display: "flex", position: "sticky", top: "0px", background: "var(--gray1)", width: "fit-content", minHeight: "3em", zIndex: 1 }}>
+                    <div style={{ fontSize: "1.5em", minWidth: "44px", position: "sticky", left: "0px", background: "var(--gray1)", display: "flex" }}>
+                        <i style={{ fontSize: "23.5px", margin: "auto", color: "var(--mint7)" }} onClick={selectAll}>{areAllSelected() ? "check_box" : counters.select.num > 0 ? "indeterminate_check_box" : "check_box_outline_blank"}</i>
+                    </div>
                     {
                         Object.keys(FIELDS).map((field, b) => {
                             if (FIELDS[field].show) return (
-                                <div key={b} className={`col-${field}`} style={{ minWidth: FIELDS[field].width, padding: "10px", display: "flex", alignItems: "center" }}>{FIELDS[field].caption}</div>
+                                <HeaderCell key={b} field={field} updateColumn={updateColumn} sortRows={sortRows} hasSelected={counters.select.num > 0} />
                             )
                         })
                     }
                 </div>
                 {
-                    rows.map((row, r) => {
-                        return (
-                            <ImportRow key={r} row={row} r={r} selectRow={(v) => selectRow(r, v)} updateFieldValue={updateFieldValue} />
+                    importedMembers.map((row, r) => {
+                        if (Object.keys(filter).every(key => {
+                            return filter[key].includes(row.index)
+                        })) return (
+                            <ImportRow key={r} row={row} r={r} selectRow={(v) => selectRow(r, v)} updateFieldValue={updateFieldValue} handleMatch={handleMatch} />
                         )
+                        return null;
                     })
                 }
             </article>
@@ -398,33 +766,13 @@ const Importer = ({optionSets, members}) => {
         </article>
 
     return (
-        <div id="page-base">
-            <div id="page-header" >
-                <SubNav
-                    caption="Import Members"
-                    root="members"
-                    // navNodes={navNodes}
-                    buttons={[
-                        
-                    ]}
-                />
-            </div>
-            <div id="page-frame">
-                <div id="page" style={{flexDirection: "column"}}>
-                    
-                    <div id="import-grid" style={{display: "flex", flex: 1, overflow: "hidden"}}>
-                        {importedMembers.length > 0
-                            ?
-                            importedResultsGrid
-                            :
-                            uploadControls
-                        }
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div id="import-grid" style={{display: "flex", flex: 1, overflow: "hidden"}}>
+            {importedMembers.length > 0
+                ?
+                importedResultsGrid
+                :
+                uploadControls
+            }
         </div>
     )
 }

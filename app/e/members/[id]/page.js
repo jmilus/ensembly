@@ -91,7 +91,7 @@ const MemberPage = async (context) => { //
                             <Text id="email" name="email" format="email" label="Email" value={member.EmailAddress[0]?.email} />
                         </Form>
                         <Form id="member-phone" APIURL={`/api/phonenumber/${member.PhoneNumber[0]?.id}`} auxData={{memberId: member.id, type: "Primary"}} auto >
-                            <Text id="phone" name="number" label="Phone Number" format="phone" value={member.PhoneNumber[0]?.phonenumber} />
+                            <Text id="phone" name="number" label="Phone Number" format="phone" value={member.PhoneNumber[0]?.number} debug/>
                         </Form>
                     </section>
 
@@ -202,7 +202,7 @@ const MemberPage = async (context) => { //
                                                                                                     </section>
                                                                                                 </Form>
                                                                                                 <ConfirmButton
-                                                                                                    button={<i class="switch" style={{['--icon1']:"'delete_outline'", ['--icon2']:"'delete'" }}></i>}
+                                                                                                    button={<i className="switch" style={{['--icon1']:"'delete_outline'", ['--icon2']:"'delete'" }}></i>}
                                                                                                     style={{ ['--edge-color']: "0 90% 50%" }}
                                                                                                     popupStyle={{background: "var(--gray2)", borderRadius: "5px"}}
                                                                                                 >

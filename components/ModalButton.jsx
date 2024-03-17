@@ -5,14 +5,14 @@ import { createPortal } from 'react-dom';
 
 import ModalWrapper from '../components/ModalWrapper';
 
-const ModalButton = ({ renderButton, title, children, buttonClass, modalClasses, buttonStyle, dismiss }) => {
+const ModalButton = ({ renderButton, title, children, buttonClass, modalClasses, buttonStyle, dismiss, disabled=false }) => {
     const [show, setShow] = useState(false);
 
     // console.log({ children })
 
     return (
         <>
-            <button onClick={() => setShow(true)} className={buttonClass} style={buttonStyle}>
+            <button onClick={() => setShow(true)} className={buttonClass} style={buttonStyle} disabled={disabled}>
                 {renderButton}
             </button>
             {show && 

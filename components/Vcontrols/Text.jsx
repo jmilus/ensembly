@@ -7,7 +7,28 @@ import { validateEmail } from 'utils';
 // import './Vstyling.css';
 
 const EditText = (props) => {
-    const { id, name, label, value="", placeholder, extraAction, format, limit, style, innerStyle, hero, isRequired=false, children, pattern, clear, readonly, validateOnBlur=false, validationFunction, debug } = props;
+    const {
+        id,
+        name,
+        label,
+        value = "",
+        placeholder,
+        extraAction,
+        format,
+        limit,
+        style,
+        innerStyle,
+        hero,
+        isRequired = false,
+        children,
+        pattern,
+        clear,
+        readonly,
+        autofocus=false,
+        validateOnBlur = false,
+        validationFunction,
+        debug
+    } = props;
     const [controlValue, setControlValue] = useState(value === null ? "" : value)
 
     if (debug) console.log(name, { props }, { controlValue });
@@ -31,25 +52,6 @@ const EditText = (props) => {
             break;
         default:
             textType = format
-    }
-
-    const formatDate = (d) => {
-        const dateNums = d.split("-");
-        let year = dateNums[0]
-        let month = dateNums[1].padStart(2, "0")
-        let day = dateNums[2].padStart(2, "0")
-
-        if (year === "") {
-            year = "0000"
-        } else {
-            if (year.length > 4) year = year.substr(-4)
-            let yearInt = parseInt(year)
-            if (year.length < 4) yearInt += 2000
-            if (yearInt > new Date().getFullYear()) yearInt = yearInt - 100
-            year = yearInt.toString()
-        }
-        
-        return `${year}-${month}-${day}`
     }
 
     function formatValue(v) {
@@ -121,7 +123,8 @@ const EditText = (props) => {
         autoComplete: "do-not-autofill",
         maxLength: limit,
         readOnly: readonly,
-        pattern
+        pattern,
+        autoFocus: autofocus
     }
 
     const inputControl = limit > 100
@@ -133,7 +136,7 @@ const EditText = (props) => {
         />
     return (
         <>
-            <div id={`text-${id}`} className={`verdant-control text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}${controlValue === "" ? " empty" : ""}`} style={style}>
+            <div id={`text-${id}`} className={`verdant-control text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${clear ? " clearable-control" : ""}${controlValue === "" && !placeholder ? " empty" : ""}`} style={style}>
                 {label && <label htmlFor={id} >{label}</label>}
                 <div className="hover-effect">
                     {inputControl}
@@ -146,15 +149,15 @@ const EditText = (props) => {
 }
 
 const Text = (props) => {
-    const { id, label, value="", style, hero, children, readonly } = props;
+    const { id, label, placeholder, value="", style, innerStyle, hero, children, readonly } = props;
 
     if (!readonly) return <EditText {...props} />
 
     return (
         <>
-            <div id={`text-${id}`} className={`text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${value === "" ? " empty" : ""}`} style={style}>
+            <div id={`text-${id}`} className={`text-box${hero ? " hero" : ""}${label ? "" : " unlabeled"}${value === "" && !placeholder ? " empty" : ""}`} style={style}>
                 {label && <label htmlFor={id} >{label}</label>}
-                <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
+                <div style={{ height: "2.75em", fontFamily: '"Arial", sans-serif', padding: "10px 15px", borderBottom: "1px solid var(--gray3)", ...innerStyle }}>{value}</div>
             </div>
             {children}
         </>

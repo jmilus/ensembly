@@ -3,7 +3,7 @@ import 'server-only';
 import { getAllMembers } from '@/api/members/route';
 
 import ModalButton from 'components/ModalButton';
-import { Form, Text, File } from 'components/Vcontrols';
+import { Form, Text } from 'components/Vcontrols';
 import SecurityWrapper from 'components/SecurityWrapper';
 import SubNav from 'components/SubNav';
 import FilterContainer from 'components/FilterContainer';
@@ -16,7 +16,7 @@ const MembersPage = async () => {
     const members = await getAllMembers();
     const { sex } = await getBioOptions(['sex']);
 
-    // console.log({ sex })
+    console.log({ members })
 
     const navButtons = [
         <ModalButton
@@ -38,19 +38,6 @@ const MembersPage = async () => {
         <Link href="/e/members/upload">
             <button className="fit"><i>upload</i><span>Upload Members</span></button>
         </Link>
-        // <ModalButton
-        //     key="modal-button-upload-members"
-        //     renderButton={<><i>upload</i><span>Upload Members</span></>}
-        //     title="Upload Members from Excel File"
-        //     buttonClass="fit"
-        // >
-        //     <Form id="upload-members-modal-form" APIURL="/api/members/uploadMembers" METHOD="POST" debug>
-        //         <File id="fileUpload" name="members" handling="upload" fileTypes="xlsx" isRequired />
-        //     </Form>
-        //     <section className="modal-buttons">
-        //         <button name="submit" className="fit" form="upload-members-modal-form">Upload</button>
-        //     </section>
-        // </ModalButton>
     ]
 
     return (

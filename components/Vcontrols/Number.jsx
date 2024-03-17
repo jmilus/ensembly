@@ -7,6 +7,7 @@ import { floor } from 'lodash';
 // import './Vstyling.css';
 
 const formatNumber = (format, controlValue) => {
+    if (controlValue === null) return "";
     let displayNumberValue = 0
     switch (format) {
         case "weight":
@@ -41,9 +42,13 @@ const formatNumber = (format, controlValue) => {
 
 const EditNumber = (props) => {
     const { id, name, label, value, extraAction, format, style, hero, isRequired, readonly, debug } = props;
-    const [controlValue, setControlValue] = useState(value || 0);
+    const [controlValue, setControlValue] = useState(value);
 
     if (debug) console.log(name, { props }, { controlValue });
+
+    useEffect(() => {
+        setControlValue(value);
+    }, [value])
 
     const handleControlValueChange = (input) => {
         const rawNumber = input.replace(/[^0-9]*/gm, '');
@@ -73,7 +78,7 @@ const EditNumber = (props) => {
     let displayNumberValue = formatNumber(format, controlValue);
     
     return (
-        <div id={`number-${id}`} className={`verdant-control number-box${label ? "" : " unlabeled"}${controlValue === 0 ? " empty" : ""}`} style={style}>
+        <div id={`number-${id}`} className={`verdant-control number-box${label ? "" : " unlabeled"}${controlValue === null ? " empty" : ""}`} style={style}>
             {label && <label htmlFor={id} >{label}</label>}
             <div className="hover-effect">
                 <input
@@ -111,7 +116,7 @@ const Number = (props) => {
         <>
             <div id={`number-${id}`} className={`number-box ${hero ? " hero" : ""}`} style={style}>
                 {label && <label htmlFor={id} >{label}</label>}
-                <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)", textAlign: "right"}}>{displayNumberValue}</div>
+                <div style={{height: "2.75em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)", textAlign: "right"}}>{displayNumberValue}</div>
             </div>
             {children}
         </>

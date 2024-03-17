@@ -74,7 +74,7 @@ const DateOnly = (props) => {
         <>
             <div id={`dateonly-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
                 {label && <label htmlFor={id} >{label}</label>}
-                <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{displayDate.toDateString()}</div>
+                <div style={{height: "2.75em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{displayDate.toDateString()}</div>
             </div>
             {children}
         </>

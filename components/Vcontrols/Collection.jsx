@@ -164,7 +164,7 @@ const Collection = (props) => {
         <>
             <div id={`collection-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
                 <label htmlFor={id} >{label}</label>
-                <div style={{ display: "flex", height: "3em", fontFamily: "arial", padding: "5px", borderBottom: "1px solid var(--gray3)" }}>
+                <div style={{ display: "flex", height: "2.75em", fontFamily: "arial", padding: "5px", borderBottom: "1px solid var(--gray3)" }}>
                     {
                         Object.values(value).map((option, i) => {
                             return <ItemNode key={i} data={option} />

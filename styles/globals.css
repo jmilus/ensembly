@@ -23,7 +23,7 @@ body {
 
   --color-p: 150 60% 45%; /* primary color */
   --color-s: 184 37% 15%; /* secondary color */
-  --color-o: lch(73 74.58 62.82); /* contrast color */
+  --color-o: lch(73 74.58 62.82);
   --color-f: lch(46 73.56 7.6);
   --color-c1: #7ED9DE; /* light cyan */
   --color-c2: #38b0b8; /* mid cyan */
@@ -202,10 +202,6 @@ input:-webkit-autofill:focus {
   transition: background-color 5000s ease-in-out 0s, box-shadow 3s ease;
 }
 
-form {
-  flex: 1;
-}
-
 button {
   display: flex;
   justify-content: center;
@@ -214,7 +210,6 @@ button {
   font-family: inherit;
   color: hsl(var(--edge-color));
   background: hsl(var(--edge-color) / 0.1);
-  border: none;
   padding: 0;
   cursor: pointer;
   white-space: nowrap;
@@ -241,9 +236,22 @@ button:active > i {
   color: inherit;
 }
 
-button > * + span {
+button[disabled] {
+  --edge-color: var(--grayx) 83% !important;
+  cursor: default !important;
+  box-shadow: none !important;
+  color: hsl(var(--edge-color)) !important;
+  background: hsl(var(--edge-color) / 0.1) !important;
+  border-color: hsl(var(--edge-color)) !important;
+}
+
+i + span {
   margin-left: 10px;
 }
+
+/* button > * + span {
+  margin-left: 10px;
+} */
 
 button:not([class]) {
   border-width: 0;
@@ -267,15 +275,31 @@ button.fat {
   height:4em;
 }
 
+button.link-like-button {
+  background: none;
+  color: var(--gray9);
+  box-shadow: none;
+  border: none;
+}
+button.link-like-button:hover {
+  color: hsl(var(--edge-color));
+}
+
+button[name="submit"] {
+  /* color: var(--text1); */
+  --edge-color: var(--color-p);
+}
+
 button.angry {
   --edge-color: 0 90% 50%;
   /* --text-active: darkred; */
 }
 
-button.happy {
+button.callout {
   --edge-color: 0 0% 100%;
   background: hsl(var(--color-p));
   --text-active: hsl(var(--color-p));
+  border: none;
 }
 
 button.caution {
@@ -1509,12 +1533,69 @@ fieldset.buttons > legend {
   height: 100%;
 }
 
-.space-children > *:not(:first-child) {
+/* .space-children > *:not(:first-child) {
   margin-left: 10px;
-}
+} */
 
 .info-flag {
-  padding: 15px 20px;
-  border-radius: 3px;
+  width: 0;
+  border-radius: 30px;
+  font-size: 0.9em;
   user-select: none;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  overflow: hidden;
+  margin-right: 0;
+  flex-wrap: nowrap;
+  color: transparent;
+  border-style: solid;
+  border-width: 0px;
+  border-color: transparent;
+  transition: all 0.15s ease;
+}
+.info-flag:hover {
+  outline: 1px solid hsl(var(--edge-color));
+  outline-offset: -1px;
+}
+
+.info-flag > span {
+  white-space: nowrap;
+}
+.info-flag.show {
+  width: 130px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  color: hsl(var(--edge-color));
+  border-color: hsl(var(--edge-color));
+  background-color: hsl(var(--edge-color) / 0.2);
+  border-color: hsl(var(--edge-color));
+  border-width: 1px;
+}
+
+.info-flag.off {
+  opacity: 0.3;
+}
+
+.info-flag.on {
+  color: white;
+  background-color: hsl(var(--edge-color));
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.column-header-button {
+  border-radius: 3px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  background: var(--mint4);
+  margin-right: 10px;
+}
+
+.column-header:hover .column-header-button,
+.column-header-button.show {
+  background: var(--mint6);
 }

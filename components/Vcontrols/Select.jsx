@@ -19,7 +19,7 @@ const EditSelect = (props) => {
         // console.log('Event fired', e, e.target)
     });
 
-    let controlOptions = packageOptions(options, value)
+    let controlOptions = packageOptions(options)
 
     useEffect(() => {
         setControlValue(value)
@@ -36,7 +36,7 @@ const EditSelect = (props) => {
         console.log("selected:", input)
         emitEvent()
         
-        if (extraAction) extraAction(input);
+        if (extraAction) extraAction(controlOptions[input]);
         setShowPopup(false);
         setControlValue(input)
     }
@@ -165,7 +165,7 @@ const Select = (props) => {
         <>
             <div id={`select-${id}`} className={`verdant-control select-box ${specialSize}${hero ? " hero" : ""}`} style={style}>
                 {label && <label htmlFor={id} >{label}</label>}
-                <div className="select-input" style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
+                <div className="select-input" style={{height: "2.75em", fontFamily: '"Arial", sans-serif', padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{value}</div>
             </div>
             {children}
         </>

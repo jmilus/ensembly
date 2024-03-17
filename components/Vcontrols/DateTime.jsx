@@ -85,7 +85,7 @@ const DateTime = (props) => {
         <>
             <div id={`dateonly-${id}`} className={`${hero ? " hero" : ""}`} style={style}>
                 {label && <label htmlFor={name} >{`${label} Date`}</label>}
-                <div style={{height: "3em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{`${displayDate.toDateString()} ${displayDate.toLocaleTimeString()}`}</div>
+                <div style={{height: "2.75em", fontFamily: "arial", padding: "10px 15px", borderBottom: "1px solid var(--gray3)"}}>{`${displayDate.toDateString()} ${displayDate.toLocaleTimeString()}`}</div>
             </div>
             {children}
         </>
