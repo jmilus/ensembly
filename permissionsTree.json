@@ -1,0 +1,43 @@
+{
+    "modules": {
+        "members": {
+            "list": "read",
+            "record": "linked"
+        },
+        "ensembles": {
+            "list": "linked"
+        },
+        "calendar": {
+            "list": "read",
+            "record": {
+                "mode": "read",
+                "elements": [
+                    { "event-note": "hide" },
+                    { 
+                        "attendance": {
+                            "list": "read",
+                            "record": "__division"
+                        }
+                    }
+                ]
+            }
+        },
+        "messages": {
+            "sub-modules": {
+                "forum": {
+                    "list": "read",
+                    "record": "create"
+                },
+                "survey": {
+                    "record": "linked"
+                },
+                "broadcast": "read"
+            }
+        }
+    },
+    "linkedIds": [
+        { "sdfkjhsfliu23r8":"read" },
+        { "r8cwdhlkjqweof":"edit" },
+        { "14r98hcjoiu34g":"edit" }
+    ]
+}

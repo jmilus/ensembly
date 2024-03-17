@@ -1,0 +1,122 @@
+#page-base {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#page-frame { /* form-section */
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    padding: 0 50px 0 40px;
+    background-image: linear-gradient(var(--gray1), var(--gray2));
+    --edge-color: var(--mintx) 50%;
+    --text-active: white;
+}
+
+#page-header {
+    background: var(--gray2);
+    height: 50px;
+    display: flex;
+    align-items: center;
+    --text-active: var(--text2);
+    --edge-color: var(--color-h3);
+    --text-active: var(--text1);
+}
+
+#record-header {
+    display: flex;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+    background: hsla(0, 0%, 98%, 0.75);
+    min-height: 90px;
+    align-items: center;
+}
+
+#page { /* page-details */
+    display: flex;
+    flex: 1;
+    color: var(--text2);
+    padding-top: 10px;
+    overflow: hidden;
+}
+
+.page-grid {
+    display: grid;
+    grid-gap: 10px;
+}
+
+.nav-wrapper {
+    display: flex;
+    flex: 1;
+    margin-right: 10px;
+    height: 100%;
+    --hero-size: 40px;
+    margin: auto 0;
+    align-items: center;
+}
+.nav-wrapper > .hero-icon {
+    outline: 0px solid white;
+    transition: all 0.2s ease;
+}
+.nav-wrapper > .hero-icon:hover {
+    outline: 5px solid white;
+}
+
+.nav-header {
+    font-size: 2em;
+    font-family: var(--brand-font);
+    min-width: 300px;
+    padding: 0 0 0 38px;
+    display: flex;
+}
+
+.nav-header span {
+    cursor: pointer;
+    color: var(--color-c3);
+    margin: auto 0;
+}
+
+.sub-nav-button {
+    display: flex;
+    align-items:center;
+    justify-content:center;
+    cursor: pointer;
+    border: none;
+    width: 10em;
+    height: 100%;
+    font-size: 1.25em;
+    color: var(--gray5);
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+
+}
+.sub-nav-button:hover {
+    border-bottom-color: var(--color-c3);
+    color: var(--color-c3);
+}
+.sub-nav-button:active {
+    border-bottom-color: var(--color-c2);
+    color: var(--color-c2);
+}
+
+.sub-nav-button.selected {
+    border-bottom-color: var(--color-s);
+    color: var(--color-s);
+}
+
+.sub-nav-actions {
+    display: flex;
+    margin: auto 10px auto auto;
+    align-items: center;
+}
+
+.sub-nav-actions > * {
+    margin-left: 10px;
+}

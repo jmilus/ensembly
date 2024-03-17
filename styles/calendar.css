@@ -1,0 +1,121 @@
+.weekday-headers-row {
+    display: flex;
+}
+
+.weekday-header {
+    flex: 1;
+    text-align: center;
+    font-family: var(--brand-font);
+    padding: 10px;
+}
+
+
+/************************* LINEUPS MANAGER *************************/
+
+#event-lineup-grid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+  
+.event-lineup-grid > article {
+    width: fit-content;
+}
+
+.event-lineup-grid-header {
+    /* padding: 0 8px; */
+    /* width: 200px; */
+    /* cursor: pointer; */
+}
+.event-lineup-grid-header > button {
+   flex: 1;
+}
+  
+.event-lineup-grid-cell {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    margin: 1px;
+}
+  
+.event-lineup-grid-row {
+    display: flex;
+    border-bottom: 1px solid var(--gray3);
+    padding: 10px 0;
+}
+  
+.grid-header-button {
+    white-space: normal;
+    padding: 5px;
+    height: auto;
+    margin: 3px;
+    border-radius: 5px;
+    cursor: pointer;
+    --edge-color: var(--color-h3);
+    overflow: hidden;
+    box-shadow: 0 0 0 0 hsl(var(--edge-color));
+}
+
+
+/************************* ATTENDANCE MANAGER *************************/
+
+.attendance-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.attendance-row {
+    display: flex;
+    border-bottom: 1px solid var(--gray3);
+}
+
+.attendance-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2em;
+    background: var(--gray2);
+}
+.attendance-name + .attendance-header {
+    border-top-left-radius: 0.5em;
+}
+.attendance-header:last-child {
+    border-top-right-radius: 0.5em;
+}
+
+.attendance-name {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+}
+
+.radio-slider.Uncounted {
+    background: hsl(0, 0%, 80%);
+}
+.radio-slider.Absent {
+    background: hsl(0, 100%, 65%);
+}
+.radio-slider.Tardy {
+    background: hsl(35, 100%, 65%);
+}
+.radio-slider.Excused {
+    background: hsl(200, 70%, 65%)
+}
+.radio-slider.Present {
+    background: var(--color-moss);
+}
+
+.calendar-control {
+    justify-content: space-between;
+}
+
+.calendar-control > a:nth-child(3) {
+    flex:1;
+}
+
+.calendar-control > a > button {
+    flex: 1;
+}
