@@ -621,7 +621,7 @@ const Importer = ({optionSets, members}) => {
                             Before importing members, you must:
                         </p>
                         <ol>
-                            {ensembles.length === 0 &&
+                            {optionSets.ensemble.length === 0 &&
                                 <li>
                                     <ModalButton
                                         renderButton="Create an Ensemble"
@@ -640,7 +640,7 @@ const Importer = ({optionSets, members}) => {
                                     </ModalButton>
                                 </li>
                             }
-                            {membershipTypes.length === 0 &&
+                            {optionSets.membershipType.length === 0 &&
                                 <li>
                                     <ModalButton
                                         renderButton="Create a Membership Type"

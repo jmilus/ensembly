@@ -19,7 +19,7 @@ export default function AfterMagicLink() {
                     boxShadow: "var(--shadow1)",
                 }}>
                 <div style={{ display: "flex" }}>
-                    <i style={{fontSize: "4em", color: "red", marginRight: "20px"}}></i>
+                    <i style={{fontSize: "4em", color: "red", marginRight: "20px"}}>mark_email_unread</i>
                     <h2>Check Your Email.</h2>
                 </div>
                 <p>{`We've sent a link to your email. If you don't see it in a few moments, check your Spam filter, or...`}</p>
