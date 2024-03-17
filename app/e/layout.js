@@ -1,7 +1,6 @@
 import 'server-only';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createClient } from 'utils/supabase/server';
 import { redirect } from 'next/navigation';
 
 import Nav from 'components/Nav';
@@ -18,11 +17,12 @@ import { getMemberUserProfile } from '@/api/auth/route';
 export const revalidate = 0;
 
 const ELayout = async ({children}) => {
-    const supabase = createServerComponentClient({ cookies });
-    const { data: { session }, error } = await supabase.auth.getSession()
-    if(error) console.log("there was a session error:", error)
-    // console.log("E layout runs with session:", session)
-    if (!session) redirect('/login');
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data?.user) {
+        console.log("there was a session error:", error)
+        redirect('/login');
+    }
 
     const profile = await getMemberUserProfile();
 
