@@ -4,8 +4,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useRef, useEffect } from 'react';
 import useStatus from '../../hooks/useStatus';
 
-// import './Vstyling.css';
-
 const Form = ({ id, auxData, children, APIURL, METHOD, altSubmit, subActions, followUp, followPath, onChange, auto, json, timeout = 1000, style, debug }) => {
     const saveTimer = useRef();
     const readOnlyInputs = useRef([]);

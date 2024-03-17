@@ -732,7 +732,7 @@ const Importer = ({optionSets, members}) => {
                     <button
                         key="upload-all"
                         name="upload-all"
-                        className="fit callout"
+                        className="fit hero"
                         onClick={() => uploadMembers()}
                         disabled={!allSafe || (filter != "" && !filterSafe)}
                     >

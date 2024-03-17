@@ -3,9 +3,21 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+import { HOSTURL } from 'config'
+
 import { createClient } from 'utils/supabase/server'
 
-export async function login(formData) {
+export async function userLoggedIn() {
+    const supabase = createClient();
+
+    const { data, error } = supabase.auth.getUser();
+
+    if (data?.user) return true;
+
+    return false;
+}
+
+export async function loginWithPassword(formData) {
   const supabase = createClient()
 
   // type-casting here for convenience
@@ -18,11 +30,30 @@ export async function login(formData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/error')
+    throw error
   }
 
-  revalidatePath('/', 'layout')
+  revalidatePath('/e', 'layout')
   redirect('/e')
+}
+
+export async function loginWithMagicLink(formData) {
+    const supabase = createClient();
+
+    const email = formData.get('email')
+
+    const { data, error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          emailRedirectTo: HOSTURL,
+        },
+    })
+
+    if (error) {
+        throw error
+    }
+
+    redirect('/login/otp')
 }
 
 export async function signup(formData) {

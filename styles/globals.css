@@ -295,7 +295,7 @@ button.angry {
   /* --text-active: darkred; */
 }
 
-button.callout {
+button.hero {
   --edge-color: 0 0% 100%;
   background: hsl(var(--color-p));
   --text-active: hsl(var(--color-p));
