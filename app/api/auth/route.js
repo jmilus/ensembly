@@ -10,9 +10,14 @@ import { redirect } from 'next/navigation';
 export async function getMemberUserProfile(member) {
     // console.log("getMemberUserProfile member:",{member})
     const supabase = createServerComponentClient({ cookies });
-    const { data: { session } } = await supabase.auth.getSession()
+    const { userData, userError } = await supabase.auth.getUser()
 
-    if (!session) return { email: "", member: {}, memberId: null, roles: [] };
+    console.log({userData})
+
+    if (!userData?.user) {
+        throw userError;
+        // return { email: "", member: {}, memberId: null, roles: [] };
+    }
     
     // const filterValue
 
@@ -29,7 +34,7 @@ export async function getMemberUserProfile(member) {
         query = query.eq('member', member)
     } else {
         // console.log("getting profile by email:", session.user.email)
-        query = query.eq('email', session.user.email)
+        query = query.eq('email', userData.email)
     }
 
     const { data: profile, error } = await query;
@@ -41,7 +46,7 @@ export async function getMemberUserProfile(member) {
     
     // console.log({ profile });
 
-    return profile || { email: "", member: {}, memberId: null, roles: []};
+    return profile;
 }
 
 export async function GET(request) {

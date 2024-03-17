@@ -1,7 +1,7 @@
 'use client'
 
 import { useContext, useState, useRef } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/client';
 import { usePathname, useRouter } from 'next/navigation';
 
 import { GlobalContext } from '../components/ContextFrame';
@@ -10,7 +10,7 @@ import { getInitials } from '../utils';
 import PopupMenu from './PopupMenu';
 
 const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
     const [showMenu, setShowMenu] = useState(false);
     const userIconRef = useRef();
     const { parameters: { profile } } = useContext(GlobalContext)
