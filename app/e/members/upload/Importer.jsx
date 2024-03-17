@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { readXlsxFile, validateValue, FIELDS } from 'utils/importFromExcel';
 import { Form, Text, Number, File, Select, CheckBox, Collection } from 'components/Vcontrols';
-import SubNav from 'components/SubNav';
+import { getEnsembleTypes, getCapacities } from './actions';
 
 import useStatus from 'hooks/useStatus';
 import { getDashedValue, validateBirthday } from 'utils/calendarUtils';
@@ -551,6 +551,12 @@ const Importer = ({optionSets, members}) => {
 
     })
 
+    const termPeriod = [
+        { id: 1, value: "Week" },
+        { id: 2, value: "Month" },
+        { id: 3, value: "Year" }
+    ]
+
     console.log({counters})
 
     const uploadControls = 
@@ -631,7 +637,7 @@ const Importer = ({optionSets, members}) => {
                                         <Form id="create-new-ensemble-form" METHOD="POST" followPath="/e/ensembles/$slug$" >
                                             <section className="modal-fields inputs">
                                                 <Text id="newEnsembleName" name="name" label="Ensemble Name" />
-                                                <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ensembleTypes} />
+                                                <Select id="newEnsembleType" name="type" label="Ensemble Type" options={() => getEnsembleTypes()} />
                                             </section>
                                         </Form>
                                         <section className="modal-buttons">
@@ -653,8 +659,8 @@ const Importer = ({optionSets, members}) => {
                                                 <Number id="membership-term-length" name="term_length" label="Expires in" value={1} style={{ flex: 1 }} isRequired />
                                                 <Select id="memberhsip-term-period" name="term_period" label="" options={termPeriod} value={3} style={{ flex: 5 }} isRequired />
                                             </section>
-                                            <Collection id="membership-capacities" name="capacity" label="Capacities" options={capacities} isRequired />
-                                            <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={ensembles} isRequired />
+                                            <Collection id="membership-capacities" name="capacity" label="Capacities" options={() => getCapacities()} isRequired />
+                                            <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={optionSets.ensemble} isRequired />
                                         </Form>
                                         <section className="modal-buttons">
                                             <button name="submit" className="fit" form="membership-type-form">Create</button>
