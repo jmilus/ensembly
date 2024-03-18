@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from 'utils/supabase/client';
-import { createClient } from '@supabase/supabase-js';
 import useStatus from 'hooks/useStatus';
 
 import { HOSTURL } from 'config'
