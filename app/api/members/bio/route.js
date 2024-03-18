@@ -1,5 +1,5 @@
 import { createClient } from 'utils/supabase/server';
-import { cookies } from 'next/headers';
+
 
 
 const defaultOptions = ['sex', 'race', 'hair', 'eyes']

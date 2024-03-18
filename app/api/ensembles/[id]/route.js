@@ -1,7 +1,7 @@
 import { createMember } from '@/api/members/route';
 import { createMembership } from '@/api/membership/route';
 import { createClient } from 'utils/supabase/server';
-import { cookies } from 'next/headers';
+
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 

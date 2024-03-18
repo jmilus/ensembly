@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { createClient } from 'utils/supabase/server';
-import { cookies } from 'next/headers';
+
 
 import { getMemberUserProfile } from '@/api/auth/route';
 import { getMemberEmails } from '@/api/members/[id]/email/route';

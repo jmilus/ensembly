@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { createClient } from 'utils/supabase/server';
-import { cookies } from 'next/headers';
+
 import { redirect } from 'next/navigation';
 
 import { Form, Text } from 'components/Vcontrols';

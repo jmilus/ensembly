@@ -1,6 +1,4 @@
 import { createClient } from 'utils/supabase/server';
-import { createClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getMemberEmails } from '../members/[id]/email/route';
 
