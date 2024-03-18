@@ -17,7 +17,7 @@ const SubNav = ({ caption, root, navNodes=[], buttons=[]}) => {
     const router = useRouter();
     const path = usePathname();
 
-    // console.log({profile})
+    console.log({profile})
 
     let locations = [...navNodes]
     locations.sort(function(a, b) {
