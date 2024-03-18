@@ -1,13 +1,13 @@
 'use server';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { extractFields } from 'utils';
 
 export async function getManyEnsembles() {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: ensembles, error } = await supabase
         .from('Ensemble')
@@ -38,7 +38,7 @@ export async function GET() {
 
 export const createEnsemble = async (data) => {
     const { name, type } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: ensemble, error } = await supabase
         .from('Ensemble')

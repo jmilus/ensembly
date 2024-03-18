@@ -1,12 +1,12 @@
 import 'server-only';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function getProfile() {
     // console.log({ids})
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     // console.log("getProfile ids:", { member }, { user })
     const { data: { session } } = await supabase.auth.getSession()
 

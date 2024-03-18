@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const getAttendance = async ({event, member}) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     let matchValues = {}
     if (event) matchValues.event = event
@@ -44,7 +44,7 @@ export async function GET(request, { params }) {
 
 
 export const updateAttendance = async ({ status, event, member }) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log({status}, {event}, {member})
 

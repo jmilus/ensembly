@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const updateLineupAssignment = async ({membership, lineup, division, new_division, title}) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log({membership}, {lineup}, {division}, {new_division}, {title})
 
@@ -38,7 +38,7 @@ export async function PUT(request, { params }) {
 // #####
 
 export const deleteLineupAssignment = async ({ membership, lineup, division }) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: deletedAssignment, error } = await supabase
         .from("LineupAssignment")

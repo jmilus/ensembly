@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 
 
 const defaultOptions = ['sex', 'race', 'hair', 'eyes']
 
 export const getBioOptions = async (options=defaultOptions) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     // console.log({options})
     
     const optionGetters = {

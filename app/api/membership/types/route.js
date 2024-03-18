@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const getManyMembershipTypes = async (ensembles) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     let query = supabase
         .from('MembershipType')
@@ -39,7 +39,7 @@ export async function GET(request) {
 
 export const updateOneMembershipType = async (typeData) => {
     const { id, name, capacity, term_length, term_period, ensembles } = typeData;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("update membership type data:", typeData)
 

@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { nester } from 'utils'
 
 export const getManyDivisions = async (ensembleId, nested=false) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: divisions, error } = await supabase
         .from('Division')

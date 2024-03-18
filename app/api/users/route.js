@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { getMemberEmails } from '../members/[id]/email/route';
 
 export const getMemberUser = async (props) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { email, member } = props;
 
@@ -37,7 +37,7 @@ export async function GET(request) {
 // ######
 
 export async function createUserAccount({ member }) {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     const { data: {session}, error} = await supabase.auth.getSession()
     
     const admin = await getMemberUser({ email: session.user.email })

@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { formatDBObject, nester, extractFields } from 'utils'
 
 export const getOneLineup = async (id) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: lineup, error } = await supabase
         .from('Lineup')
@@ -54,7 +54,7 @@ export async function GET({ params }) {
 
 export const updateOneLineup = async (data) => {
     const { id, name } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: lineup, error } = await supabase
         .from('Lineup')
@@ -83,7 +83,7 @@ export async function PUT(request, { params }) {
 
 export const duplicateOneLineup = async (data) => {
     const { name, id } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("duplicating lineup:", data)
 
@@ -111,7 +111,7 @@ export async function POST(request, { params }) {
 
 export const deleteOneLineup = async (data) => {
     const { id } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("deleting lineup:", data)
 

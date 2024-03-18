@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const getOneEventModel = async (id) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: eventModel, error } = await supabase
         .from('EventModel')
@@ -47,7 +47,7 @@ export async function GET(request, { params }) {
 // #######
 
 export const updateOneEventModel = async (data) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("update model data:", { data })
 
@@ -96,7 +96,7 @@ export async function PUT(request, { params }) {
 export const createModelEvent = async (data) => {
     console.log("new event data:", { data })
     const { model, eventStartDate, eventEndDate, eventName, exception=false } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: newEvent, error } = await supabase
         .from('Event')

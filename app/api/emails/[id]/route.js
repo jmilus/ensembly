@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
 
 export const updateOneEmail = async (emailData) => {
     const { id, email, type, memberId } = emailData;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("update member email data:", emailData)
 

@@ -1,13 +1,13 @@
 import 'server-only';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { Form, Text } from 'components/Vcontrols';
 
 const Signup = async () => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     const { data: { session }, error } = await supabase.auth.getSession()
 
     if (session) redirect(`/e/dashboard`);

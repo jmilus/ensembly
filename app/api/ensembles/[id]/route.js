@@ -1,12 +1,12 @@
 import { createMember } from '@/api/members/route';
 import { createMembership } from '@/api/membership/route';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const getOneEnsemble = async (id) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: ensemble, error } = await supabase
         .from('Ensemble')
@@ -39,7 +39,7 @@ export async function GET({ params }) {
 
 export const updateOneEnsemble = async (ensembleData) => {
     const { id, name, type, logoUrl } = ensembleData;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     // console.log("update ensemble profile data:", ensembleData)
 

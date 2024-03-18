@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const updateOnePhoneNumber = async (data) => {
     const { id, prefix, number, type, memberId } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("update member phone data:", data)
 

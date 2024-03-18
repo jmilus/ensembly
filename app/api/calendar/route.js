@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { formatDBObject } from 'utils';
 
 export const getManyEvents = async ({ startDate, endDate, ensemble }) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log({ startDate }, { endDate }, { ensemble })
 

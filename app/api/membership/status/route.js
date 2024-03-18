@@ -1,9 +1,9 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export const getAllMembershipStatus = async () => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data, error } = await supabase
         .from('MembershipStatus')

@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 
 import { getMemberUserProfile } from '@/api/auth/route';

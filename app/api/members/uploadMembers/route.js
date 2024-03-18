@@ -1,4 +1,4 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
@@ -6,7 +6,7 @@ import { extractFields } from 'utils';
 import _ from 'lodash';
 
 const importMember = async (member) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const {
         id,
@@ -55,7 +55,7 @@ const importMember = async (member) => {
 
 const importEmail = async (email, memberId) => {
     if (email === null || email === undefined ||  email === "") return "";
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     // let { data: existingEmail, error: existingEmailError } = await supabase
     //     .from("EmailAddress").select().eq('email', email).eq('member', memberId);
@@ -82,7 +82,7 @@ const importEmail = async (email, memberId) => {
 const importPhone = async (phone, memberId) => {
     console.log("phone value:", phone, memberId)
     if (phone === null || phone === undefined || phone === "") return "";
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     // let { data: existingPhone, error: existingPhoneError } = await supabase
     //     .from("PhoneAddress").select().eq('phone', phone).eq('member', memberId);
@@ -119,7 +119,7 @@ const importAddress = async (member) => {
 
     let thisAddressType = addressType || "Home"
 
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: existingAddress, error: existingAddressErr } = await supabase
         .from("Address")
@@ -156,7 +156,7 @@ const importAddress = async (member) => {
 const insertMembership = async (member, ensembleId, memberId) => {
     console.log(member, ensembleId, memberId)
     if (member.membershipType) {
-        const supabase = createServerComponentClient({ cookies });
+        const supabase = createClient();
 
         console.log("adding membership")
         const { data: memType, error: memTypeError } = await supabase
@@ -227,7 +227,7 @@ const insertMembership = async (member, ensembleId, memberId) => {
 const insertAssignment = async (division, ensembleId, membershipId) => {
     console.log({ division }, { ensembleId }, { membershipId })
     if (division) {
-        const supabase = createServerComponentClient({ cookies });
+        const supabase = createClient();
 
         const { data: primeLineup, error: lineupError } = await supabase
             .from("Lineup")
@@ -280,7 +280,7 @@ export const importHandler = async (members) => {
     // console.log({ members })
     // return true;
 
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     // const importableData = await memberImportFromExcel(members);
     // console.log({importableData})

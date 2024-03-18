@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/client';
 import { createClient } from '@supabase/supabase-js';
 import useStatus from 'hooks/useStatus';
 
@@ -21,7 +21,7 @@ import Link from 'next/link';
 
 const LoginBox = () => {
     const [linkEmail, setLinkEmail] = useState("")
-    const supabase = createClientComponentClient();
+    const supabase = createClient();
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
     const authSupabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, supabaseKey, {
         auth: {

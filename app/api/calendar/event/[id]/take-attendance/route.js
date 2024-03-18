@@ -1,9 +1,9 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export const getAttendanceStatus = async () => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: attendanceStatus, error } = await supabase
         .from('AttendanceStatus')
@@ -21,7 +21,7 @@ export const getAttendanceStatus = async () => {
 
 // export const upsertAttendance = async (data) => {
 //     const { event, member, status } = data;
-//     const supabase = createServerComponentClient({ cookies });
+//     const supabase = createClient();
 
 //     const { data: attendance, error } = await supabase
 //         .from('Attendance')

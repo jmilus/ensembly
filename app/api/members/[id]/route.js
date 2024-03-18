@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const getOneMember = async (memberId) => {
     // console.log({memberId})
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: member, error } = await supabase
         .from('Member')
@@ -47,7 +47,7 @@ export async function GET({ params }) {
 
 export const updateOneMember = async (memberData) => {
     const { id, firstName, middleName, lastName, aka, suffix, birthday, sex, height, weight, race, ethnicity, hair, eyes } = memberData;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("update member profile data:", memberData)
 

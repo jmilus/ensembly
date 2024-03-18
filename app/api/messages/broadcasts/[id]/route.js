@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { validateEmail } from 'utils';
 
 export const getOneBroadcast = async (id) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     console.log("fetch broadcast with id:", id)
 
     const { data: broadcast, error } = await supabase
@@ -30,7 +30,7 @@ export async function GET({ params }) {
 //###########
 
 export const duplicateBroadcast = async (broadcastId) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     const { data: newBroadcast, error } = await supabase.rpc('clone_broadcast', { broadcast_id: broadcastId })
 
     if (error) {
@@ -49,7 +49,7 @@ export async function POST(request, { params }) {
 // #######
 
 export const updateOneBroadcast = async (props) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     console.log("updating broadcast:", props);
 
     const { id, subject, body, to_address, cc_address, bcc_address, status } = props;
@@ -87,7 +87,7 @@ export async function PUT(request, { params }) {
 //###########
 
 export const deleteOneBroadcast = async (broadcastId) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data, error } = await supabase
         .from("Broadcast")

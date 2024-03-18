@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export const getManyLineups = async (ensemble) => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     let query = supabase
         .from('Lineup')
@@ -33,7 +33,7 @@ export async function GET(request) {
 
 export const createLineup = async (data) => {
     const { name, ensemble } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log("creating lineup:", data)
 

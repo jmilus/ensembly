@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils'
 
 export const updateDivision = async (data) => {
     const { id, name, taxonomy, capacity, parent_division } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     console.log("update Division data:", data)
 
     const { data: division, error } = await supabase
@@ -39,7 +39,7 @@ export async function PUT(request, { params }) {
 
 export const deleteDivision = async (data) => {
     const { id } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     console.log("delete Division data:", data)
 
     const { data: deleted, error } = await supabase

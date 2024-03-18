@@ -1,9 +1,9 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export const getManyBroadcasts = async () => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: broadcasts, error } = await supabase
         .from("Broadcast")
@@ -28,7 +28,7 @@ export async function GET() {
 
 // export const createBroadcast = async (data) => {
 //     const { id, subject, body } = data;
-//     const supabase = createServerComponentClient({ cookies });
+//     const supabase = createClient();
 
 //     console.log({ data })
 

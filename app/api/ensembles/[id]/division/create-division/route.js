@@ -1,11 +1,11 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils'
 
 export const createDivision = async (data) => {
     const { name, taxonomy, capacity, ensemble, parent_division } = data;
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     console.log("create Division data:", data)
 
     const { data: division, error } = await supabase

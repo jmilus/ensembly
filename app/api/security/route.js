@@ -1,11 +1,11 @@
 import 'server-only';
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies, headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function getSecurityRoles(namesOnly) {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
     // console.log(namesOnly)
     const { data: { session } } = await supabase.auth.getSession()
 

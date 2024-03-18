@@ -1,10 +1,10 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { extractFields } from 'utils';
 
 export async function updateUserProfile(props) {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     console.log(props)
     const { roles, id } = props;

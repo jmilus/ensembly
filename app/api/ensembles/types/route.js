@@ -1,9 +1,9 @@
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from 'utils/supabase/server';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export const getAllEnsembleTypes = async () => {
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createClient();
 
     const { data: types, error } = await supabase
         .from('EnsembleType')
