@@ -47,7 +47,7 @@ export const FIELDS = {
 export const validateValue = (value, fieldName, options=[]) => {
 
     if (FIELDS[fieldName].type === 'list') {
-        // console.log("evaluating list item:", fieldName, value, options)
+        console.log("evaluating list item:", fieldName, value, options)
         if (options.length === 1) {
             const onlyOption = options[0].name || options[0].type || options[0]
             return { value: onlyOption, valid: onlyOption.toLowerCase() === value.toLowerCase() ? 'pass' : 'flag' }
@@ -274,7 +274,7 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                             }
 
                             if (field === 'membershipType') {
-                                const thisEnsembleName = rowValues[ensembleColIndex] || ""
+                                const thisEnsembleName = rowValues[ensembleColIndex] || ensembleName || ""
                                 const thisEnsemble = optionSets.ensemble.find(ens => ens.name.toLowerCase() === thisEnsembleName.toLowerCase())
                                 fieldOptions = fieldOptions.filter(option => {
                                     return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
