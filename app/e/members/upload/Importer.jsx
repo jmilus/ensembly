@@ -615,6 +615,7 @@ const Importer = ({optionSets, members, ensembleTypes, capacities}) => {
                         <Form id="upload-members-form" altSubmit={(f) => processFile(f)} >
                             <article >
                                 <File id="file-selector" name="members" label="Select .xlsx file" fileTypes="xlsx" isRequired />
+                                <p>You may optionally indicate an Ensemble, which will be applied to each imported member if they do not already have one specified.</p>
                                 <Select id="ensemble-select" name="ensembleName" label="Ensemble" options={optionSets.ensemble} />
                                 <section style={{marginTop: "10px", justifyContent: "flex-end"}}>
                                     <button name="submit" className="fit">Import</button>
@@ -635,7 +636,7 @@ const Importer = ({optionSets, members, ensembleTypes, capacities}) => {
                                         title="Create New Ensemble"
                                         buttonClass="link-like-button"
                                     >
-                                        <Form id="create-new-ensemble-form" METHOD="POST" followPath="/e/ensembles/$slug$" >
+                                        <Form id="create-new-ensemble-form" APIURL="/api/ensembles" METHOD="POST" >
                                             <section className="modal-fields inputs">
                                                 <Text id="newEnsembleName" name="name" label="Ensemble Name" />
                                                 <Select id="newEnsembleType" name="type" label="Ensemble Type" options={ensembleTypes} />
@@ -661,7 +662,7 @@ const Importer = ({optionSets, members, ensembleTypes, capacities}) => {
                                                 <Select id="memberhsip-term-period" name="term_period" label="" options={termPeriod} value={3} style={{ flex: 5 }} isRequired />
                                             </section>
                                             <Collection id="membership-capacities" name="capacity" label="Capacities" options={capacities} isRequired />
-                                            <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={optionSets.ensemble} isRequired />
+                                            <Collection id="membership-ensembles" name="ensembles" label="Ensembles" options={optionSets.ensemble.map(ens => { return { ...ens, value: ens.id } })} isRequired />
                                         </Form>
                                         <section className="modal-buttons">
                                             <button name="submit" className="fit" form="membership-type-form">Create</button>
