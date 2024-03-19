@@ -615,8 +615,11 @@ const Importer = ({optionSets, members, ensembleTypes, capacities}) => {
                         <Form id="upload-members-form" altSubmit={(f) => processFile(f)} >
                             <article >
                                 <File id="file-selector" name="members" label="Select .xlsx file" fileTypes="xlsx" isRequired />
-                                <p>You may optionally indicate an Ensemble, which will be applied to each imported member if they do not already have one specified.</p>
-                                <Select id="ensemble-select" name="ensembleName" label="Ensemble" options={optionSets.ensemble} />
+                                <p>You may optionally indicate an Ensemble and Membership Type, which will be applied to each imported member where these values are unspecified.
+                                </p>
+                                <Select id="ensemble-select" name="ensembleId" label="Ensemble" options={optionSets.ensemble.map(ens => { return { ...ens, value: ens.id } })}>
+                                    <Select id="membershipType-select" name="membershipTypeId" label="Membership Type" options={optionSets.membershipType} filterKey="ensembles"/>
+                                </Select>
                                 <section style={{marginTop: "10px", justifyContent: "flex-end"}}>
                                     <button name="submit" className="fit">Import</button>
                                 </section>

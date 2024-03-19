@@ -3,7 +3,7 @@ import { createClient } from 'utils/supabase/server';
 import { NextResponse } from 'next/server';
 
 export const manageEventLineup = async (props) => {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient()
     
     console.log({props})
     const { grid, model } = props;
@@ -48,7 +48,7 @@ export async function PUT(request, {params}) {
 // ##########
 
 export async function adoptLineups(props) {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient()
     const { lineups, model } = props;
 
     const { data: events, error: modelError } = await supabase.from("Event").select("id").eq('model', model)

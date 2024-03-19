@@ -3,7 +3,7 @@ import { createClient } from 'utils/supabase/server';
 import { NextResponse } from 'next/server';
 
 export const manageEventLineup = async (props) => {
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient()
     
     console.log(props)
     const { add, event, lineup } = props;

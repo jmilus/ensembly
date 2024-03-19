@@ -13,7 +13,7 @@ const AccountPage = async (context) => {
     const { params: { id } } = context;
     console.log({ id })
 
-    const supabase = createServerComponentClient({ cookies })
+    const supabase = createClient()
 
     const userProfile = await getMemberUserProfile(id);
     const allRoles = await getSecurityRoles(true)

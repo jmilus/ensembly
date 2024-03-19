@@ -228,7 +228,7 @@ export const validateValue = (value, fieldName, options=[]) => {
 
 }
 
-export const readXlsx = async (fileData, ensembleName, optionSets) => {  // value.toString
+export const readXlsx = async (fileData, ensembleId, membershipTypeId, optionSets) => {  // value.toString
     
     const records = []
     const workbook = new Workbook();
@@ -269,15 +269,17 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
                         if (columnNum) {
                             let rowValue = ""
                             let fieldOptions = optionSets[field]
+                            const ensemble = optionSets.ensemble.find(ens => {
+                                return ens.id === ensembleId
+                            })
+
                             if (field === 'ensemble') {
-                                if (ensembleName != null && ensembleName != "") rowValue = ensembleName
+                                if (ensembleId != null && ensembleId != "") rowValue = ensemble.name;
                             }
 
-                            if (field === 'membershipType') {
-                                const thisEnsembleName = rowValues[ensembleColIndex] || ensembleName || ""
-                                const thisEnsemble = optionSets.ensemble.find(ens => ens.name.toLowerCase() === thisEnsembleName.toLowerCase())
+                            if (field === 'membershipType' && ensembleId != null && ensembleId != "") {
                                 fieldOptions = fieldOptions.filter(option => {
-                                    return thisEnsemble ? option.ensembles.includes(thisEnsemble.id) : false
+                                    return ensembleId ? option.ensembles.includes(ensembleId) : false
                                 })
                             }
 
@@ -308,6 +310,6 @@ export const readXlsx = async (fileData, ensembleName, optionSets) => {  // valu
 
 export const readXlsxFile = async (file, optionSets) => {
     const data = await new Response(file).arrayBuffer();
-    return readXlsx(data, file.get('ensembleName'), optionSets);
+    return readXlsx(data, file.get('ensembleId'), file.get('membershipTypeId'), optionSets);
 
 }
